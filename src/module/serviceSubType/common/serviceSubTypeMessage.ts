@@ -1,0 +1,15 @@
+import exp from "constants";
+
+export const inputCannotBeUndefinedOrNull = "Input cannot be undefined or null";
+export const ServiceSubTypeIsRequired = "Service sub type is required.";
+export const createServiceSubTypeSuccessfully = "Create service sub type successfully.";
+export const anErrorOccurredWhileCreatingTheServiceSubType = "An error occurred while updating the service sub type.";
+export const failedToRetrieveTheLastInsertedServiceSubTypeID = "Failed to retrieve the last inserted service Sub type ID.";
+export const failsToMatchTheRequiredPattern = "Fails to match the required pattern.";
+export const serviceSubTypeRetrievalSuccessfully = "Service sub type retrieval successfully.";
+export const anErrorOccurredWhileRetrievingServiceSubType = " An error occurred while retrieving service sub type.";
+export const serviceSubTypeNotFound = "Service sub type not found.";
+export const serviceSubTypeUpdateSuccessfully = "Service sub type update successfully.";
+export const anErrorOccurredWhileUpdatingServiceSubType = "An error occurred while updating service sub type.";
+export const anErrorOccurredWhileDeletingServiceSubType = "An error occurred while deleting service sub type.";
+export const serviceSubTypeDeletedSuccessfully = "Service sub type deleted successfully."

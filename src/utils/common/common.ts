@@ -1,0 +1,20 @@
+export const welcomeEmailSentSucessfully = "Welcome email sent successfully.";
+
+export const collaboratorEmailSentSucessfully = "Account creation email sent successfully.";
+
+export const logoImageNotFound = "Logo image not found";
+
+export const thankYouForChoosing = "Thank you for choosing ";
+
+export const connectIndiaEnterprises = "Connect India Enterprises!";
+export const hereIsYourVoucherTicketDetails = " Here is your voucher ticket details:";
+export const thisVoucherCanBeUsedForOnly = "This voucher can be used for only ";
+export const withinTheValidityPeriod = " within the validity period.";
+export const needHelp = "Need help?";
+export const ishereForYou = " is here for you!";
+export const signatureOfAuthority = "Signature of Authority";
+export const errorGeneratingPDF = "Error generating PDF:";
+export const serviceStatus = "Service Status";
+export const notificationSentSuccessfully = "Notification sent successfully.";
+export const mailSentSuccessfully = "Mail sent successfully"
+export const yourServiceRequestCreatedSuccessfully = "Your service request has been created successfully";
