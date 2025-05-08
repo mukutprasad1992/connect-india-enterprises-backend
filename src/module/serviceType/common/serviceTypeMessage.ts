@@ -1,0 +1,27 @@
+export const serviceTypeCreatedSuccessfully = 'Service type created successfully';
+export const userNotFound = 'User not found';
+export const serviceTypeRetrievalError = 'An error occurred while retrieving service type';
+export const serviceTypeCreationError = 'An error occurred while creating the service type';
+export const invalidAmount = "Invalid amount. It must be a positive number.";
+export const invalidType = "Service type must be a valid string.";
+export const invalidDuration = "Duration must be a valid string.";
+export const invalidStatus = "Status must be either 'Pending', 'Approved', 'Rejected', or 'In Progress'.";
+export const inputCannotBeUndefinedOrNull = "Input cannot be undefined or null.";
+export const serviceTypesRetrievedSuccessfully = "Service type retrieved successfully.";
+export const failedToRetrieveTheIDOfTheLastInsertedServiceType = "Failed to retrieve the ID of the last inserted service type.";
+export const serviceTypeRetrievedSuccessfully = "Service type retrieved successfully.";
+export const serviceTypeUpdateError = "Service type update error.";
+export const serviceTypeUpdatedSuccessfully = "Service Type updated successfully.";
+export const serviceTypeDeletionError = "Service type deletion error.";
+export const serviceTypeDeletedSuccessfully = "Service type deleted successfully.";
+export const serviceTypeNotFound = "ServiceType not found.";
+export const serviceTypeNotFoundOrNoChangesHaveBeenMade = "Service type not found or no changes have been made.";
+export const servicetTypesNotFoundOrAlreadyDeleted = "Service types not found or already deleted.";
+export const invalidStatusValueProvided = "Invalid status value provided.";
+
+export const serviceTypeTotalAmountRetrievedSuccessfully = "Service type total amount retrieved successfully";
+export const serviceTypeTotalAmountRetrievalError = "Service type total amount retrieval error";
+export const noTotalAmountFound = "No total amount found";
+
+export const yourServiceRequestHasBeenCreatedSuccessfully = "Your service request has been created successfully.";
+export const userNotFoundForTheGivenServiceTypeID = "User not found for the given service type ID";
