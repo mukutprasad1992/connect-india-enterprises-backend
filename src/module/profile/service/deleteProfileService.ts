@@ -12,7 +12,7 @@ export class DeleteProfileService {
     async getProfileByUserId(userId: number): Promise<any> {
         try {
             const profile = await this.dataSource.query(
-                'SELECT * FROM profiles WHERE userId = ?',
+                'SELECT * FROM users WHERE id = ?',
                 [userId]
             );
 
@@ -47,7 +47,7 @@ export class DeleteProfileService {
                     data: null
                 };
             }
-            const query = 'DELETE FROM profiles WHERE userId = ?';
+            const query = 'DELETE FROM users WHERE id = ?';
             await this.dataSource.query(query, [userId]);
 
             return {

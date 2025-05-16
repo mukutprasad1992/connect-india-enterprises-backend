@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
+import { UserSchema } from '../../user/userEntity/userSchema';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
-
-// Controllers
 import { CreateServiceTypeController } from '../controller/createServiceTypeController';
 import { GetAllServiceTypesController } from '../controller/getAllServiceTypeController';
 import { GetServiceTypeByIdController } from '../controller/getServiceTypeByIdController';
@@ -15,8 +13,6 @@ import { GetServiceTypeByServiceServiceIdController } from '../controller/getAll
 import { UpdateServiceTypeStatusController } from '../controller/updateServiceTypeStatusController';
 import { GetTotalAmountByUserIdServiceTypeController } from '../controller/getTotalAmountByIdSericeTypeController';
 import { GetTotalAmountServiceTypeController } from '../controller/getAllAmountServiceTypeController';
-
-// Services
 import { CreateServiceTypeService } from '../services/createServiceTypeServices';
 import { GetALLServiceTypeByIdService } from '../services/getAllServiceTypeServices';
 import { GetServiceTypeByIdService } from '../services/getServiceTypeByIdServise';
@@ -26,7 +22,6 @@ import { GetServiceTypeByServiceIdService } from '../services/getAllServiceTypeB
 import { UpdateServiceTypeStatusService } from '../services/updateServiseTypeStatusService';
 import { GetTotalAmountByUserIdServiceTypeService } from '../services/getTotalAmountByServiseTypeIdService';
 import { GetTotalAmountServiceTypeService } from '../services/getAllAmountServiceTypeService';
-
 import { NotificationModule } from '../../notificaton/module/notificationModule';
 import { NotificationMailService } from 'src/utils/mailer/notificatiomMail';
 import { ConfigModule } from '@nestjs/config';
@@ -34,11 +29,13 @@ import { MessageGeneratorService } from '../common/template/serviceStatusMessage
 import { CreatedServiceSuccessMessageService } from '../common/template/serviceTypeCreatedNotificationMessagetemplate';
 import { ServiceTypeMailService } from 'src/utils/mailer/ServiceTypeMailer';
 import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
+import { GetTotalAmountAndServicesByUserIdServiceTypeController } from '../controller/getTotalAmountsAndServicesByUserIdController';
+import { GetTotalAmountsAndServicesByUserIdServiceTypeService } from '../services/getTotalAmountsAndServicesByUserIdService';
 
 @Module({
     imports: [
         ConfigModule,
-        TypeOrmModule.forFeature([ServiceTypeSchema]),
+        TypeOrmModule.forFeature([ServiceTypeSchema, UserSchema]),
         TypeOrmModule,
         JwtModule.register({
             secret: process.env.JWT_SECRET,
@@ -55,7 +52,9 @@ import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpda
         GetServiceTypeByServiceServiceIdController,
         UpdateServiceTypeStatusController,
         GetTotalAmountByUserIdServiceTypeController,
-        GetTotalAmountServiceTypeController
+        GetTotalAmountServiceTypeController,
+        GetTotalAmountAndServicesByUserIdServiceTypeController,
+
     ],
     providers: [
         AuthGuard,
@@ -72,7 +71,8 @@ import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpda
         MessageGeneratorService,
         CreatedServiceSuccessMessageService,
         ServiceTypeMailService,
-        UpdatedServiceMessageService
+        UpdatedServiceMessageService,
+        GetTotalAmountsAndServicesByUserIdServiceTypeService
     ]
 })
 export class ServiceTypeModule { }

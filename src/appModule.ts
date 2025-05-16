@@ -11,6 +11,7 @@ import { CustomerModule } from './module/customer/module/customerModule';
 import { VoucherModule } from './module/voucher/module/voucherModule';
 import { AiModule } from './module/AI/module/AIModule';
 import { NotificationModule } from './module/notificaton/module/notificationModule';
+import { ProfileModule } from './module/profile/module/profileModule';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { NotificationModule } from './module/notificaton/module/notificationModu
         VoucherModule,
         AiModule,
         NotificationModule,
+        ProfileModule,
     ],
 })
 export class AppModule { }

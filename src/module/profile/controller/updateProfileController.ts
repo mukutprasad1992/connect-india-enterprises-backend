@@ -1,9 +1,9 @@
 import { Controller, Put, Body, Res, UseGuards, Req } from '@nestjs/common';
 import { UpdateProfileService } from '../service/updateProfileService';
-import { UpdateProfileDto } from '../profileDTO/updateProfileDTO';
+import { UpdateUserDto } from '../profileDTO/updateProfileDTO';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { profileUpdateSuccessfully, profileNotFound, anErrorOccurredWhileUpdatingProfile } from '../common/profileMessage';
-import { ValidationProfile } from '../common/joiValidationPipe';
+import { ValidationUser } from '../common/joiValidationPipe';
 @Controller('profile/updateProfile')
 export class UpdateProfileController {
     constructor(private readonly updateProfileService: UpdateProfileService) { }
@@ -11,7 +11,7 @@ export class UpdateProfileController {
     @Put()
     async updateProfile(
         @Req() req,
-        @Body(new ValidationProfile(UpdateProfileDto.profileSchema)) updateProfileDto: UpdateProfileDto,
+        @Body(new ValidationUser(UpdateUserDto.userSchema)) updateProfileDto: UpdateUserDto,
         @Res() res
     ) {
         try {

@@ -1,10 +1,54 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { IsString, IsEmail, IsOptional, IsDateString, Length } from 'class-validator';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
+import {
+    IsInt,
+    IsOptional,
+    IsString,
+    Length,
+} from 'class-validator';
 
-@Entity({ name: 'profiles' })
-export class ProfileSchema {
-    @PrimaryGeneratedColumn({ type: 'int' })
-    profileId: number;
+@Entity({ name: 'users' })
+export class UserSchema {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @IsString()
+    @Length(1, 15)
+    @Column({ type: 'varchar', length: 15 })
+    mobileNo: string;
+
+    @IsOptional()
+    @IsInt()
+    @Column({ type: 'int', nullable: true })
+    createdBy: number;
+
+    @IsOptional()
+    @IsInt()
+    @Column({ type: 'int', nullable: true })
+    updatedBy: number;
+
+    @CreateDateColumn({ type: 'timestamp' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ type: 'timestamp' })
+    updatedAt: Date;
+
+    @IsOptional()
+    @IsString()
+    @Length(1, 255)
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    address: string;
+
+    @IsOptional()
+    @IsInt()
+    @Column({ type: 'int', nullable: true })
+    pinCode: number;
+
 
     @IsString()
     @Length(1, 100)
@@ -16,83 +60,9 @@ export class ProfileSchema {
     @Column({ type: 'varchar', length: 100 })
     lastName: string;
 
-    @IsEmail()
-    @Length(1, 100)
-    @Column({ unique: true })
-    email: string;
-
-    @IsDateString()
-    @Column({ type: 'varchar', length: 100 })
-    dateOfBirth: string;
-
+    @IsOptional()
     @IsString()
     @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    currentStreet: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    currentArea: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    currentCity: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    currentState: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    currentCountry: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    currentPinCode: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    permanentStreet: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    permanentArea: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    permanentCity: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    permanentState: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    permanentCountry: string;
-
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    permanentPinCode: string;
-
-    @IsString()
-    @Length(1, 15)
-    @Column({ type: 'varchar', length: 15 })
-    mobileNo: string;
-
-    @Column({ type: 'varchar', length: 100 })
-    createdBy: string;
-
-    @Column({ type: 'varchar', length: 100 })
-    updatedBy: string;
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    profileImageURL: string;
 }

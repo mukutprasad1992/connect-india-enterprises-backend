@@ -1,78 +1,78 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { CreateProfileDto } from '../profileDTO/createProfileDTO';
-import { ProfileSchema } from '../profileEntity/profileSchema';
-import { UserSchema } from '../../user/userEntity/userSchema';
-import { userNotFound, profileCreateSuccessfully, anErrorOccurredWhileUpdatingTheProfile } from '../common/profileMessage';
+import { CreateUserDto } from '../profileDTO/createProfileDTO';
+import {
+    userNotFound,
+    profileCreateSuccessfully,
+    anErrorOccurredWhileUpdatingTheProfile,
+} from '../common/profileMessage';
 
 @Injectable()
 export class CreateProfileService {
     constructor(private readonly dataSource: DataSource) { }
-    async getProfileByUserId(userId: number): Promise<ProfileSchema | null> {
-        const profile = await this.dataSource.query(
-            'SELECT * FROM profiles WHERE userId = ?',
-            [userId]
-        );
-        return profile.length > 0 ? profile[0] : null;
-    }
-    async getUserByUserId(id: number): Promise<UserSchema | null> {
-        const user = await this.dataSource.query(
+
+    async getUserByUserId(userId: number): Promise<any | null> {
+        const result = await this.dataSource.query(
             'SELECT * FROM users WHERE id = ?',
-            [id]
+            [userId],
         );
-        return user.length > 0 ? user[0] : null;
+        return result.length ? result[0] : null;
     }
-    async createProfile(userId: number, createProfileDto: CreateProfileDto): Promise<any> {
-        const { firstName, createdBy, lastName, dateOfBirth, mobileNo, ...addressDetails } = createProfileDto;
+
+    async createProfile(userId: number, dto: CreateUserDto): Promise<any> {
         const user = await this.getUserByUserId(userId);
         if (!user) {
             return {
                 status: false,
-                message: userNotFound
+                message: userNotFound,
             };
         }
-        const createdAt = new Date()
-        const query = `INSERT INTO profiles (userId,createdBy, email, userRole, firstName, lastName, dateOfBirth, mobileNo, currentStreet, currentArea, currentCity, currentState, currentCountry, currentPinCode, permanentStreet, permanentArea, permanentCity, permanentState, permanentCountry, permanentPinCode, createdAt)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-        const values = [
-            userId,
-            createdBy,
-            user.email,
-            user.roleId,
+        const {
             firstName,
             lastName,
-            dateOfBirth,
-            user.mobileNo || mobileNo,
-            addressDetails.currentStreet,
-            addressDetails.currentArea,
-            addressDetails.currentCity,
-            addressDetails.currentState,
-            addressDetails.currentCountry,
-            addressDetails.currentPinCode,
-            addressDetails.permanentStreet,
-            addressDetails.permanentArea,
-            addressDetails.permanentCity,
-            addressDetails.permanentState,
-            addressDetails.permanentCountry,
-            addressDetails.permanentPinCode,
-            createdAt
+            mobileNo,
+            createdBy,
+            address,
+            pinCode,
+            profileImageURL,
+        } = dto;
+
+        const updatedAt = new Date();
+
+        const query = `
+      UPDATE users SET
+        firstName = ?, lastName = ?, mobileNo = ?, createdBy = ?, address = ?, pinCode = ?,
+        profileImageURL = ?,
+      WHERE id = ?
+    `;
+
+        const values = [
+            firstName,
+            lastName,
+            mobileNo,
+            createdBy || null,
+            address || null,
+            pinCode || null,
+            profileImageURL || null,
+            updatedAt,
+            userId,
         ];
 
         try {
-            const result = await this.dataSource.query(query, values);
-            const createdProfile = await this.getProfileByUserId(userId);
+            await this.dataSource.query(query, values);
+            const updatedUser = await this.getUserByUserId(userId);
 
             return {
                 status: true,
                 message: profileCreateSuccessfully,
-                data: createdProfile
+                data: updatedUser,
             };
         } catch (error) {
             return {
                 status: false,
                 message: anErrorOccurredWhileUpdatingTheProfile,
-                error: error.message
+                error: error.message,
             };
         }
     }

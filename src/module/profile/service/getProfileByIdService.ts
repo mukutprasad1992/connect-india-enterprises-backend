@@ -7,7 +7,7 @@ export class GetProfileByIdService {
     async getProfileByUserId(userId: number): Promise<any> {
         try {
             const profile = await this.dataSource.query(
-                'SELECT * FROM profiles WHERE userId = ?',
+                'SELECT * FROM users WHERE id = ?',
                 [userId]
             );
 

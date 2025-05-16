@@ -7,7 +7,7 @@ export class GetAllProfileService {
 
     async getAllProfiles(): Promise<any> {
         try {
-            const profiles = await this.dataSource.query('SELECT * FROM profiles');
+            const profiles = await this.dataSource.query('SELECT * FROM users');
             return {
                 status: true,
                 message: profileRetrievalSuccessfully,

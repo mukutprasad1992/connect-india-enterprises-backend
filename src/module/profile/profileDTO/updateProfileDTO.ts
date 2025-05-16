@@ -1,41 +1,20 @@
 import * as Joi from 'joi';
 
-export class UpdateProfileDto {
-    firstName: string;
-    lastName: string;
-    dateOfBirth: string;
-    mobileNo: string;
-    currentStreet: string;
-    currentArea: string;
-    currentCity: string;
-    currentState: string;
-    currentCountry: string;
-    currentPinCode: string;
-    permanentStreet: string;
-    permanentArea: string;
-    permanentCity: string;
-    permanentState: string;
-    permanentCountry: string;
-    permanentPinCode: string;
-    updatedBy: string;
-
-    static profileSchema = Joi.object({
-        firstName: Joi.string().optional(),
-        lastName: Joi.string().optional(),
-        dateOfBirth: Joi.string().optional(),
-        mobileNo: Joi.string().optional(),
-        currentStreet: Joi.string().optional(),
-        currentArea: Joi.string().optional(),
-        currentCity: Joi.string().optional(),
-        currentState: Joi.string().optional(),
-        currentCountry: Joi.string().optional(),
-        currentPinCode: Joi.string().optional(),
-        permanentStreet: Joi.string().optional(),
-        permanentArea: Joi.string().optional(),
-        permanentCity: Joi.string().optional(),
-        permanentState: Joi.string().optional(),
-        permanentCountry: Joi.string().optional(),
-        permanentPinCode: Joi.string().optional(),
-        updatedBy: Joi.string().optional(),
+export class UpdateUserDto {
+    firstName?: string;
+    lastName?: string;
+    mobileNo?: string;
+    updatedBy?: number;
+    address?: string;
+    pinCode?: number;
+    profileImageURL?: string;
+    static userSchema = Joi.object({
+        firstName: Joi.string().min(1).max(100).optional(),
+        lastName: Joi.string().min(1).max(100).optional(),
+        mobileNo: Joi.string().trim().pattern(/^[0-9]{10,15}$/).optional(),
+        updatedBy: Joi.number().integer().optional(),
+        address: Joi.string().max(255).optional().allow(null, ''),
+        pinCode: Joi.number().integer().optional(),
+        profileImageURL: Joi.string().max(100).optional().allow(null, ''),
     });
 }
