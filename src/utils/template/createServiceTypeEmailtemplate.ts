@@ -1,25 +1,42 @@
 export const emailCreateServiceTypeTemplates = {
-    NewUserRequest: (serviceSubType: string) => {
-        return `
-      <div style="line-height: 1.6; font-family: Arial, sans-serif; background-color: #f4f7fb; padding: 24px; border-radius: 10px; border: 1px solid #dce3ec;">
-        <h2 style="color: #2196F3;">🎉 Welcome to Connect India Enterprises!</h2>
+  NewUserRequest: (serviceSubType: string) => {
+    return `
+      <div>
+        <h3 >Received Your ${serviceSubType} Request!</h3>
 
-        <p style="font-size: 16px; color: #444;">Thank you for submitting your <strong>${serviceSubType}</strong> service request.</p>
+        <p style="font-size: 12px; color: #444;">Hello User      ,</p>
+        <p style="font-size: 12px; color: #444;">Thank you for choosing Connect India Enterprises!</p>
         
-        <p style="font-size: 16px; color: #444;">We’re excited to have you with us. Your service request has been successfully created and is currently marked as <strong style="color: #FFA000;">Pending</strong>.</p>
+        <p style="font-size: 12px; color: #444;">
+          Your request for <strong>${serviceSubType}</strong> has been successfully submitted and is currently marked as <strong>Pending</strong>.
+        </p>
 
-        <p style="font-size: 16px; color: #444;">The Connect India team will reach out to you shortly to discuss your request and guide you through the next steps.</p>
-        
-        <p style="font-size: 16px; color: #444;">If you have any questions in the meantime, please feel free to contact our support team at:</p>
-        
-        <ul style="font-size: 16px; color: #444; padding-left: 20px;">
-          <li><strong>9039993919</strong></li>
-          <li><strong>7898191919</strong></li>
+        <p style="font-size: 12px; color: #444;">
+          Our team is reviewing your details and will reach out within 24–48 hours to guide you through the next steps. Here's what happens next:
+        </p>
+
+        <ul style="font-size: 12px; color: #444; padding-left: 20px;">
+          <li>Personalized guidance from our team.</li>
+          <li>Next steps for processing your service.</li>
+          <li>Continued support throughout the journey.</li>
         </ul>
 
-        <p style="font-size: 16px; color: #444;">Warm regards,<br/>
-        <strong>Connect India Enterprises Team</strong> 🚀</p>
+        <p style="font-size: 12px; color: #444;">
+          You can track your request and manage your profile anytime:<br />
+          <a href="http://localhost:3000/authentication/login" >👉 Login to Dashboard</a>
+        </p>
+
+        <p style="font-size: 12px; color: #444;">
+          Need help? Reach out to our support team:<br />
+          📞 <strong>9039993919</strong> | <strong>7898191919</strong>
+        </p>
+
+        <p style="font-size: 12px; color: #444;">
+          Warm regards,<br/>
+          <strong>The Connect India Enterprises Team</strong> 🌟<br/>
+          Helping you connect with better opportunities.
+        </p>
       </div>
     `;
-    }
+  }
 };

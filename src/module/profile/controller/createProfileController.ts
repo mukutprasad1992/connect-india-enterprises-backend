@@ -1,9 +1,9 @@
 import { Controller, Post, Body, Res, UseGuards, Req } from '@nestjs/common';
 import { CreateProfileService } from '../service/createProfileService';
-import { CreateProfileDto } from '../profileDTO/createProfileDTO';
+import { CreateUserDto } from '../profileDTO/createProfileDTO';
 import { profileCreateSuccessfully, anErrorOccurredWhileUpdatingTheProfile, userAlreadyHasAProfile } from '../common/profileMessage';  // Common messages
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
-import { ValidationProfile } from '../common/joiValidationPipe';
+import { ValidationUser } from '../common/joiValidationPipe';
 
 @Controller('profile/createProfile')
 export class CreateProfileController {
@@ -11,20 +11,20 @@ export class CreateProfileController {
     @UseGuards(AuthGuard)
     @Post()
     async createProfile(
-        @Body(new ValidationProfile(CreateProfileDto.profileSchema)) createProfileDto: CreateProfileDto,
+        @Body(new ValidationUser(CreateUserDto.userSchema)) createProfileDto: CreateUserDto,
         @Res() res,
         @Req() req
     ) {
         try {
             const userId = req.user.id;
-            const existingProfile = await this.createProfileService.getProfileByUserId(userId);
-            if (existingProfile) {
-                return res.status(400).send({
-                    status: false,
-                    message: userAlreadyHasAProfile,
-                    result: null
-                });
-            }
+            // const existingProfile = await this.createProfileService.getUserByUserId(userId);
+            // if (existingProfile) {
+            //     return res.status(400).send({
+            //         status: false,
+            //         message: userAlreadyHasAProfile,
+            //         result: null
+            //     });
+            // }
             const profileResponse = await this.createProfileService.createProfile(userId, createProfileDto);
             if (profileResponse.status === true) {
                 return res.status(201).send({

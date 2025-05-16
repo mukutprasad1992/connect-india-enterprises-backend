@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { UpdateProfileDto } from '../profileDTO/updateProfileDTO';
+import { UpdateUserDto } from '../profileDTO/updateProfileDTO';
 import {
     profileUpdateSuccessfully,
     profileRetrievalSuccessfully,
@@ -13,81 +13,62 @@ import {
 export class UpdateProfileService {
     constructor(private readonly dataSource: DataSource) { }
 
-    async getProfileByUserId(userId: number): Promise<any> {
+    async getUserById(userId: number): Promise<any> {
         try {
-            const profile = await this.dataSource.query(
-                'SELECT * FROM profiles WHERE userId = ?',
+            const result = await this.dataSource.query(
+                'SELECT * FROM users WHERE id = ?',
                 [userId]
             );
-
-            if (profile.length > 0) {
+            if (result.length > 0) {
                 return {
                     status: true,
                     message: profileRetrievalSuccessfully,
-                    data: profile[0]
+                    data: result[0],
                 };
             } else {
                 return {
                     status: false,
                     message: profileNotFound,
-                    data: null
+                    data: null,
                 };
             }
         } catch (error) {
             return {
                 status: false,
                 message: anErrorOccurredWhileUpdatingProfile,
-                error: error.message
+                error: error.message,
             };
         }
     }
 
-    async updateProfile(userId: number, updateProfileDto: UpdateProfileDto): Promise<any> {
+    async updateProfile(userId: number, dto: UpdateUserDto): Promise<any> {
         try {
-            const existingProfile = await this.getProfileByUserId(userId);
-
-            if (!existingProfile.status || !existingProfile.data) {
+            const existing = await this.getUserById(userId);
+            if (!existing.status || !existing.data) {
                 return {
                     status: false,
                     message: profileNotFound,
-                    data: null
+                    data: null,
                 };
             }
-            const {
-                firstName,
-                lastName,
-                dateOfBirth,
-                mobileNo,
-                updatedBy,
-                currentStreet,
-                currentArea,
-                currentCity,
-                currentState,
-                currentCountry,
-                currentPinCode,
-                permanentStreet,
-                permanentArea,
-                permanentCity,
-                permanentState,
-                permanentCountry,
-                permanentPinCode
-            } = updateProfileDto;
-            const updatedAt = new Date()
 
-            const query = `UPDATE profiles 
-                SET firstName = ?, lastName = ?, dateOfBirth = ?, mobileNo = ?, updatedBy = ?, 
-                    currentStreet = ?, currentArea = ?, currentCity = ?, currentState = ?, currentCountry = ?, currentPinCode = ?, 
-                    permanentStreet = ?, permanentArea = ?, permanentCity = ?, permanentState = ?, permanentCountry = ?, 
-                    permanentPinCode = ?, updatedAt = ?
-                WHERE userId = ?`;
+            const fields = [];
+            const values = [];
+            for (const [key, value] of Object.entries(dto)) {
+                if (value !== undefined) {
+                    fields.push(`${key} = ?`);
+                    values.push(value);
+                }
+            }
+            fields.push('updatedAt = ?');
+            values.push(new Date());
+            values.push(userId);
 
-            const values = [
-                firstName, lastName, dateOfBirth, mobileNo, updatedBy,
-                currentStreet, currentArea, currentCity, currentState, currentCountry, currentPinCode,
-                permanentStreet, permanentArea, permanentCity, permanentState, permanentCountry, permanentPinCode,
-                updatedAt,
-                userId
-            ];
+            const query = `
+        UPDATE users
+        SET ${fields.join(', ')}
+        WHERE id = ?
+      `;
 
             const result = await this.dataSource.query(query, values);
 
@@ -95,21 +76,21 @@ export class UpdateProfileService {
                 return {
                     status: false,
                     message: profileUpdateFailedNoRowsWereAffected,
-                    data: null
+                    data: null,
                 };
             }
 
-            const updatedProfile = await this.getProfileByUserId(userId);
+            const updated = await this.getUserById(userId);
             return {
                 status: true,
                 message: profileUpdateSuccessfully,
-                data: updatedProfile.data
+                data: updated.data,
             };
         } catch (error) {
             return {
                 status: false,
                 message: anErrorOccurredWhileUpdatingProfile,
-                error: error.message
+                error: error.message,
             };
         }
     }
