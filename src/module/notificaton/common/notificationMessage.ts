@@ -8,3 +8,4 @@ export const notificationMarkedAsReadSuccessfully = "Notification marked as read
 export const failedToUpdateNotificationStatus = "Failed to update notification status";
 export const somethingWentWrong = "Something went wrong";
 export const notificationNotFound = "Notification not found";
+export const userRoleNotFound = "User role not found";

@@ -9,16 +9,13 @@ import { GetAllNotificationService } from '../service/getAllNotificationService'
 import { GetAllNotificationController } from '../controller/getAllNotificationController';
 import { UpdateIsReadByIdService } from '../service/updateIsReadByIdService';
 import { UpdateIsReadByIdController } from '../controller/UpdateIsReadByIdController';
-import { GetNotificationsByVendorIdController } from '../controller/getNotificationByVendorIdController';
-import { GetNotificationsByVendorIdService } from '../service/getNotificationByVendorIdService';
-import { GetAllAdminNotificationService } from '../service/getAllAdminNotificationService';
-import { GetAllAdminNotificationController } from '../controller/getAllAdminNotificationController';
-import { GetNotificationsByUserIdController } from '../controller/getAllNotificationByUserIdController';
-import { GetAllNotificationByUserIdService } from '../service/getAllNotificationByUserIdService';
+import { GetAllUserNotificationService } from '../service/getAllUserNotificationService';
+import { GetAllUserNotificationController } from '../controller/getAllUserNotificationController';
+import { UserSchema } from '../../user/userEntity/userSchema';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([NotificationSchema]),
+        TypeOrmModule.forFeature([NotificationSchema, UserSchema]),
         TypeOrmModule,
         JwtModule.registerAsync({
             inject: [ConfigService],
@@ -32,17 +29,13 @@ import { GetAllNotificationByUserIdService } from '../service/getAllNotification
         CreateNotificationController,
         GetAllNotificationController,
         UpdateIsReadByIdController,
-        GetNotificationsByVendorIdController,
-        GetAllAdminNotificationController,
-        GetNotificationsByUserIdController,
+        GetAllUserNotificationController,
     ],
     providers: [
         CreateNotificationService,
         GetAllNotificationService,
         UpdateIsReadByIdService,
-        GetNotificationsByVendorIdService,
-        GetAllAdminNotificationService,
-        GetAllNotificationByUserIdService,
+        GetAllUserNotificationService,
     ],
     exports: [CreateNotificationService],
 })

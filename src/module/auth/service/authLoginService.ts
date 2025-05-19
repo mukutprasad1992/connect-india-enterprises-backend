@@ -29,13 +29,16 @@ export class LoginService {
             return {
                 id: user.id,
                 email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 password: user.password,
                 mobileNo: user.mobileNo,
                 roleId: user.roleId,
                 status: user.status,
                 accessToken: user.accessToken,
                 createdBy: user.createdBy,
-                updatedBy: user.updatedBy
+                updatedBy: user.updatedBy,
+                profileImageURL: user.profileImageURL
             };
         }
 
