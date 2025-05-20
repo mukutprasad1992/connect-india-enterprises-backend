@@ -62,11 +62,14 @@ export class UserSchema {
 
     @IsOptional()
     @IsString()
-    @Length(1, 100)
     @Column({ type: 'varchar', })
     profileImageURL: string;
 
-    // ✅ New Field: dateOfBirth
+    @IsOptional()
+    @IsString()
+    @Column({ type: 'varchar', })
+    profileImageKey: string
+
     @IsOptional()
     @IsDateString()
     @Column({ type: 'date' })

@@ -10,7 +10,7 @@ import {
 import { CreateNotificationService } from '../service/createNotificationService';
 import { CreateNotificationDTO } from '../notificationDTO/createNotificationDTO';
 import { JoiValidationNotification } from '../common/joiValidationNotification';
-import { AuthGuard } from 'src/midlewares/authenticationMiddleware';
+// import { AuthGuard } from 'src/midlewares/authenticationMiddleware';
 
 @Controller('notification/createNotification')
 // @UseGuards(AuthGuard)
