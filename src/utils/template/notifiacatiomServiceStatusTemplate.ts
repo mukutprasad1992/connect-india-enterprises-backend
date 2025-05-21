@@ -19,7 +19,7 @@ export const emailTemplates = {
 
         <p style="font-size: 12px; color: #555;">
           Track your request anytime by logging into your account: <br />
-          <a href="http://localhost:3000/authentication/login">👉 Login to Dashboard</a>
+          <a href="${process.env.FRONTEND_URL}/authentication/login">👉 Login to Dashboard</a>
         </p>
 
         <p style="font-size: 12px; color: #555;">
@@ -86,7 +86,7 @@ export const emailTemplates = {
 
         <p style="font-size: 12px; color: #555;">
           Check your dashboard for real-time updates:<br />
-          <a href="http://localhost:3000/authentication/login" >👉 Login to Dashboard</a>
+          <a href="${process.env.FRONTEND_URL}/authentication/login" >👉 Login to Dashboard</a>
         </p>
 
         <p style="font-size: 12px; color: #555;">
@@ -121,7 +121,7 @@ export const emailTemplates = {
 
         <p style="font-size: 12px; color: #555;">
           You can check the status anytime:<br />
-          <a href="http://localhost:3000/authentication/login">👉 Login to Dashboard</a>
+          <a href="${process.env.FRONTEND_URL}/authentication/login">👉 Login to Dashboard</a>
         </p>
 
         <p style="font-size: 12px; color: #555;">

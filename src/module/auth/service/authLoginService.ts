@@ -35,9 +35,6 @@ export class LoginService {
                 mobileNo: user.mobileNo,
                 roleId: user.roleId,
                 status: user.status,
-                accessToken: user.accessToken,
-                createdBy: user.createdBy,
-                updatedBy: user.updatedBy,
                 profileImageURL: user.profileImageURL
             };
         }

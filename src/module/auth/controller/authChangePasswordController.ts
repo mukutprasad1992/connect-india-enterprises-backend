@@ -13,7 +13,8 @@ export class ChangePasswordController {
     @Post()
     @UseGuards(AuthGuard)
     async changePassword(
-        @Body(new JoiValidationAuth(ChangePasswordDTO.changePasswordSchema)) changePasswordDTO: ChangePasswordDTO, @Request() req,
+        @Body(new JoiValidationAuth(ChangePasswordDTO.changePasswordSchema)) changePasswordDTO: ChangePasswordDTO,
+        @Request() req,
         @Res() res
     ): Promise<any> {
         try {

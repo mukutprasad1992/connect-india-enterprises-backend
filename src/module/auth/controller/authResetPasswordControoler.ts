@@ -9,7 +9,8 @@ export class ResetPasswordController {
 
     @Post()
     async resetPassword(
-        @Body(new JoiValidationAuth(ResetPasswordDTO.resetPasswordSchema)) resetPasswordDTO: ResetPasswordDTO,
+        @Body(new JoiValidationAuth(ResetPasswordDTO.resetPasswordSchema))
+        resetPasswordDTO: ResetPasswordDTO,
         @Res() res,
     ) {
         try {
