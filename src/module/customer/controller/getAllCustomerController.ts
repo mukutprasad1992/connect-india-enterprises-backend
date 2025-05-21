@@ -14,7 +14,7 @@ export class GetAllCustomerController {
     async getCustomerByVendor(@Res() res, @Req() req) {
         try {
             const userId = req.user.id;
-            const customersResponse = await this.getAllCustomerService.getAllCustomer();
+            const customersResponse = await this.getAllCustomerService.getAllCustomer(userId);
 
             if (customersResponse.status === true) {
                 return res.status(200).send({

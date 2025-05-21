@@ -23,7 +23,7 @@ export class GetAllCustomersByVenderIdService {
             }
 
             const customers = await this.dataSource.query(
-                'SELECT * FROM customers WHERE vendorId = ?',
+                `SELECT   c.id, c.name, c.address, c.phone, c.email, c.pincode, FROM customers c WHERE vendorId = ?`,
                 [vendorId]
             );
 

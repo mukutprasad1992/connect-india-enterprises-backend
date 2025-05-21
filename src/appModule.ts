@@ -12,6 +12,7 @@ import { VoucherModule } from './module/voucher/module/voucherModule';
 import { AiModule } from './module/AI/module/AIModule';
 import { NotificationModule } from './module/notificaton/module/notificationModule';
 import { ProfileModule } from './module/profile/module/profileModule';
+import { FileModule } from './module/file/module/fileModule';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { ProfileModule } from './module/profile/module/profileModule';
         AiModule,
         NotificationModule,
         ProfileModule,
+        FileModule
     ],
 })
 export class AppModule { }

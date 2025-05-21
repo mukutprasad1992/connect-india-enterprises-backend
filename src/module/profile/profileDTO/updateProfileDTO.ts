@@ -7,7 +7,9 @@ export class UpdateUserDto {
     updatedBy?: number;
     address?: string;
     pinCode?: number;
+    dateOfBirth: string;
     profileImageURL?: string;
+    profileImageKey: string
     static userSchema = Joi.object({
         firstName: Joi.string().min(1).max(100).optional(),
         lastName: Joi.string().min(1).max(100).optional(),
@@ -15,6 +17,8 @@ export class UpdateUserDto {
         updatedBy: Joi.number().integer().optional(),
         address: Joi.string().max(255).optional().allow(null, ''),
         pinCode: Joi.number().integer().optional(),
-        profileImageURL: Joi.string().max(100).optional().allow(null, ''),
+        dateOfBirth: Joi.string().optional(),
+        profileImageURL: Joi.string().optional().allow(null, ''),
+        profileImageKey: Joi.string().optional().allow(null, ''),
     });
 }

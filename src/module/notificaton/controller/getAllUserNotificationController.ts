@@ -3,24 +3,24 @@ import {
     Get,
     Res,
     UseGuards,
-    Req,
-    Param
+    Req
 } from '@nestjs/common';
-import { GetAllNotificationByUserIdService } from '../service/getAllNotificationByUserIdService';
+import { GetAllUserNotificationService } from '../service/getAllUserNotificationService';
 import { AuthGuard } from 'src/midlewares/authenticationMiddleware';
 import { somethingWentWrong } from '../common/notificationMessage';
 
-@Controller('notification/getNotificationsByUserId')
+@Controller('notification/getAllUserNotification')
 @UseGuards(AuthGuard)
-export class GetNotificationsByUserIdController {
+export class GetAllUserNotificationController {
     constructor(
-        private readonly getAllNotificationByUserIdService: GetAllNotificationByUserIdService
+        private readonly getAllUserNotificationService: GetAllUserNotificationService
     ) { }
 
-    @Get('/:userId')
-    async getAllNotifications(@Param('userId') userId: number, @Res() res, @Req() req) {
+    @Get()
+    async getAllUserNotifications(@Res() res, @Req() req) {
         try {
-            const response = await this.getAllNotificationByUserIdService.getNotificationsByUserId(userId);
+            const userId = req.user.id
+            const response = await this.getAllUserNotificationService.getAllNotifications(userId);
 
             if (response.status === true) {
                 return res.status(200).send({

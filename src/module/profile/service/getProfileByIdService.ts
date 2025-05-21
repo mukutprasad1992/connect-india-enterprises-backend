@@ -7,7 +7,20 @@ export class GetProfileByIdService {
     async getProfileByUserId(userId: number): Promise<any> {
         try {
             const profile = await this.dataSource.query(
-                'SELECT * FROM users WHERE id = ?',
+                `SELECT 
+                u.email, 
+                u.mobileNo, 
+                u.roleId, 
+                u.businessName, 
+                u.businessRepresentative, 
+                u.address, 
+                u.vendorCode, 
+                u.pinCode, 
+                u.firstName, 
+                u.lastName, 
+                u.profileImageURL, 
+                u.dateOfBirth  
+                FROM users u WHERE id = ?`,
                 [userId]
             );
 

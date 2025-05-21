@@ -6,6 +6,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import {
+    IsDateString,
     IsInt,
     IsOptional,
     IsString,
@@ -49,7 +50,6 @@ export class UserSchema {
     @Column({ type: 'int', nullable: true })
     pinCode: number;
 
-
     @IsString()
     @Length(1, 100)
     @Column({ type: 'varchar', length: 100 })
@@ -62,7 +62,16 @@ export class UserSchema {
 
     @IsOptional()
     @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100, nullable: true })
+    @Column({ type: 'varchar', })
     profileImageURL: string;
+
+    @IsOptional()
+    @IsString()
+    @Column({ type: 'varchar', })
+    profileImageKey: string
+
+    @IsOptional()
+    @IsDateString()
+    @Column({ type: 'date' })
+    dateOfBirth: string;
 }
