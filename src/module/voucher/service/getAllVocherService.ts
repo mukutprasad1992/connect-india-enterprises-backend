@@ -14,7 +14,7 @@ export class GetAllVoucherService {
         v.customerId,  v.vendorId,  c.name AS customerName, c.address AS customerAddress, c.phone AS customerPhone,
         c.email AS customerEmail, c.pincode AS customerPincode, u.email AS vendorEmail, u.mobileNo AS vendorMobileNo,
         u.businessName AS vendorBusinessName, u.businessRepresentative AS vendorBusinessRepresentative,
-        u.vendorCode AS vendorCode,  u.address AS vendorAddress, v.status AS status, v.createdAt AS CreatedAt,
+        u.vendorCode AS vendorCode, u.pinCode AS vendorPincode,  u.address AS vendorAddress, v.status AS status, v.pdfURL AS pdfURL, v.createdAt AS CreatedAt,
         v.createdBy AS CreatedBy, v.updatedAt AS UpdatedAt,  v.updatedBy AS UpdatedBy
         FROM
             vouchers v

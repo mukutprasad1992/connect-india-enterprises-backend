@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { GetUserByIdService } from 'src/module/user/service/getUserByIdService';
 import { UserSchema } from 'src/module/user/userEntity/userSchema';
+import { CouponPDFFileController } from '../controller/uploadCouponPDFController';
+import { UploadCouponPDFService } from '../service/uploadCouponPDfService';
 
 @Module({
     imports: [
@@ -20,10 +22,17 @@ import { UserSchema } from 'src/module/user/userEntity/userSchema';
             }),
         }),
     ],
-    controllers: [FileController],
+    controllers: [
+        FileController,
+        CouponPDFFileController
+    ],
     providers: [
         FileUploadService,
-        GetUserByIdService
+        GetUserByIdService,
+        UploadCouponPDFService
     ],
+    exports: [
+        UploadCouponPDFService
+    ]
 })
 export class FileModule { }

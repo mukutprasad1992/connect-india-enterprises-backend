@@ -17,3 +17,4 @@ export const anErrorOccurredWhileUpdatingProfile = 'An error occurred while upda
 export const profileDeleteSuccessfully = 'Profile deleted successfully';
 export const anErrorOccurredWhileDeletingProfile = 'An error occurred while deleting the profile';
 export const profileUpdateFailedNoRowsWereAffected = "Profile update failed. No rows were affected.";
+export const profileUpdateFailed = "Profile update failed";

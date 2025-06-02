@@ -20,9 +20,7 @@ export class GetAllCustomerService {
                     message: vendorNotFound,
                 };
             }
-
             const { roleId } = user;
-
             const query = `
         SELECT 
           c.id, c.name, c.address, c.phone, c.email, c.pincode,
@@ -31,7 +29,6 @@ export class GetAllCustomerService {
         JOIN users u ON c.vendorId = u.id
         ${roleId === 2 ? 'WHERE c.vendorId = ?' : ''}
       `;
-
             const customers = await this.dataSource.query(query, roleId === 2 ? [userId] : []);
 
             if (customers.length === 0) {
@@ -40,7 +37,6 @@ export class GetAllCustomerService {
                     message: customerNotFound,
                 };
             }
-
             return {
                 status: true,
                 message: customersRetrievedSuccessfully,
@@ -54,7 +50,6 @@ export class GetAllCustomerService {
             };
         }
     }
-
     private async getUserById(id: number): Promise<any> {
         try {
             const result = await this.dataSource.query(

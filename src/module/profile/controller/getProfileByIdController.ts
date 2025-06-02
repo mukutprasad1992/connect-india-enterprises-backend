@@ -20,7 +20,7 @@ export class GetProfileByIdController {
                     result: profileResponse.data
                 });
             } else {
-                return res.status(404).send({
+                return res.status(401).send({
                     status: profileResponse.status,
                     message: profileResponse.error,
                     result: null

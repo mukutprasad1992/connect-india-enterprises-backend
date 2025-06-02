@@ -17,6 +17,7 @@ import {
   welcomeEmailSentSucessfully,
   withinTheValidityPeriod,
 } from '../common/common';
+import { UploadCouponPDFService } from '../../module/file/service/uploadCouponPDfService';
 import { sendEmailToVendorForVoucherCreated } from '../template/voucherCreatedSuccessfullyToVendor';
 import { sendEmailToCustomerForVoucherCreated } from '../template/voucherCreatedSuccessfullyToCustomer';
 import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
@@ -29,7 +30,10 @@ import * as path from 'path';
 export class VoucherMailService {
   private transporter;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private uploadCouponPDFService: UploadCouponPDFService
+  ) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -59,13 +63,15 @@ export class VoucherMailService {
           },
         ],
       };
-
       const mail = await this.transporter.sendMail(mailOptions);
 
       return {
         status: true,
         message: welcomeEmailSentSucessfully,
-        data: mail,
+        data: {
+          mail,
+          pdfPath
+        },
       };
     } catch (error) {
       return {
@@ -103,7 +109,10 @@ export class VoucherMailService {
       return {
         status: true,
         message: welcomeEmailSentSucessfully,
-        data: mail,
+        data: {
+          mail,
+          pdfPath
+        },
       };
     } catch (error) {
       return {
@@ -363,9 +372,9 @@ export class VoucherMailService {
         font: fontRegular,
         color: rgb(0, 0, 0),
       });
-      page.drawText(`Vendor Code:`, { x: 115, y: height - 410, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
+      page.drawText(`Pin code:`, { x: 115, y: height - 410, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
       page.drawImage(logoPinCodeImage, { x: 117, y: height - 427, width: 11, height: 11 });
-      page.drawText(`${voucherData.vendorCode}`, { x: 135, y: height - 425, size: 9, font: fontRegular, color: rgb(0, 0, 0) });
+      page.drawText(`${voucherData.vendorPincode}`, { x: 135, y: height - 425, size: 9, font: fontRegular, color: rgb(0, 0, 0) });
 
       page.drawImage(logoContactImage, { x: 116, y: height - 497, width: 9, height: 9 });
       page.drawImage(logoEmailImage, { x: 333, y: height - 497, width: 12, height: 12 });
@@ -430,7 +439,7 @@ export class VoucherMailService {
         font: fontRegular,
         color: rgb(0, 0, 0),
       });
-      page.drawText(`Pincode:`, { x: 115, y: height - 540, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
+      page.drawText(`Pin code:`, { x: 115, y: height - 540, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
       page.drawText(`${voucherData.customerPincode}`, { x: 135, y: height - 555, size: 9, font: fontRegular, color: rgb(0, 0, 0) });
       page.drawRectangle({
         x: 50,

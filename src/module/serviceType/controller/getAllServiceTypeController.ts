@@ -4,6 +4,7 @@ import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import {
     serviceTypeRetrievalError
 } from '../common/serviceTypeMessage';
+import { error } from 'console';
 @Controller('serviceType/getAllServiceType')
 export class GetAllServiceTypesController {
     constructor(private readonly getALLServiceTypeByIdService: GetALLServiceTypeByIdService) { }
@@ -12,7 +13,7 @@ export class GetAllServiceTypesController {
     async getUserServiceTypes(@Res() res, @Req() req) {
         try {
             const userId = req.user.id;
-            const serviceTypesResponse = await this.getALLServiceTypeByIdService.getAllServiceTypesByUser();
+            const serviceTypesResponse = await this.getALLServiceTypeByIdService.getAllServiceTypesByUser(userId);
 
             if (serviceTypesResponse.status === true) {
                 return res.status(200).send({
@@ -23,7 +24,8 @@ export class GetAllServiceTypesController {
             } else {
                 return res.status(400).send({
                     status: false,
-                    message: serviceTypesResponse.error,
+                    message: serviceTypesResponse.message,
+                    error: serviceTypesResponse.error,
                     data: null
                 });
             }

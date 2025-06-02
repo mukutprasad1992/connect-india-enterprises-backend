@@ -25,11 +25,12 @@ export class UpdateIsReadByIdService {
                     message: notificationNotFoundOrAlreadyUpdated,
                 };
             }
-
-            return {
-                status: true,
-                message: notificationMarkedAsReadSuccessfully,
-            };
+            else {
+                return {
+                    status: true,
+                    message: notificationMarkedAsReadSuccessfully,
+                }
+            }
         } catch (error) {
             return {
                 status: false,

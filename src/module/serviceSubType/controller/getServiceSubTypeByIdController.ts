@@ -1,5 +1,5 @@
 import { Controller, Get, Res, UseGuards, Req, Param } from '@nestjs/common';
-import { GetServiceSubTypeByIdService } from '../services/GetServiceSubTypeByIdService';
+import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 import { AuthGuard } from 'src/midlewares/authenticationMiddleware';
 import { anErrorOccurredWhileRetrievingServiceSubType } from '../common/serviceSubTypeMessage';
 

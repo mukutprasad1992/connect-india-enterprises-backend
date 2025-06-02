@@ -21,12 +21,11 @@ export class GetAllCustomersByVenderIdService {
                     message: vendorNotFound,
                 };
             }
-
+            const query = `SELECT c.id, c.name, c.address, c.phone, c.email, c.pincode FROM customers c WHERE c.vendorId = ?`
             const customers = await this.dataSource.query(
-                `SELECT   c.id, c.name, c.address, c.phone, c.email, c.pincode, FROM customers c WHERE vendorId = ?`,
+                query,
                 [vendorId]
             );
-
             if (customers.length === 0) {
                 return {
                     status: false,

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import {
+    serviceNotFound,
     serviceRetrievalError,
     servicesRetrievedSuccessfully
 } from '../common/serviceMessage';
@@ -12,11 +13,20 @@ export class GetALLServiceByIdmentService {
             const services = await this.dataSource.query(
                 'SELECT * FROM services',
             );
-            return {
-                message: servicesRetrievedSuccessfully,
-                status: true,
-                data: services,
-            };
+            if (services.length === 0) {
+                return {
+                    status: false,
+                    message: serviceNotFound,
+                    data: null
+                }
+            }
+            else {
+                return {
+                    message: servicesRetrievedSuccessfully,
+                    status: true,
+                    data: services,
+                }
+            }
         } catch (error) {
             return {
                 status: false,

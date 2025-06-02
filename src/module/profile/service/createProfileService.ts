@@ -5,6 +5,7 @@ import {
     userNotFound,
     profileCreateSuccessfully,
     anErrorOccurredWhileUpdatingTheProfile,
+    profileNotFound,
 } from '../common/profileMessage';
 
 @Injectable()
@@ -62,7 +63,12 @@ export class CreateProfileService {
         try {
             await this.dataSource.query(query, values);
             const updatedUser = await this.getUserByUserId(userId);
-
+            if (!updatedUser) {
+                return {
+                    status: false,
+                    message: profileNotFound
+                }
+            }
             return {
                 status: true,
                 message: profileCreateSuccessfully,

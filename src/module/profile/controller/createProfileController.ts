@@ -17,14 +17,6 @@ export class CreateProfileController {
     ) {
         try {
             const userId = req.user.id;
-            // const existingProfile = await this.createProfileService.getUserByUserId(userId);
-            // if (existingProfile) {
-            //     return res.status(400).send({
-            //         status: false,
-            //         message: userAlreadyHasAProfile,
-            //         result: null
-            //     });
-            // }
             const profileResponse = await this.createProfileService.createProfile(userId, createProfileDto);
             if (profileResponse.status === true) {
                 return res.status(201).send({
