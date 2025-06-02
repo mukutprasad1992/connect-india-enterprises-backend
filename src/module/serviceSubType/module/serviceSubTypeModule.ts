@@ -25,6 +25,7 @@ import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSu
             signOptions: { expiresIn: '1h' },
         }),
     ],
+
     controllers: [
         CreateServiceSubTypeController,
         GetAllServiceSubTypeController,
