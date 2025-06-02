@@ -11,6 +11,7 @@ export class GetServiceSubTypeByServiceIdController {
     async getProfile(@Param('serviceId') serviceId: number, @Req() req, @Res() res) {
         try {
             const userId = req.user.id;
+
             const serviceSubTypeResponse = await this.getServiceSubTypeByServiceIdService.getServiceSubTypeByServiceId(serviceId);
 
             if (serviceSubTypeResponse.status === true) {
