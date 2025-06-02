@@ -15,6 +15,7 @@ export class GetServiceSubTypeByServiceIdService {
                 'SELECT * FROM serviceSubTypes WHERE serviceId = ?',
                 [ServiceId]
             );
+            console.log("serviceSubType----->", serviceSubType);
             if (!serviceSubType[0]) {
                 return {
                     status: false,
