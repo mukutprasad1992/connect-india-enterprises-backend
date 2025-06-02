@@ -31,7 +31,7 @@ import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServ
         GetServiceSubTypeByIdController,
         UpdateServiceSubTypeByIdController,
         DeleteServiceSubTypeByIdController,
-        GetServiceSubTypeByServiceIdController,
+        // GetServiceSubTypeByServiceIdController,
     ],
     providers: [
         AuthGuard,
@@ -40,7 +40,7 @@ import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServ
         GetServiceSubTypeByIdService,
         UpdateServiceSubTypeByIdService,
         DeleteServiceSubTypeByIdService,
-        GetServiceSubTypeByServiceIdService,
+        // GetServiceSubTypeByServiceIdService,
     ],
     exports: [
         CreateServiceSubTypeService,
