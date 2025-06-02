@@ -3,18 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { ServiceSubTypeSchema } from '../serviceSubTypeEntity/serviceSubTypeEntity';
-import { CreateServiceSubTypeService } from '../services/createServiceSubTypeService';
 import { CreateServiceSubTypeController } from '../controller/createServiceSubTypeController';
-import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeService';
 import { GetAllServiceSubTypeController } from '../controller/getAllServiceSubTypeController';
-import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
-import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
 import { UpdateServiceSubTypeByIdController } from '../controller/updateServiceSubTypeByIdController';
-import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
 import { DeleteServiceSubTypeByIdController } from '../controller/deleteServiceSubTypeController';
-import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
 import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServiceSubTypeByServiceIdController';
+import { CreateServiceSubTypeService } from '../services/createServiceSubTypeService';
+import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeService';
+import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
+import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
+import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
+import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
 
 @Module({
     imports: [
