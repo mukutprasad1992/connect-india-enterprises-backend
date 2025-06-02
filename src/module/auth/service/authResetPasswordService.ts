@@ -17,7 +17,6 @@ export class ResetPasswordService {
     constructor(
         private readonly dataSource: DataSource,
     ) { }
-
     async resetPassword(resetToken: string, newPassword: string): Promise<any> {
         let decodedToken;
         try {

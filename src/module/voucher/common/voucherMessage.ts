@@ -17,3 +17,6 @@ export const notificationCreationFailed = "Notification creation failed:";
 export const greatNews = "🎉 Hey";
 export const aNewcouponhasJustBeenGeneratedFor = `! A new 🎟️ coupon has just been generated for`
 export const theyCanRedeemitAtYourStoreSoGetReadyToWelcomeThemWithASmile = ` They can redeem it at your store 🛍️, so get ready to welcome them with a smile 😊!`
+export const fileNotUpload = "File not upload";
+export const failedToSendEmails = "Failed to send emails.";
+export const failedToUpdateThePDFURLInTheDatabase = "Failed to update the PDF URL in the database.";

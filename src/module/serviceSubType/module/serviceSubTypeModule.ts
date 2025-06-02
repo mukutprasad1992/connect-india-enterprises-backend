@@ -7,7 +7,7 @@ import { CreateServiceSubTypeService } from '../services/createServiceSubTypeSer
 import { CreateServiceSubTypeController } from '../controller/createServiceSubTypeController';
 import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeService';
 import { GetAllServiceSubTypeController } from '../controller/getAllServiceSubTypeController';
-import { GetServiceSubTypeByIdService } from '../services/GetServiceSubTypeByIdService';
+import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
 import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
 import { UpdateServiceSubTypeByIdController } from '../controller/updateServiceSubTypeByIdController';

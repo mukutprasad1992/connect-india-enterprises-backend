@@ -26,3 +26,4 @@ export const noTotalAmountFound = "No total amount found";
 export const yourServiceRequestHasBeenCreatedSuccessfully = "Your service request has been created successfully.";
 export const userNotFoundForTheGivenServiceTypeID = "User not found for the given service type ID";
 export const unauthorizedRole = "Unauthorized role";
+export const youAreNotAdmin = "You are not admin";

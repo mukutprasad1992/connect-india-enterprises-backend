@@ -7,6 +7,7 @@ import {
     profileNotFound,
     anErrorOccurredWhileUpdatingProfile,
     profileUpdateFailedNoRowsWereAffected,
+    profileUpdateFailed,
 } from '../common/profileMessage';
 
 @Injectable()
@@ -64,12 +65,7 @@ export class UpdateProfileService {
             values.push(new Date());
             values.push(userId);
 
-            const query = `
-        UPDATE users
-        SET ${fields.join(', ')}
-        WHERE id = ?
-      `;
-
+            const query = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
             const result = await this.dataSource.query(query, values);
 
             if (!result.affectedRows || result.affectedRows === 0) {
@@ -81,11 +77,20 @@ export class UpdateProfileService {
             }
 
             const updated = await this.getUserById(userId);
-            return {
-                status: true,
-                message: profileUpdateSuccessfully,
-                data: updated.data,
-            };
+            if (updated.status === false) {
+                return {
+                    status: false,
+                    message: profileUpdateFailed,
+                    data: null
+                }
+            }
+            else {
+                return {
+                    status: true,
+                    message: profileUpdateSuccessfully,
+                    data: updated.data,
+                }
+            }
         } catch (error) {
             return {
                 status: false,
