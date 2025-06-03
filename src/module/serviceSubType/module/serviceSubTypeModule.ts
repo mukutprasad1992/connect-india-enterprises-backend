@@ -11,11 +11,10 @@ import { DeleteServiceSubTypeByIdController } from '../controller/deleteServiceS
 import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServiceSubTypeByServiceIdController';
 import { CreateServiceSubTypeService } from '../services/createServiceSubTypeService';
 import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeService';
-import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
 import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
 import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
-
+import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 @Module({
     imports: [
         TypeOrmModule.forFeature([ServiceSubTypeSchema]),
