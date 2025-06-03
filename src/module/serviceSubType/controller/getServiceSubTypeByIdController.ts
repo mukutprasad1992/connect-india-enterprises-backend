@@ -3,6 +3,7 @@ import { AuthGuard } from 'src/midlewares/authenticationMiddleware';
 import { anErrorOccurredWhileRetrievingServiceSubType } from '../common/serviceSubTypeMessage';
 import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 
+
 @Controller('serviceSubType/getServiceSubTypeById/:id')
 export class GetServiceSubTypeByIdController {
     constructor(private readonly getServiceSubTypeByIdService: GetServiceSubTypeByIdService) { }

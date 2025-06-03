@@ -15,6 +15,7 @@ import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTyp
 import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
 import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
 import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
+
 @Module({
     imports: [
         TypeOrmModule.forFeature([ServiceSubTypeSchema]),
