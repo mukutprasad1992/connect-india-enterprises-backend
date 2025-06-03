@@ -8,11 +8,9 @@ import { ServiceSubTypeSchema } from '../serviceSubTypeEntity/serviceSubTypeEnti
 
 import { CreateServiceSubTypeController } from '../controller/createServiceSubTypeController';
 import { GetAllServiceSubTypeController } from '../controller/getAllServiceSubTypeController';
-// import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
 import { UpdateServiceSubTypeByIdController } from '../controller/updateServiceSubTypeByIdController';
 import { DeleteServiceSubTypeByIdController } from '../controller/deleteServiceSubTypeController';
 import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServiceSubTypeByServiceIdController';
-// import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 import { CreateServiceSubTypeService } from '../services/createServiceSubTypeService';
 import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeService';
 import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
@@ -32,7 +30,6 @@ import { GetByServiceSubTypeIdService } from '../services/getByServiceSubTypeIdS
     controllers: [
         CreateServiceSubTypeController,
         GetAllServiceSubTypeController,
-        // GetServiceSubTypeByIdController,
         UpdateServiceSubTypeByIdController,
         DeleteServiceSubTypeByIdController,
         GetServiceSubTypeByServiceIdController,
@@ -42,7 +39,6 @@ import { GetByServiceSubTypeIdService } from '../services/getByServiceSubTypeIdS
         AuthGuard,
         CreateServiceSubTypeService,
         GetAllServiceSubTypeService,
-        // GetServiceSubTypeByIdService,
         UpdateServiceSubTypeByIdService,
         DeleteServiceSubTypeByIdService,
         GetServiceSubTypeByServiceIdService,
