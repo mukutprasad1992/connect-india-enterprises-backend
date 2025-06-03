@@ -5,7 +5,7 @@ import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { ServiceSubTypeSchema } from '../serviceSubTypeEntity/serviceSubTypeEntity';
 import { CreateServiceSubTypeController } from '../controller/createServiceSubTypeController';
 import { GetAllServiceSubTypeController } from '../controller/getAllServiceSubTypeController';
-import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
+// import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
 import { UpdateServiceSubTypeByIdController } from '../controller/updateServiceSubTypeByIdController';
 import { DeleteServiceSubTypeByIdController } from '../controller/deleteServiceSubTypeController';
 import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServiceSubTypeByServiceIdController';
@@ -14,7 +14,7 @@ import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeSer
 import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
 import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
 import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
-import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
+// import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 
 @Module({
     imports: [
@@ -29,7 +29,7 @@ import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdS
     controllers: [
         CreateServiceSubTypeController,
         GetAllServiceSubTypeController,
-        GetServiceSubTypeByIdController,
+        // GetServiceSubTypeByIdController,
         UpdateServiceSubTypeByIdController,
         DeleteServiceSubTypeByIdController,
         GetServiceSubTypeByServiceIdController,
@@ -38,7 +38,7 @@ import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdS
         AuthGuard,
         CreateServiceSubTypeService,
         GetAllServiceSubTypeService,
-        GetServiceSubTypeByIdService,
+        // GetServiceSubTypeByIdService,
         UpdateServiceSubTypeByIdService,
         DeleteServiceSubTypeByIdService,
         GetServiceSubTypeByServiceIdService,
