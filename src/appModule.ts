@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './module/user/module/userModule';
 import { databaseConfig } from './config/databaseConfig';
 import { AuthModule } from './module/auth/module/authModule';
-import { ServiceSubTypeModule } from './module/serviceSubType/module/serviceSubTypeModule';
 import { ServiceTypeModule } from './module/serviceType/module/serviceTypeModule';
 import { ServiceModule } from './module/service/module/serviceModule';
 import { CustomerModule } from './module/customer/module/customerModule';
@@ -21,7 +20,6 @@ import { FileModule } from './module/file/module/fileModule';
         TypeOrmModule,
         UserModule,
         AuthModule,
-        ServiceSubTypeModule,
         ServiceTypeModule,
         ServiceModule,
         CustomerModule,
