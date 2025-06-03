@@ -1,5 +1,3 @@
-import exp from "constants";
-
 export const inputCannotBeUndefinedOrNull = "Input cannot be undefined or null";
 export const ServiceSubTypeIsRequired = "Service sub type is required.";
 export const createServiceSubTypeSuccessfully = "Create service sub type successfully.";

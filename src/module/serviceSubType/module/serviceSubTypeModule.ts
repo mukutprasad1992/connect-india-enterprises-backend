@@ -1,20 +1,23 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
+
 import { ServiceSubTypeSchema } from '../serviceSubTypeEntity/serviceSubTypeEntity';
+
 import { CreateServiceSubTypeController } from '../controller/createServiceSubTypeController';
 import { GetAllServiceSubTypeController } from '../controller/getAllServiceSubTypeController';
-// import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
+import { GetServiceSubTypeByIdController } from '../controller/getServiceSubTypeByIdController';
 import { UpdateServiceSubTypeByIdController } from '../controller/updateServiceSubTypeByIdController';
 import { DeleteServiceSubTypeByIdController } from '../controller/deleteServiceSubTypeController';
 import { GetServiceSubTypeByServiceIdController } from '../controller/getAllServiceSubTypeByServiceIdController';
+import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 import { CreateServiceSubTypeService } from '../services/createServiceSubTypeService';
 import { GetAllServiceSubTypeService } from '../services/gatAllServiceSubTypeService';
 import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTypeBYIdService';
 import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
 import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
-// import { GetServiceSubTypeByIdService } from '../services/getServiceSubTypeByIdService';
 
 @Module({
     imports: [
@@ -25,11 +28,10 @@ import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSu
             signOptions: { expiresIn: '1h' },
         }),
     ],
-
     controllers: [
         CreateServiceSubTypeController,
         GetAllServiceSubTypeController,
-        // GetServiceSubTypeByIdController,
+        GetServiceSubTypeByIdController,
         UpdateServiceSubTypeByIdController,
         DeleteServiceSubTypeByIdController,
         GetServiceSubTypeByServiceIdController,
@@ -38,13 +40,11 @@ import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSu
         AuthGuard,
         CreateServiceSubTypeService,
         GetAllServiceSubTypeService,
-        // GetServiceSubTypeByIdService,
+        GetServiceSubTypeByIdService,
         UpdateServiceSubTypeByIdService,
         DeleteServiceSubTypeByIdService,
         GetServiceSubTypeByServiceIdService,
     ],
-    exports: [
-        CreateServiceSubTypeService,
-    ],
+    exports: [CreateServiceSubTypeService],
 })
 export class ServiceSubTypeModule { }
