@@ -20,6 +20,7 @@ import { MailService } from 'src/utils/mailer/authMailer';
 import { ConfigModule } from '@nestjs/config';
 import { UpdateUserStatusService } from '../service/updateUserStatusService';
 import { UpdateUserStatusByIdController } from '../controller/updateUserStatuscontroller';
+import { VendorBlockOrUnblockMailService } from 'src/utils/mailer/vendorBlockOrUnblockMail';
 
 @Module({
     imports: [
@@ -51,6 +52,7 @@ import { UpdateUserStatusByIdController } from '../controller/updateUserStatusco
         UpdateUserStatusService,
         AuthGuard,
         MailService,
+        VendorBlockOrUnblockMailService
     ],
 })
 export class UserModule { }

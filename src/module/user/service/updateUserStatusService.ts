@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserSchema } from '../userEntity/userSchema';
 import { UpdateUserDTO } from '../userDTO/updateUserDTO';
+import { VendorBlockOrUnblockMailService } from '../../../utils/mailer/vendorBlockOrUnblockMail'
 import {
     invalidStatusValueProvided,
     userIdNotFound,
@@ -12,7 +13,9 @@ import {
 
 @Injectable()
 export class UpdateUserStatusService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(private readonly dataSource: DataSource,
+        private readonly vendorBlockOrUnblockMailService: VendorBlockOrUnblockMailService
+    ) { }
 
     async getUserById(id: number): Promise<UserSchema | null | any> {
         const user = await this.dataSource.query(
@@ -39,7 +42,6 @@ export class UpdateUserStatusService {
                 };
             }
 
-            // ✅ Check if user exists
             const userExists = await this.getUserById(id);
             if (!userExists) {
                 return {
@@ -49,7 +51,6 @@ export class UpdateUserStatusService {
                 };
             }
 
-            // ✅ Update query
             const query = `UPDATE users SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE id = ?`;
             const updateResult = await this.dataSource.query(query, [
                 status,
@@ -57,7 +58,6 @@ export class UpdateUserStatusService {
                 id,
             ]);
 
-            // ✅ Handle no update case
             if (updateResult.affectedRows === 0) {
                 return {
                     status: false,
@@ -66,8 +66,14 @@ export class UpdateUserStatusService {
                 };
             }
 
-            // ✅ Fetch updated user
             const updatedUser = await this.getUserById(id);
+            const mail = await this.vendorBlockOrUnblockMailService.emailVendorBlockOrUnblock(updatedUser.email, status, updatedUser.businessName);
+            if (!mail) {
+                return {
+                    status: false,
+                    message: "Fail mail",
+                };
+            }
 
             return {
                 status: true,
