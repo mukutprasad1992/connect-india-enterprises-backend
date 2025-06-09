@@ -1,6 +1,6 @@
 import { Controller, Post, UploadedFile, UseInterceptors, Body, HttpException, Res, Req, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileUploadService } from '../service/fileUploadService';
+import { ProfileImageUploadService } from '../service/profileImageUploadService';
 import { FileUploadDto } from '../dto/fileUploadDTO';
 import { JoiValidationPipe } from '../common/joi/fileUploadValidation';
 import { ConfigService } from '@nestjs/config';
@@ -16,14 +16,14 @@ import { GetUserByIdService } from '../../user/service/getUserByIdService';
 
 @Controller('files')
 @UseGuards(AuthGuard)
-export class FileController {
+export class ProfileImageUploadController {
     constructor(
-        private readonly fileService: FileUploadService,
+        private readonly profileImageUploadService: ProfileImageUploadService,
         private readonly configService: ConfigService,
         private readonly userService: GetUserByIdService,
     ) { }
 
-    @Post('upload')
+    @Post('profileImageUpload')
     @UseInterceptors(FileInterceptor('file'))
     async uploadFile(
         @UploadedFile() file: Express.Multer.File,
@@ -44,9 +44,9 @@ export class FileController {
             }
             const user = await this.userService.getUserById(userId);
 
-            await this.fileService.deleteFileFromS3(user.data.profileImageKey);
+            await this.profileImageUploadService.deleteFileFromS3(user.data.profileImageKey);
 
-            const uploadResult = await this.fileService.uploadFile(file);
+            const uploadResult = await this.profileImageUploadService.uploadFile(file);
             if (uploadResult?.status) {
                 return res.status(200).send({
                     status: true,
