@@ -12,7 +12,7 @@ import {
 } from '../common/message/messageFileUpload';
 import { s3 } from '../../../config/awsConfig'
 @Injectable()
-export class FileUploadService {
+export class ProfileImageUploadService {
     async deleteFileFromS3(key: string) {
         const bucket = process.env.AWS_BUCKET_NAME;
         if (!bucket) return;
