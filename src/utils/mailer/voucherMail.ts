@@ -17,15 +17,13 @@ import {
   welcomeEmailSentSucessfully,
   withinTheValidityPeriod,
 } from '../common/common';
-import * as QRCode from 'qrcode';
+// import * as QRCode from 'qrcode';
 import { UploadCouponPDFService } from '../../module/file/service/uploadCouponPDfService';
 import { sendEmailToVendorForVoucherCreated } from '../template/voucherCreatedSuccessfullyToVendor';
 import { sendEmailToCustomerForVoucherCreated } from '../template/voucherCreatedSuccessfullyToCustomer';
 import { PDFDocument, rgb, StandardFonts, degrees, PDFPage, PDFFont } from 'pdf-lib';
 import * as fs from 'fs';
 import * as path from 'path';
-
-
 
 @Injectable()
 export class VoucherMailService {
