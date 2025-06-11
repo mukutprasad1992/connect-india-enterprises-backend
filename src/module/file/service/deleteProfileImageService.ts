@@ -7,6 +7,11 @@ import {
 } from '@aws-sdk/client-s3';
 import { UserSchema } from '../../profile/profileEntity/profileSchema';
 import { s3 } from '../../../config/awsConfig';
+import {
+    anUnexpectedErrorOccurredWhileDeletingTheFileFromS3,
+    profileImageDeletedSuccessfully,
+    profileImageNotFound
+} from '../common/message/messageFileUpload';
 
 @Injectable()
 export class DeleteProfileImageService {
@@ -44,7 +49,11 @@ export class DeleteProfileImageService {
                 }
             }
         } catch (error) {
-            console.error('Error deleting S3 versions:', error);
+            return {
+                status: false,
+                message: anUnexpectedErrorOccurredWhileDeletingTheFileFromS3,
+                error: error.message,
+            };
         }
     }
     async deleteProfileImage(userId: number) {
@@ -58,7 +67,7 @@ export class DeleteProfileImageService {
         if (!user || !user.profileImageKey) {
             return {
                 status: false,
-                message: 'Profile image not found.',
+                message: profileImageNotFound,
             };
         }
         await this.deleteFileFromS3(user.profileImageKey);
@@ -69,7 +78,7 @@ export class DeleteProfileImageService {
 
         return {
             status: true,
-            message: 'Profile image deleted successfully.',
+            message: profileImageDeletedSuccessfully,
         };
     }
 }
