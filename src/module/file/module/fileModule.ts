@@ -9,7 +9,7 @@ import { GetUserByIdService } from 'src/module/user/service/getUserByIdService';
 import { UserSchema } from 'src/module/user/userEntity/userSchema';
 import { CouponPDFFileController } from '../controller/uploadCouponPDFController';
 import { UploadCouponPDFService } from '../service/uploadCouponPDfService';
-import { DeleteProfileImageService } from '../service/deleteProgileImageService';
+import { DeleteProfileImageService } from '../service/deleteProfileImageService';
 import { DeleteProfileImageController } from '../controller/deleteProfileImageController';
 
 @Module({

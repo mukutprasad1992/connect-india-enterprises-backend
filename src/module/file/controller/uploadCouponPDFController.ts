@@ -12,7 +12,6 @@ import {
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
     fileIsNotUploaded
 } from '../common/message/messageFileUpload';
-import { GetUserByIdService } from '../../user/service/getUserByIdService';
 
 @Controller('uploadFile/couponPDF')
 @UseGuards(AuthGuard)
@@ -20,7 +19,6 @@ export class CouponPDFFileController {
     constructor(
         private readonly uploadCouponPDFService: UploadCouponPDFService,
         private readonly configService: ConfigService,
-        private readonly userService: GetUserByIdService,
     ) { }
 
     @Post()
@@ -42,7 +40,6 @@ export class CouponPDFFileController {
                     result: null,
                 });
             }
-            // const user = await this.userService.getUserById(userId);
             const uploadResult = await this.uploadCouponPDFService.uploadFile(file);
             if (uploadResult?.status) {
                 return res.status(200).send({

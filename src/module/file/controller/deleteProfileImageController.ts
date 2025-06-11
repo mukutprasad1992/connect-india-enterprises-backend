@@ -5,8 +5,9 @@ import {
     Res,
     UseGuards,
 } from '@nestjs/common';
-import { DeleteProfileImageService } from '../service/deleteProgileImageService';
+import { DeleteProfileImageService } from '../service/deleteProfileImageService';
 import { AuthGuard } from 'src/midlewares/authenticationMiddleware';
+import { anUnexpectedErrorOccurredWhileDeletingTheFileFromS3 } from '../common/message/messageFileUpload';
 
 @Controller('files')
 @UseGuards(AuthGuard)
@@ -36,7 +37,7 @@ export class DeleteProfileImageController {
         } catch (error: any) {
             return res.status(500).json({
                 status: false,
-                message: error.message || 'An error occurred while deleting the profile image.',
+                message: error.message || anUnexpectedErrorOccurredWhileDeletingTheFileFromS3,
             });
         }
     }
