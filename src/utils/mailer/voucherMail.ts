@@ -345,11 +345,12 @@ export class VoucherMailService {
 
       page.drawText(`Address:`, { x: 330, y: height - 380, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
       page.drawImage(logoAddressImage, { x: 333, y: height - 397, width: 11, height: 11 });
-      const maxLineLength = 30;
+      const maxLineLength = 25;
       let address = voucherData.vendorAddress.trim().replace(/\s+/g, " ");
       let firstLine = address.substring(0, maxLineLength);
       let secondLine = address.substring(maxLineLength, maxLineLength * 2);
       let thirdLine = address.substring(maxLineLength * 2, maxLineLength * 3);
+      let fourthLine = address.substring(maxLineLength * 3, maxLineLength * 4);
       page.drawText(firstLine, {
         x: 350,
         y: height - 395,
@@ -367,6 +368,13 @@ export class VoucherMailService {
       page.drawText(thirdLine, {
         x: 350,
         y: height - 395 - 19,
+        size: 9,
+        font: fontRegular,
+        color: rgb(0, 0, 0),
+      });
+      page.drawText(fourthLine, {
+        x: 350,
+        y: height - 395 - 28.5,
         size: 9,
         font: fontRegular,
         color: rgb(0, 0, 0),
@@ -411,11 +419,12 @@ export class VoucherMailService {
 
       page.drawText(`Address:`, { x: 330, y: height - 510, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
 
-      const customerMaxLineLength = 30;
+      const customerMaxLineLength = 25;
       let customerAddress = voucherData.customerAddress.trim().replace(/\s+/g, " ");
       let customerFirstLine = customerAddress.substring(0, customerMaxLineLength);
       let customerSecondLine = customerAddress.substring(customerMaxLineLength, customerMaxLineLength * 2);
       let customerThirdLine = customerAddress.substring(customerMaxLineLength * 2, customerMaxLineLength * 3);
+      let customerfourthLine = customerAddress.substring(customerMaxLineLength * 3, customerMaxLineLength * 4);
       page.drawText(customerFirstLine, {
         x: 350,
         y: height - 525,
@@ -434,6 +443,14 @@ export class VoucherMailService {
       page.drawText(customerThirdLine, {
         x: 350,
         y: height - 525 - 19,
+        size: 9,
+        font: fontRegular,
+        color: rgb(0, 0, 0),
+      });
+
+      page.drawText(customerfourthLine, {
+        x: 350,
+        y: height - 525 - 28.5,
         size: 9,
         font: fontRegular,
         color: rgb(0, 0, 0),

@@ -3,7 +3,7 @@ import { UpdateProfileService } from '../service/updateProfileService';
 import { UpdateUserDto } from '../profileDTO/updateProfileDTO';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { profileUpdateSuccessfully, profileNotFound, anErrorOccurredWhileUpdatingProfile } from '../common/profileMessage';
-import { ValidationUser } from '../common/joiValidationPipe';
+// import { ValidationUser } from '../common/joiValidationPipe';
 @Controller('profile/updateProfile')
 export class UpdateProfileController {
     constructor(private readonly updateProfileService: UpdateProfileService) { }
@@ -11,7 +11,7 @@ export class UpdateProfileController {
     @Put()
     async updateProfile(
         @Req() req,
-        @Body(new ValidationUser(UpdateUserDto.userSchema)) updateProfileDto: UpdateUserDto,
+        @Body() updateProfileDto: UpdateUserDto,
         @Res() res
     ) {
         try {
