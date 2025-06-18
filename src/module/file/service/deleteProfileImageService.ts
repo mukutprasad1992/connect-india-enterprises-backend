@@ -61,10 +61,9 @@ export class DeleteProfileImageService {
             'SELECT id, profileImageKey, profileImageURL FROM users WHERE id = ?',
             [userId],
         );
-
         const user = users[0];
 
-        if (!user || !user.profileImageKey) {
+        if (!user) {
             return {
                 status: false,
                 message: profileImageNotFound,
