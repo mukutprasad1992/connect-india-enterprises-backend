@@ -27,3 +27,4 @@ export const yourServiceRequestHasBeenCreatedSuccessfully = "Your service reques
 export const userNotFoundForTheGivenServiceTypeID = "User not found for the given service type ID";
 export const unauthorizedRole = "Unauthorized role";
 export const youAreNotAdmin = "You are not admin";
+export const serviceTypeDeletionMailError = "Service type deletion mail Error"
