@@ -1,6 +1,7 @@
 export const voucherCreatedSuccessfully = "Voucher created successfully.";
 export const anErrorOccurredWhileCreatingTheVoucher = " An error occurred while creating the  voucher.";
 export const errorRetrievingVouchers = "Error retrieving vouchers.";
+export const errorRetrievingVouchersAndCustomers = "Error retrieving vouchers and customers.";
 export const vouchersRetrievedSuccessfully = "Voucher details retrieve successfully.";
 export const voucherCodeIsAlreadyExist = "Voucher code is already exist.";
 export const voucherRecordNotFound = "Voucher record not found.";
@@ -20,3 +21,5 @@ export const theyCanRedeemitAtYourStoreSoGetReadyToWelcomeThemWithASmile = ` The
 export const fileNotUpload = "File not upload";
 export const failedToSendEmails = "Failed to send emails.";
 export const failedToUpdateThePDFURLInTheDatabase = "Failed to update the PDF URL in the database.";
+export const voucherAndCustomerRecordNotFound = "Voucher and customer record not found.";
+export const vouchersAndCustomerRetrievedSuccessfully = "Voucher and customer details retrieve successfully.";
