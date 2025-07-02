@@ -23,8 +23,6 @@ import { UpdateVoucherStatusByIdController } from '../controller/updateVoucherSt
 import { NotificationModule } from 'src/module/notificaton/module/notificationModule';
 import { SuccessVoucherMessageService } from '../common/template/voucherNotificationSuccessMessageTemplate';
 import { UploadCouponPDFService } from 'src/module/file/service/uploadCouponPDfService';
-import { GetTotalVoucherAndCustomerByVendorIdService } from '../service/getTotalVoucherAndCustomerByvendorIdService';
-import { GetTotalVoucherAndCustomerByVendorIdController } from '../controller/getTotalVoucherAndCustomerByVendorController';
 
 @Module({
     imports: [
@@ -45,7 +43,6 @@ import { GetTotalVoucherAndCustomerByVendorIdController } from '../controller/ge
         DeleteVoucherByIdController,
         GetAllVoucherByVendorIdController,
         UpdateVoucherStatusByIdController,
-        GetTotalVoucherAndCustomerByVendorIdController
 
     ],
     providers: [
@@ -60,7 +57,6 @@ import { GetTotalVoucherAndCustomerByVendorIdController } from '../controller/ge
         UpdateVoucherStatusService,
         SuccessVoucherMessageService,
         UploadCouponPDFService,
-        GetTotalVoucherAndCustomerByVendorIdService
 
     ],
 })
