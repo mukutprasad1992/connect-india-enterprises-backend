@@ -31,6 +31,8 @@ import { ServiceTypeMailService } from 'src/utils/mailer/ServiceTypeMailer';
 import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
 import { GetTotalAmountAndServicesByUserIdServiceTypeController } from '../controller/getTotalAmountsAndServicesByUserIdController';
 import { GetTotalAmountsAndServicesByUserIdServiceTypeService } from '../services/getTotalAmountsAndServicesByUserIdService';
+import { DeleteServiceTypeByUserSendMailService } from 'src/utils/mailer/deleteServiceTypeByUserSendMail';
+import { DeletedServiceRequestNotificationService } from '../common/template/DeletedUserNotificationMessage';
 
 @Module({
     imports: [
@@ -72,7 +74,9 @@ import { GetTotalAmountsAndServicesByUserIdServiceTypeService } from '../service
         CreatedServiceSuccessMessageService,
         ServiceTypeMailService,
         UpdatedServiceMessageService,
-        GetTotalAmountsAndServicesByUserIdServiceTypeService
+        GetTotalAmountsAndServicesByUserIdServiceTypeService,
+        DeleteServiceTypeByUserSendMailService,
+        DeletedServiceRequestNotificationService
     ]
 })
 export class ServiceTypeModule { }

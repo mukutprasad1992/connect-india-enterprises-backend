@@ -56,7 +56,7 @@ import { UploadCouponPDFService } from 'src/module/file/service/uploadCouponPDfS
         GetAllVouchersByVendorIdService,
         UpdateVoucherStatusService,
         SuccessVoucherMessageService,
-        UploadCouponPDFService
+        UploadCouponPDFService,
 
     ],
 })

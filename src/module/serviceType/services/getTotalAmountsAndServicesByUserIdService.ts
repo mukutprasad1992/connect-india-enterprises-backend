@@ -50,26 +50,26 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
         const query = `
             SELECT
                 -- Investment
-                COUNT(CASE WHEN serviceId = 1 THEN 1 END) AS investmentTotalServices,
-                SUM(CASE WHEN serviceId = 1 THEN amount ELSE 0 END) AS investmentTotalAmount,
+                COUNT(CASE WHEN serviceId = 1 AND status = 'Approved' THEN 1 END) AS investmentTotalServices,
+                SUM(CASE WHEN serviceId = 1 AND status = 'Approved' THEN amount ELSE 0 END) AS investmentTotalAmount,
                 SUM(CASE WHEN serviceId = 1 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE()) AND YEAR(createdAt) = YEAR(CURDATE()) THEN amount ELSE 0 END) AS investmentCurrentMonth,
                 SUM(CASE WHEN serviceId = 1 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE() - INTERVAL 1 MONTH) AND YEAR(createdAt) = YEAR(CURDATE() - INTERVAL 1 MONTH) THEN amount ELSE 0 END) AS investmentPreviousMonth,
 
                 -- Policy
-                COUNT(CASE WHEN serviceId = 2 THEN 1 END) AS policyTotalServices,
-                SUM(CASE WHEN serviceId = 2 THEN amount ELSE 0 END) AS policyTotalAmount,
+                COUNT(CASE WHEN serviceId = 2 AND status = 'Approved' THEN 1 END) AS policyTotalServices,
+                SUM(CASE WHEN serviceId = 2 AND status = 'Approved' THEN amount ELSE 0 END) AS policyTotalAmount,
                 SUM(CASE WHEN serviceId = 2 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE()) AND YEAR(createdAt) = YEAR(CURDATE()) THEN amount ELSE 0 END) AS policyCurrentMonth,
                 SUM(CASE WHEN serviceId = 2 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE() - INTERVAL 1 MONTH) AND YEAR(createdAt) = YEAR(CURDATE() - INTERVAL 1 MONTH) THEN amount ELSE 0 END) AS policyPreviousMonth,
 
                 -- Insurance
-                COUNT(CASE WHEN serviceId = 3 THEN 1 END) AS insuranceTotalServices,
-                SUM(CASE WHEN serviceId = 3 THEN amount ELSE 0 END) AS insuranceTotalAmount,
+                COUNT(CASE WHEN serviceId = 3 AND status = 'Approved' THEN 1 END) AS insuranceTotalServices,
+                SUM(CASE WHEN serviceId = 3 AND status = 'Approved' THEN amount ELSE 0 END) AS insuranceTotalAmount,
                 SUM(CASE WHEN serviceId = 3 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE()) AND YEAR(createdAt) = YEAR(CURDATE()) THEN amount ELSE 0 END) AS insuranceCurrentMonth,
                 SUM(CASE WHEN serviceId = 3 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE() - INTERVAL 1 MONTH) AND YEAR(createdAt) = YEAR(CURDATE() - INTERVAL 1 MONTH) THEN amount ELSE 0 END) AS insurancePreviousMonth,
 
                 -- Loan
-                COUNT(CASE WHEN serviceId = 4 THEN 1 END) AS loanTotalServices,
-                SUM(CASE WHEN serviceId = 4 THEN amount ELSE 0 END) AS loanTotalAmount,
+                COUNT(CASE WHEN serviceId = 4 AND status = 'Approved' THEN 1 END) AS loanTotalServices,
+                SUM(CASE WHEN serviceId = 4 AND status = 'Approved' THEN amount ELSE 0 END) AS loanTotalAmount,
                 SUM(CASE WHEN serviceId = 4 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE()) AND YEAR(createdAt) = YEAR(CURDATE()) THEN amount ELSE 0 END) AS loanCurrentMonth,
                 SUM(CASE WHEN serviceId = 4 AND status = 'Approved' AND MONTH(createdAt) = MONTH(CURDATE() - INTERVAL 1 MONTH) AND YEAR(createdAt) = YEAR(CURDATE() - INTERVAL 1 MONTH) THEN amount ELSE 0 END) AS loanPreviousMonth
             FROM servicetypes

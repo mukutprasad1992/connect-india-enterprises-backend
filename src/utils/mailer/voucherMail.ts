@@ -17,14 +17,13 @@ import {
   welcomeEmailSentSucessfully,
   withinTheValidityPeriod,
 } from '../common/common';
+// import * as QRCode from 'qrcode';
 import { UploadCouponPDFService } from '../../module/file/service/uploadCouponPDfService';
 import { sendEmailToVendorForVoucherCreated } from '../template/voucherCreatedSuccessfullyToVendor';
 import { sendEmailToCustomerForVoucherCreated } from '../template/voucherCreatedSuccessfullyToCustomer';
-import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, degrees, PDFPage, PDFFont } from 'pdf-lib';
 import * as fs from 'fs';
 import * as path from 'path';
-
-
 
 @Injectable()
 export class VoucherMailService {
@@ -346,11 +345,12 @@ export class VoucherMailService {
 
       page.drawText(`Address:`, { x: 330, y: height - 380, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
       page.drawImage(logoAddressImage, { x: 333, y: height - 397, width: 11, height: 11 });
-      const maxLineLength = 30;
+      const maxLineLength = 25;
       let address = voucherData.vendorAddress.trim().replace(/\s+/g, " ");
       let firstLine = address.substring(0, maxLineLength);
       let secondLine = address.substring(maxLineLength, maxLineLength * 2);
       let thirdLine = address.substring(maxLineLength * 2, maxLineLength * 3);
+      let fourthLine = address.substring(maxLineLength * 3, maxLineLength * 4);
       page.drawText(firstLine, {
         x: 350,
         y: height - 395,
@@ -368,6 +368,13 @@ export class VoucherMailService {
       page.drawText(thirdLine, {
         x: 350,
         y: height - 395 - 19,
+        size: 9,
+        font: fontRegular,
+        color: rgb(0, 0, 0),
+      });
+      page.drawText(fourthLine, {
+        x: 350,
+        y: height - 395 - 28.5,
         size: 9,
         font: fontRegular,
         color: rgb(0, 0, 0),
@@ -412,11 +419,12 @@ export class VoucherMailService {
 
       page.drawText(`Address:`, { x: 330, y: height - 510, size: 8, font: fontRegular, color: rgb(116 / 255, 127 / 255, 141 / 255) });
 
-      const customerMaxLineLength = 30;
+      const customerMaxLineLength = 25;
       let customerAddress = voucherData.customerAddress.trim().replace(/\s+/g, " ");
       let customerFirstLine = customerAddress.substring(0, customerMaxLineLength);
       let customerSecondLine = customerAddress.substring(customerMaxLineLength, customerMaxLineLength * 2);
       let customerThirdLine = customerAddress.substring(customerMaxLineLength * 2, customerMaxLineLength * 3);
+      let customerfourthLine = customerAddress.substring(customerMaxLineLength * 3, customerMaxLineLength * 4);
       page.drawText(customerFirstLine, {
         x: 350,
         y: height - 525,
@@ -435,6 +443,14 @@ export class VoucherMailService {
       page.drawText(customerThirdLine, {
         x: 350,
         y: height - 525 - 19,
+        size: 9,
+        font: fontRegular,
+        color: rgb(0, 0, 0),
+      });
+
+      page.drawText(customerfourthLine, {
+        x: 350,
+        y: height - 525 - 28.5,
         size: 9,
         font: fontRegular,
         color: rgb(0, 0, 0),
@@ -526,14 +542,63 @@ export class VoucherMailService {
         font: fontRegular,
         color: rgb(77 / 255, 121 / 255, 255 / 255,)
       });
+      // async function drawQRCodeOnPdfPage(
+      //   page: PDFPage,
+      //   vendorName: string,
+      //   customerName: string,
+      //   position: { x: number, y: number },
+      //   pdfDoc: PDFDocument,
+      //   font: PDFFont,
+      //   voucherImageUrl: string
+      // ): Promise<void> {
+      //   const vendor = vendorName.trim().slice(0, 3).toUpperCase();
+      //   const customer = customerName.trim().slice(0, 3).toUpperCase();
+      //   const now = new Date();
+      //   const date = now.toISOString().slice(0, 10).replace(/-/g, '');
+      //   const time = now.toTimeString().slice(0, 8).replace(/:/g, '');
+      //   const uniqueCode = `${vendor}${customer}${date}${time}`;
 
-      page.drawText(signatureOfAuthority, {
+      //   const qrContent = `${voucherImageUrl}?code=${uniqueCode}`;
+      //   const qrDataUrl = await QRCode.toDataURL(qrContent, { errorCorrectionLevel: 'H' });
+      //   const qrImageBase64 = qrDataUrl.split(',')[1];
+      //   const qrImage = await pdfDoc.embedPng(qrImageBase64);
+      //   const qrDims = qrImage.scale(1);
+
+      //   const imageHeight = 80; // optional: adjust image size
+
+      //   // Embed the image (voucher image) from URL
+      //   const imageBytes = await fetch(voucherImageUrl).then(res => res.arrayBuffer());
+      //   const voucherImg = await pdfDoc.embedJpg(imageBytes); // or embedPng if it's a PNG
+      //   const voucherDims = voucherImg.scale(1);
+
+      //   const height = page.getHeight();
+
+      //   // Draw the QR code
+      //   page.drawImage(qrImage, {
+      //     x: position.x,
+      //     y: height - position.y,
+      //     width: 40,
+      //     height: 40,
+      //   });
+      // }
+      // await drawQRCodeOnPdfPage(
+      //   page,
+      //   voucherData.vendorBusinessName,
+      //   voucherData.customerName,
+      //   { x: 75, y: 805 },
+      //   pdfDoc,
+      //   fontRegular,
+      //   'https://connect-india-enterprises-bucket.s3.ap-south-1.amazonaws.com/profileImage/1749551071549-admin.jpeg'
+      // );
+      // Draw signature text
+      page.drawText('Authorized Signatory', {
         x: 60,
-        y: height - 810,
+        y: height - 815,
         size: 9,
         font: fontRegular,
-        color: blackColor
+        color: blackColor,
       });
+
       // Save PDF
       const pdfBytes = await pdfDoc.save();
       const pdfPath = path.join(outputDir, `${pdfName}.pdf`);

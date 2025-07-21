@@ -1,6 +1,7 @@
 import { Controller, Delete, Param, Res, UseGuards, Req } from '@nestjs/common';
 import { DeleteServiceTypeByIdService } from '../services/deleteServiceTypeByIdServices';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
+
 import {
     serviceTypeDeletionError,
     serviceTypeDeletedSuccessfully,
@@ -8,7 +9,9 @@ import {
 
 @Controller('serviceType/deleteServiceTypeById/:id')
 export class DeleteServiceTypeByIdController {
-    constructor(private readonly deleteServiceTypeByIdService: DeleteServiceTypeByIdService) { }
+    constructor(
+        private readonly deleteServiceTypeByIdService: DeleteServiceTypeByIdService,
+    ) { }
 
     @UseGuards(AuthGuard)
     @Delete()
@@ -19,8 +22,7 @@ export class DeleteServiceTypeByIdController {
     ) {
         try {
             const userId = req.user.id;
-            const deleteResponse = await this.deleteServiceTypeByIdService.deleteServiceTypeById(id);
-
+            const deleteResponse = await this.deleteServiceTypeByIdService.deleteServiceTypeById(id, userId);
             if (deleteResponse.status === true) {
                 return res.status(200).send({
                     status: true,

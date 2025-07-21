@@ -23,7 +23,7 @@ export const emailCreateServiceTypeTemplates = {
 
         <p style="font-size: 12px; color: #444;">
           You can track your request and manage your profile anytime:<br />
-          <a href="http://localhost:3000/authentication/login" >👉 Login to Dashboard</a>
+          <a href="http://13.201.80.65:3000/authentication/login" >👉 Login to Dashboard</a>
         </p>
 
         <p style="font-size: 12px; color: #444;">

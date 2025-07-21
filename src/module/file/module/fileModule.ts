@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { FileController } from '../controller/uploadFileController';
-import { FileUploadService } from '../../file/service/fileUploadService';
+import { ProfileImageUploadController } from '../controller/profileImageUploadController';
+import { ProfileImageUploadService } from '../service/profileImageUploadService';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -9,6 +9,8 @@ import { GetUserByIdService } from 'src/module/user/service/getUserByIdService';
 import { UserSchema } from 'src/module/user/userEntity/userSchema';
 import { CouponPDFFileController } from '../controller/uploadCouponPDFController';
 import { UploadCouponPDFService } from '../service/uploadCouponPDfService';
+import { DeleteProfileImageService } from '../service/deleteProfileImageService';
+import { DeleteProfileImageController } from '../controller/deleteProfileImageController';
 
 @Module({
     imports: [
@@ -23,13 +25,15 @@ import { UploadCouponPDFService } from '../service/uploadCouponPDfService';
         }),
     ],
     controllers: [
-        FileController,
-        CouponPDFFileController
+        ProfileImageUploadController,
+        CouponPDFFileController,
+        DeleteProfileImageController
     ],
     providers: [
-        FileUploadService,
+        ProfileImageUploadService,
         GetUserByIdService,
-        UploadCouponPDFService
+        UploadCouponPDFService,
+        DeleteProfileImageService
     ],
     exports: [
         UploadCouponPDFService
