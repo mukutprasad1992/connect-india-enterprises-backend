@@ -1,6 +1,6 @@
 import { Controller, Post, UploadedFile, UseInterceptors, Body, HttpException, Res, Req, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadCouponPDFService } from '../service/uploadCouponPDfService';
+import { UploadDocumentForServiceTypeByUserService } from '../service/uploadDocumnetForServiceTypeByUserService';
 import { FileUploadDto } from '../dto/fileUploadDTO';
 import { JoiValidationPipe } from '../common/joi/fileUploadValidation';
 import { ConfigService } from '@nestjs/config';
@@ -10,14 +10,15 @@ import {
     anUnexpectedErrorOccurredDuringFileUpload,
     AWSBucketName,
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
-    fileNotUploaded
+    fileNotUploaded,
+    folderNameRequired
 } from '../common/message/messageFileUpload';
 
-@Controller('uploadFile/couponPDF')
+@Controller('uploadDocumentSerciceTypeFile/dynamic')
 @UseGuards(AuthGuard)
-export class CouponPDFFileController {
+export class UploadDocumentForServiceTypeByUserController {
     constructor(
-        private readonly uploadCouponPDFService: UploadCouponPDFService,
+        private readonly uploadDocumentService: UploadDocumentForServiceTypeByUserService,
         private readonly configService: ConfigService,
     ) { }
 
@@ -32,6 +33,7 @@ export class CouponPDFFileController {
         try {
             const userId = req.user.id;
             const bucket = this.configService.get<string>(AWSBucketName);
+            const { folderName } = body;
 
             if (!bucket) {
                 return res.status(400).send({
@@ -40,7 +42,17 @@ export class CouponPDFFileController {
                     result: null,
                 });
             }
-            const uploadResult = await this.uploadCouponPDFService.uploadFile(file);
+
+            if (!folderName) {
+                return res.status(400).send({
+                    status: false,
+                    message: folderNameRequired,
+                    result: null,
+                });
+            }
+
+            const uploadResult = await this.uploadDocumentService.uploadFile(file, folderName);
+
             if (uploadResult?.status) {
                 return res.status(200).send({
                     status: true,
@@ -50,7 +62,8 @@ export class CouponPDFFileController {
             } else {
                 return res.status(400).send({
                     status: false,
-                    message: fileNotUploaded,
+                    message: uploadResult.message || fileNotUploaded,
+                    result: null,
                 });
             }
         } catch (error: any) {

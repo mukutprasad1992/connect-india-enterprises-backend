@@ -1,4 +1,4 @@
-import { Controller, Put, Param, Body, Res, UseGuards, Req } from '@nestjs/common';
+import { Controller, Put, Param, Body, Res, UseGuards, Req, UsePipes } from '@nestjs/common';
 import { UpdateServiceTypeByIdService } from '../services/updateServiceTypeByIdServices';
 import { UpdateServiceTypeDTO } from '../serviceTypeDTO/updateServiceTypeDTO';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
@@ -16,7 +16,7 @@ export class UpdateServiceTypeByIdController {
     @Put()
     async updateServiceTypeById(
         @Param('id') id: number,
-        @Body(new ValidationServiceType(UpdateServiceTypeDTO.serviceTypeSchema)) updateServiceTypeDto: UpdateServiceTypeDTO,
+        @Body(new ValidationServiceType(UpdateServiceTypeDTO.getValidationSchema())) updateServiceTypeDto: UpdateServiceTypeDTO,
         @Res() res,
         @Req() req
     ) {

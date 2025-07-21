@@ -1,6 +1,8 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
-import * as Joi from "joi";
-import { inputCannotBeUndefinedOrNull, invalidAmount, invalidDuration, invalidStatus, invalidType } from "./serviceTypeMessage";
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import * as Joi from 'joi';
+import {
+    inputCannotBeUndefinedOrNull,
+} from './serviceTypeMessage';
 
 @Injectable()
 export class ValidationServiceType implements PipeTransform {
@@ -9,34 +11,43 @@ export class ValidationServiceType implements PipeTransform {
     transform(value: any, metadata: ArgumentMetadata) {
         if (value === undefined || value === null) {
             throw new BadRequestException({
-                statusCode: 400,
-                message: inputCannotBeUndefinedOrNull
+                status: false,
+                message: inputCannotBeUndefinedOrNull,
+                errors: {
+                    body: 'Request body is required'
+                }
             });
         }
+        if (typeof value !== 'object' || Array.isArray(value)) {
+            throw new BadRequestException({
+                status: false,
+                message: 'Validation failed',
+                errors: {
+                    body: 'Request body must be a JSON object'
+                }
+            });
+        }
+        const { error, value: validatedValue } = this.schema.validate(value, {
+            abortEarly: false,
+            allowUnknown: true,
+            stripUnknown: true
+        });
 
-        const { error } = this.schema.validate(value);
         if (error) {
-            let errorMessage = error.details[0].message;
-
-            if (errorMessage.includes("amount")) {
-                errorMessage = invalidAmount;
-            } else if (errorMessage.includes("type")) {
-                errorMessage = invalidType;
-            } else if (errorMessage.includes("duration")) {
-                errorMessage = invalidDuration;
-            } else if (errorMessage.includes("status")) {
-                errorMessage = invalidStatus;
-            }
-
-            errorMessage = errorMessage.replace(/"([^"]*)"/g, '$1');
-            errorMessage = errorMessage.charAt(0).toUpperCase() + errorMessage.slice(1);
+            const errorDetails = error.details.reduce((acc, detail) => {
+                const key = detail.path[0] ?? 'body';
+                let message = detail.message.replace(/"/g, '');
+                acc[key] = message;
+                return acc;
+            }, {});
 
             throw new BadRequestException({
-                statusCode: 400,
-                errors: errorMessage,
+                status: false,
+                message: 'Validation failed',
+                errors: errorDetails
             });
         }
 
-        return value;
+        return validatedValue;
     }
 }

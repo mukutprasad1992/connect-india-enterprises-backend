@@ -21,3 +21,4 @@ export const yourServiceRequestCreatedSuccessfully = "Your service request has b
 export const blockedSubjects = "Notice: Block Applied to Your Collaborator Account";
 export const unblockedSubjects = "Welcome back! Your account access has now been unblocked.";
 export const serviceRequestHasBeenDeleted = "Service Request Has Been Deleted";
+export const yourServiceRequestUpdatedSuccessfully = "Your service request has been updated successfully";

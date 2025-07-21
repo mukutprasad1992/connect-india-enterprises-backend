@@ -50,6 +50,9 @@ export class ServiceTypeSchema {
     toTime: string;
 
     @Column()
+    email: string;
+
+    @Column()
     createdBy: string;
 
     @ManyToOne(() => UserSchema, (user) => user.id, { onDelete: 'CASCADE' })

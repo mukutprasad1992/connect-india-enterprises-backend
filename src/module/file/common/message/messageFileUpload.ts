@@ -1,9 +1,10 @@
 export const anUnexpectedErrorOccurredDuringFileUpload = "An unexpected error occurred during file upload";
 export const AWSBucketNameIsNotDefinedInEnvironmentVariables = "AWS_BUCKET_NAME is not defined in environment variables";
-export const fileIsNotUploaded = "File is not uploaded";
+export const fileNotUploaded = "File is not uploaded";
 export const AWSBucketName = "AWS_BUCKET_NAME";
-export const fileUloadedSuccessfully = "File uloaded successfully!";
+export const fileUploadedSuccessfully = "File uloaded successfully!";
 export const fileNotUpload = "File not upload";
 export const profileImageNotFound = "Profile image not found.";
 export const profileImageDeletedSuccessfully = "Profile image deleted successfully.";
 export const anUnexpectedErrorOccurredWhileDeletingTheFileFromS3 = "An unexpected error occurred while deleting the file from S3.";
+export const folderNameRequired = "Folder name required";

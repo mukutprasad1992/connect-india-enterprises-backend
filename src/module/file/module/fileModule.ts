@@ -11,6 +11,8 @@ import { CouponPDFFileController } from '../controller/uploadCouponPDFController
 import { UploadCouponPDFService } from '../service/uploadCouponPDfService';
 import { DeleteProfileImageService } from '../service/deleteProfileImageService';
 import { DeleteProfileImageController } from '../controller/deleteProfileImageController';
+import { UploadDocumentForServiceTypeByUserService } from '../service/uploadDocumnetForServiceTypeByUserService';
+import { UploadDocumentForServiceTypeByUserController } from '../controller/uploadDocumentForServiceTypeByUserController';
 
 @Module({
     imports: [
@@ -27,13 +29,16 @@ import { DeleteProfileImageController } from '../controller/deleteProfileImageCo
     controllers: [
         ProfileImageUploadController,
         CouponPDFFileController,
-        DeleteProfileImageController
+        DeleteProfileImageController,
+        UploadDocumentForServiceTypeByUserController
+
     ],
     providers: [
         ProfileImageUploadService,
         GetUserByIdService,
         UploadCouponPDFService,
-        DeleteProfileImageService
+        DeleteProfileImageService,
+        UploadDocumentForServiceTypeByUserService
     ],
     exports: [
         UploadCouponPDFService

@@ -9,3 +9,4 @@ export const failedToUpdateNotificationStatus = "Failed to update notification s
 export const somethingWentWrong = "Something went wrong";
 export const notificationNotFound = "Notification not found";
 export const userRoleNotFound = "User role not found";
+

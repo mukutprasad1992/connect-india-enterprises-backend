@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, UseGuards, Req, Get } from '@nestjs/common';
+import { Controller, Post, Body, Res, UseGuards, Req, Get, UsePipes } from '@nestjs/common';
 import { CreateServiceTypeService } from '../services/createServiceTypeServices';
 import { CreateServiceTypeDTO } from '../serviceTypeDTO/createServiceTypeDTO';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
@@ -14,9 +14,8 @@ export class CreateServiceTypeController {
     @UseGuards(AuthGuard)
     @Post()
     async createServiceType(
-        @Body(new ValidationServiceType(CreateServiceTypeDTO.ServiceTypeSchema)) createServiceTypeDto: CreateServiceTypeDTO,
-        @Res() res,
-        @Req() req
+        @Body(new ValidationServiceType(CreateServiceTypeDTO.getValidationSchema())) createServiceTypeDto: CreateServiceTypeDTO,
+        @Req() req, @Res() res
     ) {
         try {
             const userId = req.user.id;

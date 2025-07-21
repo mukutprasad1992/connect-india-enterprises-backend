@@ -8,6 +8,7 @@ export class JoiValidationPipe implements PipeTransform {
 
         mediaType: Joi.string().valid('image', 'video', 'document').required(),
         description: Joi.string().optional(),
+        folderName: Joi.string().optional(),
     });
 
     transform(value: any, metadata: ArgumentMetadata) {
@@ -16,3 +17,4 @@ export class JoiValidationPipe implements PipeTransform {
         return value;
     }
 }
+

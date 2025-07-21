@@ -1,48 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import {
-    S3Client,
     PutObjectCommand,
-    DeleteObjectCommand,
-    ListObjectVersionsCommand,
 } from '@aws-sdk/client-s3';
 import {
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
-    fileNotUpload,
+    fileNotUploaded,
     fileUploadedSuccessfully,
+    folderNameRequired,
 } from '../common/message/messageFileUpload';
-import { s3 } from '../../../config/awsConfig'
+import { s3 } from '../../../config/awsConfig';
+
 @Injectable()
-export class ProfileImageUploadService {
-    async deleteFileFromS3(key: string) {
-        const bucket = process.env.AWS_BUCKET_NAME;
-        if (!bucket) return;
-
-        try {
-            const versions = await s3.send(new ListObjectVersionsCommand({
-                Bucket: bucket,
-                Prefix: key,
-            }));
-
-            const allVersions = [
-                ...(versions.Versions || []),
-                ...(versions.DeleteMarkers || []),
-            ];
-
-            for (const version of allVersions) {
-                if (version.Key === key && version.VersionId) {
-                    await s3.send(new DeleteObjectCommand({
-                        Bucket: bucket,
-                        Key: key,
-                        VersionId: version.VersionId,
-                    }));
-                }
-            }
-        } catch (error) {
-            console.error(`Error deleting S3 versions:`, error);
+export class UploadDocumentForServiceTypeByUserService {
+    async uploadFile(
+        file: Express.Multer.File,
+        folderName: string,
+    ) {
+        if (!folderName) {
+            return {
+                status: false,
+                message: folderNameRequired,
+            };
         }
-    }
 
-    async uploadFile(file: Express.Multer.File) {
         const bucket = process.env.AWS_BUCKET_NAME;
         if (!bucket) {
             return {
@@ -51,7 +31,13 @@ export class ProfileImageUploadService {
             };
         }
 
-        const key = `profileImage/${Date.now()}-${file.originalname}`;
+        if (!file) {
+            return {
+                status: false,
+                message: fileNotUploaded,
+            };
+        }
+        const key = `${folderName}/${Date.now()}-${file.originalname}`;
 
         const command = new PutObjectCommand({
             Bucket: bucket,
@@ -71,6 +57,7 @@ export class ProfileImageUploadService {
                     key,
                     size: file.size,
                     mimetype: file.mimetype,
+                    folderName,
                 },
             };
         } catch (error: any) {

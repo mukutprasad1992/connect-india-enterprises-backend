@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
-import { emailCreateServiceTypeTemplates } from '../template/createServiceTypeEmailtemplate';
-import { mailSentSuccessfully, yourServiceRequestCreatedSuccessfully } from '../common/common';
+import { mailSentSuccessfully, yourServiceRequestUpdatedSuccessfully } from '../common/common';
+import { emailUpdateServiceTypeTemplates } from '../template/updateServiceTypeByUserMailTemplate';
 
 @Injectable()
-export class ServiceTypeMailService {
+export class UpdateServiceTypeByUserMailService {
     private transporter;
     constructor(private configService: ConfigService) {
         this.transporter = nodemailer.createTransport({
@@ -17,15 +17,15 @@ export class ServiceTypeMailService {
         });
     }
 
-    async emailCreateServiceTypeTemplates(to: string, status: string, serviceSubType: string) {
+    async emailCreateServiceTypeTemplates(to: string, serviceSubType: string) {
         try {
             const USER_EMAIL = process.env.USER_EMAIL;
 
-            const htmlTemplate = emailCreateServiceTypeTemplates.NewUserRequest(serviceSubType);
+            const htmlTemplate = emailUpdateServiceTypeTemplates.UpdateUserRequest(serviceSubType);
             const mailOptions = {
                 from: USER_EMAIL,
                 to,
-                subject: yourServiceRequestCreatedSuccessfully,
+                subject: yourServiceRequestUpdatedSuccessfully,
                 html: htmlTemplate,
             };
 

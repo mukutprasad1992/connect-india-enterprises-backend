@@ -28,3 +28,5 @@ export const userNotFoundForTheGivenServiceTypeID = "User not found for the give
 export const unauthorizedRole = "Unauthorized role";
 export const youAreNotAdmin = "You are not admin";
 export const serviceTypeDeletionMailError = "Service type deletion mail Error"
+export const noValidFieldsProvidedForUpdate = "No valid fields provided for update";
+export const atLeastOneFieldMustBeProvidedForpdate = "At least one field must be provided for update";

@@ -1,4 +1,4 @@
-import { Controller, Put, Body, Param, Res, UseGuards, Req } from '@nestjs/common';
+import { Controller, Put, Body, Param, Res, UseGuards, Req, UsePipes } from '@nestjs/common';
 import { UpdateServiceTypeStatusService } from '../services/updateServiseTypeStatusService';
 import { UpdateServiceTypeDTO } from '../serviceTypeDTO/updateServiceTypeDTO';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
@@ -14,7 +14,7 @@ export class UpdateServiceTypeStatusController {
     @Put()
     async updateServiceTypeStatus(
         @Param('id') id: number,
-        @Body(new ValidationServiceType(UpdateServiceTypeDTO.serviceTypeSchema)) updateServiceTypeDto: UpdateServiceTypeDTO,
+        @Body(new ValidationServiceType(UpdateServiceTypeDTO.getValidationSchema())) updateServiceTypeDto: UpdateServiceTypeDTO,
         @Res() res,
         @Req() req
     ) {
@@ -38,7 +38,6 @@ export class UpdateServiceTypeStatusController {
                 });
             }
         } catch (error) {
-            console.log("<-----error---->", error.message);
             return res.status(500).send({
                 status: false,
                 message: serviceTypeUpdateError,

@@ -10,7 +10,7 @@ import {
     anUnexpectedErrorOccurredDuringFileUpload,
     AWSBucketName,
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
-    fileIsNotUploaded
+    fileNotUploaded
 } from '../common/message/messageFileUpload';
 import { GetUserByIdService } from '../../user/service/getUserByIdService';
 
@@ -56,7 +56,7 @@ export class ProfileImageUploadController {
             } else {
                 return res.status(400).send({
                     status: false,
-                    message: fileIsNotUploaded,
+                    message: fileNotUploaded,
                 });
             }
         } catch (error: any) {

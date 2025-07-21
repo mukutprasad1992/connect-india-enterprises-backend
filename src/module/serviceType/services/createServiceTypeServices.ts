@@ -12,7 +12,7 @@ import {
     failedToRetrieveTheIDOfTheLastInsertedServiceType,
     yourServiceRequestHasBeenCreatedSuccessfully,
 } from '../common/serviceTypeMessage';
-import { errorWhileCreatingNotification, notificationCreationFailed } from '../../notificaton/common/notificationMessage';
+import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
 import { ServiceTypeMailService } from 'src/utils/mailer/ServiceTypeMailer';
 
@@ -54,7 +54,6 @@ export class CreateServiceTypeService {
     }
 
     async createServiceType(userId: number, createServiceTypeDto: CreateServiceTypeDTO): Promise<any> {
-        const { amount, serviceSubType, duration, status, comment, serviceId, fromTime, toTime } = createServiceTypeDto;
         const user = await this.getUserById(userId);
 
         if (!user) {
@@ -63,14 +62,24 @@ export class CreateServiceTypeService {
                 message: userNotFound,
             };
         }
+        const baseFields = {
+            userId,
+            createdBy: userId,
+            createdAt: new Date(),
+        };
 
-        const createdBy = userId;
-        const formattedFromTime = this.formatTimeTo24Hour(fromTime);
-        const formattedToTime = this.formatTimeTo24Hour(toTime);
+        if (createServiceTypeDto.fromTime) {
+            createServiceTypeDto.fromTime = this.formatTimeTo24Hour(createServiceTypeDto.fromTime);
+        }
+        if (createServiceTypeDto.toTime) {
+            createServiceTypeDto.toTime = this.formatTimeTo24Hour(createServiceTypeDto.toTime);
+        }
+        const allFields = { ...baseFields, ...createServiceTypeDto };
+        const columns = Object.keys(allFields).join(', ');
+        const placeholders = Object.keys(allFields).map(() => '?').join(', ');
+        const values = Object.values(allFields);
 
-        const query = `INSERT INTO servicetypes (userId, serviceId, createdBy, amount, serviceSubType, duration, status, fromTime, toTime, comment, createdAt)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())`;
-        const values = [userId, serviceId, createdBy, amount, serviceSubType, duration, status, formattedFromTime, formattedToTime, comment || ""];
+        const query = `INSERT INTO servicetypes (${columns}) VALUES (${placeholders})`;
 
         try {
             await this.dataSource.query(query, values);
@@ -83,10 +92,17 @@ export class CreateServiceTypeService {
                     message: failedToRetrieveTheIDOfTheLastInsertedServiceType,
                 };
             }
-            const email = user.email
-            const sendEmailToUser = await this.serviceTypeMailService.emailCreateServiceTypeTemplates(email, status, serviceSubType);
+
+            const email = user.email;
+            const sendEmailToUser = await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
+                email,
+                createServiceTypeDto.status,
+                createServiceTypeDto.serviceSubType
+            );
+
             const createdServiceType = await this.getServiceTypeById(lastInsertedId);
             const message = this.createdServiceSuccessMessageService.getMessageFromCreatedServiceType(createdServiceType);
+
             const notificationPayload: CreateNotificationDTO = {
                 message: `${message}`,
                 userRoleId: 3,
@@ -98,6 +114,7 @@ export class CreateServiceTypeService {
                 vendorId: null,
                 isUser: 1
             };
+
             const notification = await this.createNotificationService.createNotification(notificationPayload);
             if (!notification) {
                 return {
@@ -105,6 +122,7 @@ export class CreateServiceTypeService {
                     message: notificationCreationFailed,
                 };
             }
+
             return {
                 status: true,
                 message: serviceTypeCreatedSuccessfully,

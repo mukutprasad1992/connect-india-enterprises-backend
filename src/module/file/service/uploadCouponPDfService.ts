@@ -8,7 +8,7 @@ import {
 import {
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
     fileNotUpload,
-    fileUloadedSuccessfully,
+    fileUploadedSuccessfully,
 } from '../common/message/messageFileUpload';
 import { s3 } from '../../../config/awsConfig'
 @Injectable()
@@ -37,7 +37,7 @@ export class UploadCouponPDFService {
 
             return {
                 status: true,
-                message: fileUloadedSuccessfully,
+                message: fileUploadedSuccessfully,
                 data: {
                     url: `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
                     key,
