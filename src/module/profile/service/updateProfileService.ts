@@ -68,7 +68,7 @@ export class UpdateProfileService {
             const query = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
             const result = await this.dataSource.query(query, values);
 
-            if (!result.affectedRows || result.affectedRows === 0) {
+            if (!result) {
                 return {
                     status: false,
                     message: profileUpdateFailedNoRowsWereAffected,

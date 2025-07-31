@@ -6,8 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "rm -rf dist",
-    "build": "npx nest build && tsc copyLogo.ts && node copyLogo.ts",
+    "prebuild": "rimraf dist",
+    "build": "nest build && ts-node copyLogo.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch",
@@ -46,7 +46,6 @@
     "qrcode": "^1.5.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "rimraf": "^6.0.1",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
