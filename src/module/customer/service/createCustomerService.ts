@@ -11,6 +11,7 @@ import {
     customerNotFound,
     customerWithThisEmailAlreadyExists,
     vendorNotFound,
+    newCustomerCreatedForVendor,
 } from '../common/customerMessage';
 import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
 import { NotificationCustomerService } from '../common/template/notificationCreateCustomerMessageTemelate';
@@ -73,9 +74,11 @@ export class CreateCustomerService {
                     };
                 }
                 const createdCustomer = await this.getCustomerById(lastInsertedId);
-                const message = await this.notificationCustomerService.sendCustomerDetailsNotification(createdCustomer);
+                const BusinessRepresentative = vendor.BusinessRepresentative;
+                // const message = await this.notificationCustomerService.sendCustomerDetailsNotification(createdCustomer);
+
                 const notificationPayload: CreateNotificationDTO = {
-                    message: `${message}`,
+                    message: `${newCustomerCreatedForVendor}<span style="color: #007BFF;">${BusinessRepresentative}</span> `,
                     userRoleId: 2,
                     voucherId: null,
                     isRead: false,

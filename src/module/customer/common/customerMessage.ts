@@ -13,3 +13,5 @@ export const failedToUpdateCustomer = "Failed to update customer.";
 export const customerUpdationError = "Customer updation error.";
 export const customerSuccessfullyDeleted = "Customer successfully deleted.";
 export const anErrorOccurredWhileDeletingCustomers = "An error occurred while deleting customers.";
+export const customerDetailsUpdatedByVendor = "Customer Details Updated by Vendor ";
+export const newCustomerCreatedForVendor = "New Customer Created for Vendor ";

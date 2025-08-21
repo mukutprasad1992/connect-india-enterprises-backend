@@ -5,6 +5,7 @@ import { CustomerSchema } from '../customerEntity/customerEntity';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
 import { UpdateNotificationCustomerService } from '../common/template/notificationUpdateCustomerMessage'
 import {
+    customerDetailsUpdatedByVendor,
     customerNotFound,
     customerUpdatedSuccessfully,
     failedToUpdateCustomer,
@@ -67,9 +68,10 @@ export class UpdateCustomerService {
             }
 
             const updatedCustomer = await this.getCustomerById(id);
-            const message = await this.updateNotificationCustomerService.sendCustomerDetailsNotification(updatedCustomer);
+            // const message = await this.updateNotificationCustomerService.sendCustomerDetailsNotification(updatedCustomer);
+            const BusinessRepresentative = updatedCustomer?.BusinessRepresentative;
             const notificationPayload: CreateNotificationDTO = {
-                message: `${message} `,
+                message: `${customerDetailsUpdatedByVendor}<span style="color: #2c7be5;">${BusinessRepresentative}</span> `,
                 userRoleId: 2,
                 voucherId: null,
                 isRead: false,

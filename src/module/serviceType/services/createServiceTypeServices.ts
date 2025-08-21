@@ -101,10 +101,10 @@ export class CreateServiceTypeService {
             );
 
             const createdServiceType = await this.getServiceTypeById(lastInsertedId);
-            const message = this.createdServiceSuccessMessageService.getMessageFromCreatedServiceType(createdServiceType);
+            // const message = this.createdServiceSuccessMessageService.getMessageFromCreatedServiceType(createdServiceType);
 
             const notificationPayload: CreateNotificationDTO = {
-                message: `${message}`,
+                message: ` A new <span class="highlight">${createdServiceType.serviceSubType}</span> service has created by a user and requires your attention.`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,

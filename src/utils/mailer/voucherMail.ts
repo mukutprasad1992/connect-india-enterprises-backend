@@ -143,7 +143,7 @@ export class VoucherMailService {
       }
       const logoBytes = fs.readFileSync(logoImagePath);
       const logoImage = await pdfDoc.embedPng(logoBytes);
-      page.drawImage(logoImage, { x: 50, y: height - 85, width: 170, height: 55 });
+      page.drawImage(logoImage, { x: 20, y: height - 85, width: 170, height: 55 });
 
       //rupees icon 
       const logoRupees = path.resolve(__dirname, '..', '..', 'iconsrupee.png');
@@ -246,8 +246,8 @@ export class VoucherMailService {
       const titleX = ((width - titleWidth) / 2) - 12;
       const vendorNameX = (width - vendorNameWidth) / 2;
 
-      page.drawText(title, { x: titleX, y: height - 50, size: 14, font, color: brownColor });
-      page.drawText(vendorName, { x: vendorNameX, y: height - 70, size: 10, font, color: brownColor });
+      page.drawText(title, { x: titleX, y: height - 75, size: 14, font, color: brownColor });
+      page.drawText(vendorName, { x: vendorNameX, y: height - 90, size: 10, font, color: brownColor });
 
       page.drawLine({
         start: { x: 50, y: height - 105 },
@@ -255,9 +255,28 @@ export class VoucherMailService {
         color: rgb(116 / 255, 127 / 255, 141 / 255),
         thickness: 1,
       });
-      page.drawText(`Voucher Number: ${voucherData.voucherCode} |`, { x: 138, y: height - 120, size: fontSize, font: fontRegular, color: brownColor });
-      page.drawText(`Vendor Code: ${voucherData.vendorCode} |`, { x: 270, y: height - 120, size: fontSize, font: fontRegular, color: brownColor });
-      page.drawText(`Date: ${currentDate}`, { x: 400, y: height - 120, size: fontSize, font: fontRegular, color: brownColor });
+      // Prepare dynamic values
+      const voucherNumberText = `Voucher Number: ${voucherData.voucherCode}`;
+      const vendorCodeText = `Vendor Code: ${voucherData.vendorCode}`;
+      const dateText = `Date: ${currentDate}`;
+
+      // Combine all into a single line
+      const fullLine = `${voucherNumberText} | ${vendorCodeText} | ${dateText}`;
+
+      // Measure the width of the full line
+      const textWidth = fontRegular.widthOfTextAtSize(fullLine, fontSize);
+
+      // Calculate X coordinate to center the text
+      const centerX = (page.getWidth() - textWidth) / 2;
+
+      // Draw centered text
+      page.drawText(fullLine, {
+        x: centerX,
+        y: height - 120,
+        size: fontSize,
+        font: fontRegular,
+        color: brownColor,
+      });
 
       page.drawText(`Hey ${voucherData.customerName}`, { x: 50, y: height - 150, size: 9, font: fontRegular, color: blackColor });
 

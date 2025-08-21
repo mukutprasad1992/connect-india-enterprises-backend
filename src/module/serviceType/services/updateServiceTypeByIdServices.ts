@@ -79,10 +79,10 @@ export class UpdateServiceTypeByIdService {
                 email,
                 updatedServiceType?.serviceSubType
             );
-            const message = this.updatedServiceMessageService.getMessageFromUpdatedService(updatedServiceType);
+            // const message = this.updatedServiceMessageService.getMessageFromUpdatedService(updatedServiceType);
 
             const notificationPayload: CreateNotificationDTO = {
-                message: `${message}`,
+                message: `A <span class="highlight">${updatedServiceType?.serviceSubType}</span> service request has been updated by the user.`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,

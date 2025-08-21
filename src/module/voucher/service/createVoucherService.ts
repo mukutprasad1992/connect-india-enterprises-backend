@@ -131,9 +131,10 @@ export class CreateVoucherService {
                     message: failedToSendEmails
                 };
             }
-            const htmlMessage = await this.successVoucherMessageService.getCouponGeneratedMessage(voucherDetails);
+            // const htmlMessage = await this.successVoucherMessageService.getCouponGeneratedMessage(voucherDetails);
             const notificationPayload: CreateNotificationDTO = {
-                message: `${htmlMessage}`,
+                message: `  🎉 Hey <span color="green">${voucherDetails.vendorName}</span>! 🎉<br/>
+                            A new coupon has just been generated!`,
                 userRoleId: 1,
                 voucherId: voucherDetails.id,
                 isRead: false,

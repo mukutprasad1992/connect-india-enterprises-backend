@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, ReturnDocument } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { UpdateServiceTypeDTO } from '../serviceTypeDTO/updateServiceTypeDTO';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { CreateNotificationDTO } from '../../notificaton/notificationDTO/createNotificationDTO';
@@ -70,7 +70,23 @@ export class UpdateServiceTypeStatusService {
             }
             const serviceRequiestUserId = getUserIdByServiceTypeId[0].userId
             const serviceSubType = getUserIdByServiceTypeId[0].serviceSubType
-            const message = this.messageGeneratorService.getStatusMessage(status, serviceSubType);
+
+            const getStatusMessage = (status: string, serviceSubType: string) => {
+                switch (status) {
+                    case 'Approved':
+                        return `The service request for ${serviceSubType} has been approved.`;
+                    case 'Rejected':
+                        return `The service request for ${serviceSubType} has been rejected.`;
+                    case 'In Progress':
+                        return `The service request for ${serviceSubType} is currently in progress.`;
+                    case 'Pending':
+                        return `The service request for ${serviceSubType} is pending.`;
+                    default:
+                        return '';
+                }
+            }
+
+            const message = getStatusMessage(status, serviceSubType)
             if (updateResult) {
                 const notificationPayload: CreateNotificationDTO = {
                     message: `${message}`,
@@ -100,15 +116,19 @@ export class UpdateServiceTypeStatusService {
                     data: null
                 };
             }
-
-            const updatedServiceType = await this.getServiceTypeById(id);
             return {
                 status: true,
                 message: serviceTypeUpdatedSuccessfully,
-                data: updatedServiceType
+                data: {
+                    id,
+                    status,
+                    updatedAt: new Date(),
+                    updatedBy: userId
+                }
             };
 
-        } catch (error) {
+        }
+        catch (error) {
             return {
                 status: false,
                 message: serviceTypeUpdateError,

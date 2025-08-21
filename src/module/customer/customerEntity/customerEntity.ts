@@ -31,4 +31,34 @@ export class CustomerSchema {
     @Column()
     pincode: string;
 
+    @Column({ type: 'int' })
+    vendorId: number;
+
+    @IsOptional()
+    @Column({ type: 'int', nullable: true })
+    createdBy?: number;
+
+    @IsOptional()
+    @IsDateString()
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt?: Date;
+
+    @IsOptional()
+    @Column({ type: 'int', nullable: true })
+    updatedBy?: number;
+
+    @IsOptional()
+    @IsDateString()
+    @Column({ type: 'timestamp', nullable: true })
+    updatedAt?: Date;
+
+    @IsOptional()
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    BusinessRepresentative?: string;
+
+    @IsOptional()
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    businessName?: string;
+
+
 }

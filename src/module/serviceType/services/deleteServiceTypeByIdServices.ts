@@ -41,10 +41,10 @@ export class DeleteServiceTypeByIdService {
             const email = getUserIdByServiceTypeId[0].email;
             const serviceSubType = getUserIdByServiceTypeId[0].serviceSubType
             const serviceRequiestUserId = getUserIdByServiceTypeId[0].userId
-            const message = this.deletedServiceRequestNotificationService.getMessage(serviceSubType);
+            //  const message = this.deletedServiceRequestNotificationService.getMessage(serviceSubType);
             if (result) {
                 const notificationPayload: CreateNotificationDTO = {
-                    message: `${message}`,
+                    message: `Service Request Deleted by User`,
                     userRoleId: 3,
                     voucherId: null,
                     isRead: false,
