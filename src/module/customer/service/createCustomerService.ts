@@ -78,7 +78,7 @@ export class CreateCustomerService {
                 // const message = await this.notificationCustomerService.sendCustomerDetailsNotification(createdCustomer);
 
                 const notificationPayload: CreateNotificationDTO = {
-                    message: `${newCustomerCreatedForVendor}<span style="color: #007BFF;">${BusinessRepresentative}</span> `,
+                    message: `${newCustomerCreatedForVendor} ${BusinessRepresentative}`,
                     userRoleId: 2,
                     voucherId: null,
                     isRead: false,

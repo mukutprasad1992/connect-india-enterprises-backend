@@ -71,7 +71,7 @@ export class UpdateCustomerService {
             // const message = await this.updateNotificationCustomerService.sendCustomerDetailsNotification(updatedCustomer);
             const BusinessRepresentative = updatedCustomer?.BusinessRepresentative;
             const notificationPayload: CreateNotificationDTO = {
-                message: `${customerDetailsUpdatedByVendor}<span style="color: #2c7be5;">${BusinessRepresentative}</span> `,
+                message: `${customerDetailsUpdatedByVendor} ${BusinessRepresentative} `,
                 userRoleId: 2,
                 voucherId: null,
                 isRead: false,

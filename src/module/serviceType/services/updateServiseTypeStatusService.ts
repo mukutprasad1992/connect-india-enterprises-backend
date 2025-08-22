@@ -70,23 +70,35 @@ export class UpdateServiceTypeStatusService {
             }
             const serviceRequiestUserId = getUserIdByServiceTypeId[0].userId
             const serviceSubType = getUserIdByServiceTypeId[0].serviceSubType
+            function formatServiceSubType(serviceSubType: string): string {
+                if (!serviceSubType) return '';
 
-            const getStatusMessage = (status: string, serviceSubType: string) => {
+                // camelCase → "Mutual Fund"
+                const spaced = serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+                // Capitalize each word
+                const titleCase = spaced.replace(/\b\w/g, char => char.toUpperCase());
+
+                // Wrap in <strong>
+                return `<strong>${titleCase}</strong>`;
+            }
+            const getStatusMessage = (status: string, formattedServiceSubType: string) => {
                 switch (status) {
                     case 'Approved':
-                        return `The service request for ${serviceSubType} has been approved.`;
+                        return `The service request for ${formattedServiceSubType} has been approved.`;
                     case 'Rejected':
-                        return `The service request for ${serviceSubType} has been rejected.`;
+                        return `The service request for ${formattedServiceSubType} has been rejected.`;
                     case 'In Progress':
-                        return `The service request for ${serviceSubType} is currently in progress.`;
+                        return `The service request for ${formattedServiceSubType} is currently in progress.`;
                     case 'Pending':
-                        return `The service request for ${serviceSubType} is pending.`;
+                        return `The service request for ${formattedServiceSubType} is pending.`;
                     default:
                         return '';
                 }
-            }
+            };
 
-            const message = getStatusMessage(status, serviceSubType)
+            const formattedServiceSubType = formatServiceSubType(serviceSubType);
+            const message = getStatusMessage(status, formattedServiceSubType)
             if (updateResult) {
                 const notificationPayload: CreateNotificationDTO = {
                     message: `${message}`,

@@ -133,7 +133,7 @@ export class CreateVoucherService {
             }
             // const htmlMessage = await this.successVoucherMessageService.getCouponGeneratedMessage(voucherDetails);
             const notificationPayload: CreateNotificationDTO = {
-                message: `  🎉 Hey <span color="green">${voucherDetails.vendorName}</span>! 🎉<br/>
+                message: `  🎉 Hey ${voucherDetails.vendorName} 🎉<br/>
                             A new coupon has just been generated!`,
                 userRoleId: 1,
                 voucherId: voucherDetails.id,

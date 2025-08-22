@@ -101,10 +101,20 @@ export class CreateServiceTypeService {
             );
 
             const createdServiceType = await this.getServiceTypeById(lastInsertedId);
-            // const message = this.createdServiceSuccessMessageService.getMessageFromCreatedServiceType(createdServiceType);
 
+            function formatServiceSubType(value: string): string {
+                if (!value) return '';
+
+                // camelCase ko "Camel Case" me convert karna
+                const spaced = value.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+                // bold karna (HTML wrap)
+                return `<strong>${spaced}</strong>`;
+            }
+            const formattedSubType = formatServiceSubType(createdServiceType.serviceSubType);
+            // const message = this.createdServiceSuccessMessageService.getMessageFromCreatedServiceType(createdServiceType);
             const notificationPayload: CreateNotificationDTO = {
-                message: ` A new <span class="highlight">${createdServiceType.serviceSubType}</span> service has created by a user and requires your attention.`,
+                message: `A new ${formattedSubType} service has been created by a user and requires your attention.`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,
