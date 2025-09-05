@@ -5,7 +5,8 @@ import {
     serviceTypeUpdateError,
     serviceTypeUpdatedSuccessfully,
     serviceTypeNotFound,
-    noValidFieldsProvidedForUpdate
+    noValidFieldsProvidedForUpdate,
+    failedToRetrieveTheIDOfTheLastInsertedServiceType
 } from '../common/serviceTypeMessage';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
@@ -21,90 +22,319 @@ export class UpdateServiceTypeByIdService {
         private readonly updateServiceTypeByUserMailService: UpdateServiceTypeByUserMailService,
     ) { }
 
-    async getServiceTypeById(id: number): Promise<ServiceTypeSchema | null> {
+    async getServiceRequestById(serviceRequestId: number): Promise<ServiceTypeSchema | null> {
         const serviceType = await this.dataSource.query(
-            `SELECT u.id AS userId, u.email, s.serviceSubType
-                                 FROM servicetypes s
-                                 JOIN users u ON s.userId = u.id
-                                 WHERE s.id = ?; `,
-            [id]
+            `SELECT * FROM investmentdetails i WHERE i.serviceRequestId = ?; `,
+            [serviceRequestId]
         );
         return serviceType.length > 0 ? serviceType[0] : null;
     }
 
+    private async insertAndReturnId(query: string, params: any[]): Promise<number | null> {
+        const result: any = await this.dataSource.query(query, params);
+        return result && result.insertId ? result.insertId : null;
+    }
+    async updateBasicDetails(
+        aadharNumber: string,
+        panNumber: string,
+        userId: number,
+        basicDetailsId: number,
+    ): Promise<boolean> {
+        const query = `
+      UPDATE basicdetails
+      SET aadharNumber = ?, 
+          panNumber = ?, 
+          updatedBy = ?, 
+          updatedAt = NOW()
+      WHERE id = ?
+    `;
+        const result: any = await this.dataSource.query(query, [
+            aadharNumber,
+            panNumber,
+            userId,
+            basicDetailsId,
+        ]);
+        // result.affectedRows tells how many rows got updated
+        return result.affectedRows > 0;
+    }
 
-    async updateServiceTypeById(id: number, userId: number, updateData: any): Promise<any> {
-        try {
-            const serviceTypeExists = await this.getServiceTypeById(id);
-            if (!serviceTypeExists) {
-                return {
-                    status: false,
-                    message: serviceTypeNotFound,
-                    data: null,
-                };
-            }
-            const validUpdates = Object.entries(updateData)
-                .filter(([_, value]) => value !== undefined && value !== null)
-                .filter(([key, _]) => key !== 'id');
+    async savePersonalDetails(
+        id: number | null, // null → insert, number → update
+        email: string,
+        mobile: string,
+        placeOfBirth: { city: string; state: string },
+        income: string,
+        occupation: string,
+        userId: number
+    ): Promise<number | null> {
+        if (id) {
+            // ✅ UPDATE if id exists
+            const query = `
+          UPDATE personaldetails
+          SET email = ?,
+              mobile = ?,
+              placeOfBirth = ?,
+              income = ?,
+              occupation = ?,
+              updatedBy = ?, 
+              updatedAt = NOW()
+          WHERE id = ?
+        `;
 
-            if (validUpdates.length === 0) {
-                return {
-                    status: false,
-                    message: noValidFieldsProvidedForUpdate,
-                    data: null,
-                };
-            }
-            const setClause = validUpdates
-                .map(([key]) => `${key} = ?`)
-                .join(', ');
-            const values = [
-                ...validUpdates.map(([_, value]) => value),
-                userId,
-                id
-            ];
-
-            await this.dataSource.query(
-                `UPDATE servicetypes
-             SET
-                 ${setClause},
-                 updatedAt = now(),
-                 updatedBy = ?
-             WHERE id = ?`,
-                values
-            );
-
-            const updatedServiceType = await this.getServiceTypeById(id);
-            const email = updatedServiceType?.email;
-            const sendEmailToUser = await this.updateServiceTypeByUserMailService.emailCreateServiceTypeTemplates(
+            const result: any = await this.dataSource.query(query, [
                 email,
-                updatedServiceType?.serviceSubType
-            );
-            // const message = this.updatedServiceMessageService.getMessageFromUpdatedService(updatedServiceType);
+                mobile,
+                JSON.stringify(placeOfBirth),
+                income,
+                occupation,
+                userId,
+                id,
+            ]);
 
-            const notificationPayload: CreateNotificationDTO = {
-                message: `A  <strong>${updatedServiceType?.serviceSubType} </strong >service request has been updated by the user.`,
-                userRoleId: 3,
-                voucherId: null,
-                isRead: false,
-                createdBy: userId,
-                updatedBy: userId,
-                userId: userId,
-                vendorId: null,
-                isUser: 1
-            };
+            return result.affectedRows > 0 ? id : null;
+        } else {
+            // ✅ INSERT if id is null
+            const query = `
+          INSERT INTO personaldetails 
+              (email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
+          VALUES (?, ?, ?, ?, ?, ?, NOW())
+        `;
 
-            const notification = await this.createNotificationService.createNotification(notificationPayload);
-            if (!notification) {
-                return {
-                    status: false,
-                    message: notificationCreationFailed,
-                };
+            const result: any = await this.dataSource.query(query, [
+                email,
+                mobile,
+                JSON.stringify(placeOfBirth),
+                income,
+                occupation,
+                userId,
+            ]);
+
+            return result.insertId || null;
+        }
+    }
+
+    async saveNomineeDetails(
+        id: number | null, // null → insert, number → update
+        nomineeIdType: string,
+        nomineeId: string,
+        nomineeMobile: string,
+        nomineeRelation: string,
+        userId: number
+    ): Promise<number | null> {
+        if (id) {
+            // ✅ UPDATE if id exists
+            const query = `
+          UPDATE nomineedetails
+          SET nomineeIdType = ?,
+              nomineeId = ?,
+              nomineeMobile = ?,
+              nomineeRelation = ?,
+              updatedBy = ?, 
+              updatedAt = NOW()
+          WHERE id = ?
+        `;
+
+            const result: any = await this.dataSource.query(query, [
+                nomineeIdType,
+                nomineeId,
+                nomineeMobile,
+                nomineeRelation,
+                userId,
+                id,
+            ]);
+
+            return result.affectedRows > 0 ? id : null;
+        } else {
+            // ✅ INSERT if id is null
+            const query = `
+          INSERT INTO nomineedetails
+              (nomineeIdType, nomineeId, nomineeMobile, nomineeRelation, createdBy, createdAt)
+          VALUES (?, ?, ?, ?, ?, NOW())
+        `;
+
+            const result: any = await this.dataSource.query(query, [
+                nomineeIdType,
+                nomineeId,
+                nomineeMobile,
+                nomineeRelation,
+                userId,
+            ]);
+
+            return result.insertId || null;
+        }
+    }
+
+    async saveDocuments(
+        id: number | null, // null → insert, number → update
+        aadharCardFileKey: string,
+        panCardFileKey: string,
+        bankProofFileKey: string,
+        salarySlipsFileKey: string,
+        itrDocumentsFileKey: string,
+        userId: number
+    ): Promise<number | null> {
+        if (id) {
+            // ✅ UPDATE if id exists
+            const query = `
+          UPDATE documents
+          SET aadharCardFileKey = ?,
+              panCardFileKey = ?,
+              bankProofFileKey = ?,
+              salarySlipsFileKey = ?,
+              itrDocumentsFileKey = ?,
+              updatedBy = ?, 
+              updatedAt = NOW()
+          WHERE id = ?
+        `;
+
+            const result: any = await this.dataSource.query(query, [
+                aadharCardFileKey,
+                panCardFileKey,
+                bankProofFileKey,
+                salarySlipsFileKey,
+                itrDocumentsFileKey,
+                userId,
+                id,
+            ]);
+
+            return result.affectedRows > 0 ? id : null;
+        } else {
+            // ✅ INSERT if id is null
+            const query = `
+          INSERT INTO documents
+              (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
+          VALUES (?, ?, ?, ?, ?, ?, NOW())
+        `;
+
+            const result: any = await this.dataSource.query(query, [
+                aadharCardFileKey,
+                panCardFileKey,
+                bankProofFileKey,
+                salarySlipsFileKey,
+                itrDocumentsFileKey,
+                userId,
+            ]);
+
+            return result.insertId || null;
+        }
+    }
+    async updateServiceTypeById(
+        serviceRequestId: number,
+        userId: number,
+        updateData: any
+    ): Promise<any> {
+        try {
+            let serviceRequestExists = await this.getServiceRequestById(serviceRequestId);
+            const activeSteps = updateData.stepStatus;
+
+            let detailId: number | null = null;
+
+            // Step 1: Basic Details
+            if (activeSteps === "basicDetails") {
+                detailId = serviceRequestExists?.basicDetailsId || null;
+                const updated = await this.updateBasicDetails(
+                    updateData.aadharNumber,
+                    updateData.panNumber,
+                    userId,
+                    detailId
+                );
+                if (!updated) {
+                    return { status: false, message: "Failed to update basic details" };
+                }
+                detailId = serviceRequestExists.basicDetailsId; // already present
+            }
+
+            // Step 2: Personal Details
+            else if (activeSteps === "personalDetails") {
+                detailId = await this.savePersonalDetails(
+                    serviceRequestExists?.personalDetailsId || null,
+                    updateData.email,
+                    updateData.mobile,
+                    updateData.placeOfBirth,
+                    updateData.income,
+                    updateData.occupation,
+                    userId
+                );
+                if (!detailId) {
+                    return { status: false, message: "Failed to save personal details" };
+                }
+            }
+
+            // Step 3: Nominee Details
+            else if (activeSteps === "nomineeDetails") {
+                detailId = await this.saveNomineeDetails(
+                    serviceRequestExists?.nomineeDetailsId || null,
+                    updateData.nomineeIdType,
+                    updateData.nomineeId,
+                    updateData.nomineeMobile,
+                    updateData.nomineeRelation,
+                    userId
+                );
+                if (!detailId) {
+                    return { status: false, message: "Failed to save nominee details" };
+                }
+            }
+
+            // Step 4: Documents
+            else if (activeSteps === "documents") {
+                detailId = await this.saveDocuments(
+                    serviceRequestExists?.documentsId || null,
+                    updateData.aadharCardFileKey,
+                    updateData.panCardFileKey,
+                    updateData.bankProofFileKey,
+                    updateData.salarySlipsFileKey,
+                    updateData.itrDocumentsFileKey,
+                    userId
+                );
+                if (!detailId) {
+                    return { status: false, message: "Failed to save documents" };
+                }
+            }
+
+            // Step 5: Review
+            else if (activeSteps === "review") {
+                // Just mark submit in investmentdetails
+                const submitStatus = updateData.isDetailsConfirmed === 1 ? 'complete' : 'inComplete';
+                await this.dataSource.query(
+                    `UPDATE investmentdetails 
+         SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+         WHERE serviceRequestId = ?`,
+                    [updateData.isDetailsConfirmed ? "completed" : "pending", activeSteps, userId, serviceRequestId]
+                );
+
+                return { status: true, message: "Review step completed successfully" };
+            }
+
+            // ✅ Update/Insert into investmentdetails
+            if (detailId) {
+                if (serviceRequestExists) {
+                    // Update existing record
+                    await this.dataSource.query(
+                        `UPDATE investmentdetails 
+           SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+           WHERE serviceRequestId = ?`,
+                        [detailId, activeSteps, userId, serviceRequestId]
+                    );
+                } else {
+                    // Insert new record
+                    const invQuery = `
+          INSERT INTO investmentdetails 
+          (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
+          VALUES (?, ?, ?, ?, ?, NOW())
+        `;
+                    await this.insertAndReturnId(invQuery, [
+                        detailId,
+                        serviceRequestId,
+                        updateData.status || "active",
+                        activeSteps,
+                        userId,
+                    ]);
+                }
             }
 
             return {
                 message: serviceTypeUpdatedSuccessfully,
                 status: true,
-                data: updatedServiceType,
             };
         } catch (error) {
             return {

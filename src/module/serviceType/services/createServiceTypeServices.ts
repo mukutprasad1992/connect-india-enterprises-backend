@@ -4,7 +4,7 @@ import { CreateServiceTypeDTO } from '../serviceTypeDTO/createServiceTypeDTO';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { UserSchema } from '../../user/userEntity/userSchema';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
-import { CreatedServiceSuccessMessageService } from '../common/template/serviceTypeCreatedNotificationMessagetemplate'
+import { CreatedServiceSuccessMessageService } from '../common/template/serviceTypeCreatedNotificationMessagetemplate';
 import {
     userNotFound,
     serviceTypeCreatedSuccessfully,
@@ -25,10 +25,11 @@ export class CreateServiceTypeService {
         private readonly serviceTypeMailService: ServiceTypeMailService,
     ) { }
 
+    // --- Helpers ---
     async getServiceTypeById(id: number): Promise<ServiceTypeSchema | null> {
         const serviceType = await this.dataSource.query(
             'SELECT * FROM servicetypes WHERE id = ?',
-            [id]
+            [id],
         );
         return serviceType.length > 0 ? serviceType[0] : null;
     }
@@ -36,85 +37,132 @@ export class CreateServiceTypeService {
     async getUserById(userId: number): Promise<UserSchema | null> {
         const user = await this.dataSource.query(
             'SELECT * FROM users WHERE id = ?',
-            [userId]
+            [userId],
         );
         return user.length > 0 ? user[0] : null;
     }
 
-    private formatTimeTo24Hour(time: string): string {
-        const [timePart, modifier] = time.split(' ');
-        let [hours, minutes] = timePart.split(':');
-
-        if (modifier === 'PM' && hours !== '12') {
-            hours = String(parseInt(hours, 10) + 12);
-        } else if (modifier === 'AM' && hours === '12') {
-            hours = '00';
-        }
-        return `${hours}:${minutes}:00`;
+    async getServiceSubTypeId(ServiceSubType: string): Promise<{ id: number } | null> {
+        const result = await this.dataSource.query(
+            'SELECT id FROM servicesubtypes WHERE ledgerType = ?',
+            [ServiceSubType],
+        );
+        return result.length > 0 ? { id: result[0].id } : null;
     }
 
-    async createServiceType(userId: number, createServiceTypeDto: CreateServiceTypeDTO): Promise<any> {
-        const user = await this.getUserById(userId);
+    private async insertAndReturnId(query: string, params: any[]): Promise<number | null> {
+        const result: any = await this.dataSource.query(query, params);
+        return result && result.insertId ? result.insertId : null;
+    }
 
-        if (!user) {
-            return {
-                status: false,
-                message: userNotFound,
-            };
-        }
-        const baseFields = {
-            userId,
-            createdBy: userId,
-            createdAt: new Date(),
-        };
+    async addServiceRequest(
+        userId: number,
+        serviceId: number,
+        serviceSubTypeId: number,
+    ): Promise<number | null> {
+        const query = `
+      INSERT INTO servicerequests (userId, serviceId, serviceSubTypeId, createdBy, createdAt)
+      VALUES (?, ?, ?, ?, NOW())
+    `;
+        return this.insertAndReturnId(query, [userId, serviceId, serviceSubTypeId, userId]);
+    }
 
-        if (createServiceTypeDto.fromTime) {
-            createServiceTypeDto.fromTime = this.formatTimeTo24Hour(createServiceTypeDto.fromTime);
-        }
-        if (createServiceTypeDto.toTime) {
-            createServiceTypeDto.toTime = this.formatTimeTo24Hour(createServiceTypeDto.toTime);
-        }
-        const allFields = { ...baseFields, ...createServiceTypeDto };
-        const columns = Object.keys(allFields).join(', ');
-        const placeholders = Object.keys(allFields).map(() => '?').join(', ');
-        const values = Object.values(allFields);
+    async addBasicDetails(
+        userId: number,
+        aadharNumber: string,
+        panNumber: string,
+    ): Promise<number | null> {
+        const query = `
+      INSERT INTO basicdetails (aadharNumber, panNumber, createdBy, createdAt)
+      VALUES (?, ?, ?, NOW())
+    `;
+        return this.insertAndReturnId(query, [aadharNumber, panNumber, userId]);
+    }
 
-        const query = `INSERT INTO servicetypes (${columns}) VALUES (${placeholders})`;
-
+    // --- Main Service ---
+    async createServiceType(userId: number, dto: CreateServiceTypeDTO): Promise<any> {
         try {
-            await this.dataSource.query(query, values);
-            const lastInserted = await this.dataSource.query("SELECT LAST_INSERT_ID() as id");
-            const lastInsertedId = lastInserted[0]?.id;
-
-            if (!lastInsertedId) {
-                return {
-                    status: false,
-                    message: failedToRetrieveTheIDOfTheLastInsertedServiceType,
-                };
+            const user = await this.getUserById(userId);
+            if (!user) {
+                return { status: false, message: userNotFound };
             }
 
-            const email = user.email;
-            const sendEmailToUser = await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
-                email,
-                createServiceTypeDto.status,
-                createServiceTypeDto.serviceSubType
+            // 🔹 Get Service Subtype
+            const serviceSubType = await this.getServiceSubTypeId(dto.ServiceSubType);
+            if (!serviceSubType) {
+                return { status: false, message: `Invalid ServiceSubType: ${dto.ServiceSubType}` };
+            }
+
+            // 🔹 Insert Service Request
+            const serviceRequestId = await this.addServiceRequest(
+                userId,
+                dto.serviceId,
+                serviceSubType.id,
+            );
+            if (!serviceRequestId) {
+                return { status: false, message: 'Failed to create service request' };
+            }
+
+            // 🔹 Insert Basic Details
+            const basicDetailsId = await this.addBasicDetails(
+                userId,
+                dto.aadharNumber,
+                dto.panNumber,
+            );
+            if (!basicDetailsId) {
+                return { status: false, message: 'Failed to create basic details' };
+            }
+
+            // 🔹 Insert Investment Details
+            const invQuery = `
+        INSERT INTO investmentdetails 
+        (basicDetailsId, serviceRequestId, status, activeSteps, createdBy, createdAt)
+        VALUES (?, ?, ?, ?, ?, NOW())
+      `;
+            const investmentId = await this.insertAndReturnId(invQuery, [
+                basicDetailsId,
+                serviceRequestId,
+                dto.status,
+                dto.stepStatus,
+                userId,
+            ]);
+
+            if (!investmentId) {
+                return { status: false, message: failedToRetrieveTheIDOfTheLastInsertedServiceType };
+            }
+
+            // 🔹 Fetch all related data in one JOIN query
+            const joinedData = await this.dataSource.query(
+                `
+        SELECT 
+           sr.id as id,
+           sr.serviceId, sr.serviceSubTypeId,
+          bd.id as basicDetailsId, bd.aadharNumber, bd.panNumber,
+          inv.id as investmentId, inv.status, inv.activeSteps, inv.createdAt as investmentCreatedAt,
+          sst.ledgerType as serviceSubTypeName
+        FROM investmentdetails inv
+        INNER JOIN basicdetails bd ON inv.basicDetailsId = bd.id
+        INNER JOIN servicerequests sr ON inv.serviceRequestId = sr.id
+        INNER JOIN users u ON sr.userId = u.id
+        INNER JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
+        WHERE inv.id = ?
+        `,
+                [investmentId],
             );
 
-            const createdServiceType = await this.getServiceTypeById(lastInsertedId);
+            const finalData = joinedData[0];
 
-            function formatServiceSubType(value: string): string {
-                if (!value) return '';
+            // 🔹 Send Email
+            await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
+                user.email,
+                dto.status,
+                dto.serviceSubType,
+            );
 
-                // camelCase ko "Camel Case" me convert karna
-                const spaced = value.replace(/([a-z])([A-Z])/g, '$1 $2');
-
-                // bold karna (HTML wrap)
-                return `<strong>${spaced}</strong>`;
-            }
-            const formattedSubType = formatServiceSubType(createdServiceType.serviceSubType);
-            // const message = this.createdServiceSuccessMessageService.getMessageFromCreatedServiceType(createdServiceType);
+            // 🔹 Send Notification
+            const formattedSubType = dto.ServiceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `A new ${formattedSubType} service has been created by a user and requires your attention.`,
+                message: `A new <strong>${formattedSubType}</strong> service has been created by a user and requires your attention.`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,
@@ -122,24 +170,20 @@ export class CreateServiceTypeService {
                 updatedBy: userId,
                 userId: user.id,
                 vendorId: null,
-                isUser: 1
+                isUser: 1,
             };
 
             const notification = await this.createNotificationService.createNotification(notificationPayload);
             if (!notification) {
-                return {
-                    status: false,
-                    message: notificationCreationFailed,
-                };
+                return { status: false, message: notificationCreationFailed };
             }
 
+            // 🔹 Final response
             return {
                 status: true,
                 message: serviceTypeCreatedSuccessfully,
-                data: createdServiceType,
-                notification: {
-                    message: yourServiceRequestHasBeenCreatedSuccessfully
-                }
+                data: finalData,
+                notification: { message: yourServiceRequestHasBeenCreatedSuccessfully },
             };
         } catch (error) {
             return {
@@ -149,5 +193,4 @@ export class CreateServiceTypeService {
             };
         }
     }
-
 }

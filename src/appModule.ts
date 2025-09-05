@@ -13,6 +13,7 @@ import { AiModule } from './module/AI/module/AIModule';
 import { NotificationModule } from './module/notificaton/module/notificationModule';
 import { ProfileModule } from './module/profile/module/profileModule';
 import { FileModule } from './module/file/module/fileModule';
+import { CityModule } from './module/city/module/cityModule';
 
 @Module({
     imports: [
@@ -29,7 +30,8 @@ import { FileModule } from './module/file/module/fileModule';
         AiModule,
         NotificationModule,
         ProfileModule,
-        FileModule
+        FileModule,
+        CityModule
     ],
 })
 export class AppModule { }
