@@ -11,6 +11,11 @@ import {
     serviceTypeCreationError,
     failedToRetrieveTheIDOfTheLastInsertedServiceType,
     yourServiceRequestHasBeenCreatedSuccessfully,
+    invalidServiceSubType,
+    failedToCreateServiceRequest,
+    failedToCreateBasicDetails,
+    serviceHasBeenCreatedByAUserAndRequiresYourAttention,
+    ANew,
 } from '../common/serviceTypeMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
@@ -25,7 +30,6 @@ export class CreateServiceTypeService {
         private readonly serviceTypeMailService: ServiceTypeMailService,
     ) { }
 
-    // --- Helpers ---
     async getServiceTypeById(id: number): Promise<ServiceTypeSchema | null> {
         const serviceType = await this.dataSource.query(
             'SELECT * FROM servicetypes WHERE id = ?',
@@ -87,33 +91,29 @@ export class CreateServiceTypeService {
                 return { status: false, message: userNotFound };
             }
 
-            // 🔹 Get Service Subtype
             const serviceSubType = await this.getServiceSubTypeId(dto.ServiceSubType);
             if (!serviceSubType) {
-                return { status: false, message: `Invalid ServiceSubType: ${dto.ServiceSubType}` };
+                return { status: false, message: `${invalidServiceSubType} : ${dto.ServiceSubType}` };
             }
 
-            // 🔹 Insert Service Request
             const serviceRequestId = await this.addServiceRequest(
                 userId,
                 dto.serviceId,
                 serviceSubType.id,
             );
             if (!serviceRequestId) {
-                return { status: false, message: 'Failed to create service request' };
+                return { status: false, message: failedToCreateServiceRequest };
             }
 
-            // 🔹 Insert Basic Details
             const basicDetailsId = await this.addBasicDetails(
                 userId,
                 dto.aadharNumber,
                 dto.panNumber,
             );
             if (!basicDetailsId) {
-                return { status: false, message: 'Failed to create basic details' };
+                return { status: false, message: failedToCreateBasicDetails };
             }
 
-            // 🔹 Insert Investment Details
             const invQuery = `
         INSERT INTO investmentdetails 
         (basicDetailsId, serviceRequestId, status, activeSteps, createdBy, createdAt)
@@ -123,7 +123,7 @@ export class CreateServiceTypeService {
                 basicDetailsId,
                 serviceRequestId,
                 dto.status,
-                dto.stepStatus,
+                dto.activeSteps,
                 userId,
             ]);
 
@@ -131,38 +131,35 @@ export class CreateServiceTypeService {
                 return { status: false, message: failedToRetrieveTheIDOfTheLastInsertedServiceType };
             }
 
-            // 🔹 Fetch all related data in one JOIN query
             const joinedData = await this.dataSource.query(
                 `
-        SELECT 
-           sr.id as id,
-           sr.serviceId, sr.serviceSubTypeId,
-          bd.id as basicDetailsId, bd.aadharNumber, bd.panNumber,
-          inv.id as investmentId, inv.status, inv.activeSteps, inv.createdAt as investmentCreatedAt,
-          sst.ledgerType as serviceSubTypeName
-        FROM investmentdetails inv
-        INNER JOIN basicdetails bd ON inv.basicDetailsId = bd.id
-        INNER JOIN servicerequests sr ON inv.serviceRequestId = sr.id
-        INNER JOIN users u ON sr.userId = u.id
-        INNER JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-        WHERE inv.id = ?
-        `,
+                 SELECT 
+                    sr.id as id,
+                    sr.serviceId, sr.serviceSubTypeId,
+                   bd.id as basicDetailsId, bd.aadharNumber, bd.panNumber,
+                   inv.id as investmentId, inv.status, inv.activeSteps, inv.createdAt as investmentCreatedAt,
+                   sst.ledgerType as serviceSubTypeName
+                 FROM investmentdetails inv
+                 INNER JOIN basicdetails bd ON inv.basicDetailsId = bd.id
+                 INNER JOIN servicerequests sr ON inv.serviceRequestId = sr.id
+                 INNER JOIN users u ON sr.userId = u.id
+                 INNER JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
+                 WHERE inv.id = ?
+                 `,
                 [investmentId],
             );
 
             const finalData = joinedData[0];
 
-            // 🔹 Send Email
             await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
                 user.email,
                 dto.status,
                 dto.serviceSubType,
             );
 
-            // 🔹 Send Notification
             const formattedSubType = dto.ServiceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `A new <strong>${formattedSubType}</strong> service has been created by a user and requires your attention.`,
+                message: `${ANew} <strong>${formattedSubType}</strong> ${serviceHasBeenCreatedByAUserAndRequiresYourAttention}`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,
@@ -178,7 +175,6 @@ export class CreateServiceTypeService {
                 return { status: false, message: notificationCreationFailed };
             }
 
-            // 🔹 Final response
             return {
                 status: true,
                 message: serviceTypeCreatedSuccessfully,

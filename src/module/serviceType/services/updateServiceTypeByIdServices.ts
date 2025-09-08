@@ -4,9 +4,11 @@ import { CreateNotificationService } from '../../notificaton/service/createNotif
 import {
     serviceTypeUpdateError,
     serviceTypeUpdatedSuccessfully,
-    serviceTypeNotFound,
-    noValidFieldsProvidedForUpdate,
-    failedToRetrieveTheIDOfTheLastInsertedServiceType
+    reviewStepCompletedSuccessfully,
+    failedToUpdateBasicDetails,
+    failedToSavePersonalDetails,
+    failedToSaveNomineeDetails,
+    failedToSaveDocuments
 } from '../common/serviceTypeMessage';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
@@ -54,12 +56,11 @@ export class UpdateServiceTypeByIdService {
             userId,
             basicDetailsId,
         ]);
-        // result.affectedRows tells how many rows got updated
         return result.affectedRows > 0;
     }
 
     async savePersonalDetails(
-        id: number | null, // null → insert, number → update
+        id: number | null,
         email: string,
         mobile: string,
         placeOfBirth: { city: string; state: string },
@@ -68,7 +69,6 @@ export class UpdateServiceTypeByIdService {
         userId: number
     ): Promise<number | null> {
         if (id) {
-            // ✅ UPDATE if id exists
             const query = `
           UPDATE personaldetails
           SET email = ?,
@@ -93,7 +93,6 @@ export class UpdateServiceTypeByIdService {
 
             return result.affectedRows > 0 ? id : null;
         } else {
-            // ✅ INSERT if id is null
             const query = `
           INSERT INTO personaldetails 
               (email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
@@ -114,7 +113,7 @@ export class UpdateServiceTypeByIdService {
     }
 
     async saveNomineeDetails(
-        id: number | null, // null → insert, number → update
+        id: number | null,
         nomineeIdType: string,
         nomineeId: string,
         nomineeMobile: string,
@@ -122,7 +121,6 @@ export class UpdateServiceTypeByIdService {
         userId: number
     ): Promise<number | null> {
         if (id) {
-            // ✅ UPDATE if id exists
             const query = `
           UPDATE nomineedetails
           SET nomineeIdType = ?,
@@ -145,7 +143,6 @@ export class UpdateServiceTypeByIdService {
 
             return result.affectedRows > 0 ? id : null;
         } else {
-            // ✅ INSERT if id is null
             const query = `
           INSERT INTO nomineedetails
               (nomineeIdType, nomineeId, nomineeMobile, nomineeRelation, createdBy, createdAt)
@@ -165,7 +162,7 @@ export class UpdateServiceTypeByIdService {
     }
 
     async saveDocuments(
-        id: number | null, // null → insert, number → update
+        id: number | null,
         aadharCardFileKey: string,
         panCardFileKey: string,
         bankProofFileKey: string,
@@ -174,7 +171,6 @@ export class UpdateServiceTypeByIdService {
         userId: number
     ): Promise<number | null> {
         if (id) {
-            // ✅ UPDATE if id exists
             const query = `
           UPDATE documents
           SET aadharCardFileKey = ?,
@@ -199,7 +195,6 @@ export class UpdateServiceTypeByIdService {
 
             return result.affectedRows > 0 ? id : null;
         } else {
-            // ✅ INSERT if id is null
             const query = `
           INSERT INTO documents
               (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
@@ -225,7 +220,7 @@ export class UpdateServiceTypeByIdService {
     ): Promise<any> {
         try {
             let serviceRequestExists = await this.getServiceRequestById(serviceRequestId);
-            const activeSteps = updateData.stepStatus;
+            const activeSteps = updateData.activeSteps;
 
             let detailId: number | null = null;
 
@@ -239,9 +234,9 @@ export class UpdateServiceTypeByIdService {
                     detailId
                 );
                 if (!updated) {
-                    return { status: false, message: "Failed to update basic details" };
+                    return { status: false, message: failedToUpdateBasicDetails };
                 }
-                detailId = serviceRequestExists.basicDetailsId; // already present
+                detailId = serviceRequestExists.basicDetailsId;
             }
 
             // Step 2: Personal Details
@@ -256,7 +251,7 @@ export class UpdateServiceTypeByIdService {
                     userId
                 );
                 if (!detailId) {
-                    return { status: false, message: "Failed to save personal details" };
+                    return { status: false, message: failedToSavePersonalDetails };
                 }
             }
 
@@ -271,7 +266,7 @@ export class UpdateServiceTypeByIdService {
                     userId
                 );
                 if (!detailId) {
-                    return { status: false, message: "Failed to save nominee details" };
+                    return { status: false, message: failedToSaveNomineeDetails };
                 }
             }
 
@@ -287,28 +282,25 @@ export class UpdateServiceTypeByIdService {
                     userId
                 );
                 if (!detailId) {
-                    return { status: false, message: "Failed to save documents" };
+                    return { status: false, message: failedToSaveDocuments };
                 }
             }
 
             // Step 5: Review
             else if (activeSteps === "review") {
-                // Just mark submit in investmentdetails
-                const submitStatus = updateData.isDetailsConfirmed === 1 ? 'complete' : 'inComplete';
+                const submitStatus = updateData.submit === 1 ? 'complete' : 'inComplete';
                 await this.dataSource.query(
                     `UPDATE investmentdetails 
          SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
          WHERE serviceRequestId = ?`,
-                    [updateData.isDetailsConfirmed ? "completed" : "pending", activeSteps, userId, serviceRequestId]
+                    [submitStatus, activeSteps, userId, serviceRequestId]
                 );
 
-                return { status: true, message: "Review step completed successfully" };
+                return { status: true, message: reviewStepCompletedSuccessfully };
             }
 
-            // ✅ Update/Insert into investmentdetails
             if (detailId) {
                 if (serviceRequestExists) {
-                    // Update existing record
                     await this.dataSource.query(
                         `UPDATE investmentdetails 
            SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
@@ -316,7 +308,6 @@ export class UpdateServiceTypeByIdService {
                         [detailId, activeSteps, userId, serviceRequestId]
                     );
                 } else {
-                    // Insert new record
                     const invQuery = `
           INSERT INTO investmentdetails 
           (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)

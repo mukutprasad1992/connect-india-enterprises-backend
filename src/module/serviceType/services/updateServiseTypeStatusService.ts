@@ -28,7 +28,7 @@ export class UpdateServiceTypeStatusService {
 
     async getServiceTypeById(id: number): Promise<ServiceTypeSchema | null> {
         const serviceType = await this.dataSource.query(
-            'SELECT * FROM servicetypes WHERE id = ?',
+            'SELECT * FROM investmentdetails WHERE serviceRequestId = ?',
             [id]
         );
         return serviceType.length > 0 ? serviceType[0] : null;
@@ -55,12 +55,12 @@ export class UpdateServiceTypeStatusService {
                 };
             }
 
-            const query = `UPDATE servicetypes SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE id = ?`;
+            const query = `UPDATE investmentdetails SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE id = ?`;
             const updateResult = await this.dataSource.query(query, [status, userId, id]);
-            const userIdQuery = `SELECT u.id AS userId, u.email, s.serviceSubType
-                                 FROM servicetypes s
-                                 JOIN users u ON s.userId = u.id
-                                 WHERE s.id = ?;`
+            const userIdQuery = `SELECT sr.id, sr.userId, s.serviceRequestId
+                                 FROM investmentdetails s
+                                 JOIN servicerequests sr ON s.serviceRequestId = sr.id
+                                 WHERE s.serviceRequestId = ?;`
             const getUserIdByServiceTypeId = await this.dataSource.query(userIdQuery, [id])
             if (!getUserIdByServiceTypeId) {
                 return {

@@ -31,8 +31,6 @@ export class GetServiceTypeByServiceIdService {
                         inv.status,
                         inv.activeSteps,
                         inv.submit,
-                        inv.createdAt AS investmentCreatedAt,
-                        inv.updatedAt AS investmentUpdatedAt,
                                 
                         -- Service SubType
                         sst.ledgerType AS serviceSubTypeName,
@@ -44,8 +42,8 @@ export class GetServiceTypeByServiceIdService {
                                 
                         -- Personal Details
                         pd.id AS personalDetailsId,
-                        pd.email AS personalEmail,
-                        pd.mobile AS personalMobile,
+                        pd.email,
+                        pd.mobile,
                         pd.placeOfBirth,
                         pd.income,
                         pd.occupation,

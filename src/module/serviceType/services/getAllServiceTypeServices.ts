@@ -21,9 +21,67 @@ export class GetALLServiceTypeByIdService {
             }
             else {
                 const serviceTypes = await this.dataSource.query(
-                    `SELECT s.*, u.firstName, u.lastName, u.email, u.mobileNo, u.profileImageURL
-                 FROM servicetypes s 
-                 LEFT JOIN users u ON u.id = s.userId; `,
+                    `
+                           SELECT
+                        -- Service Request
+                        sr.id,
+                        sr.serviceId,
+                        sr.serviceSubTypeId,
+                                
+                        -- User
+                        u.id AS userId,
+                        u.firstName,
+                        u.lastName,
+                        u.email AS userEmail,
+                                
+                        -- Investment
+                        inv.id AS investmentId,
+                        inv.status,
+                        inv.activeSteps,
+                        inv.submit,
+                        inv.createdAt AS investmentCreatedAt,
+                        inv.updatedAt AS investmentUpdatedAt,
+                                
+                        -- Service SubType
+                        sst.ledgerType AS serviceSubTypeName,
+                                
+                        -- Basic Details
+                        bd.id AS basicDetailsId,
+                        bd.aadharNumber,
+                        bd.panNumber,
+                                
+                        -- Personal Details
+                        pd.id AS personalDetailsId,
+                        pd.email AS email,
+                        pd.mobile AS mobile,
+                        pd.placeOfBirth,
+                        pd.income,
+                        pd.occupation,
+                                
+                        -- Nominee Details
+                        nd.id AS nomineeDetailsId,
+                        nd.nomineeIdType,
+                        nd.nomineeId,
+                        nd.nomineeMobile,
+                        nd.nomineeRelation,
+                                
+                        -- Documents
+                        doc.id AS documentsId,
+                        doc.aadharCardFileKey,
+                        doc.panCardFileKey,
+                        doc.bankProofFileKey,
+                        doc.salarySlipsFileKey,
+                        doc.itrDocumentsFileKey
+                                
+                    FROM servicerequests sr
+                    INNER JOIN users u ON sr.userId = u.id
+                    LEFT JOIN investmentdetails inv ON inv.serviceRequestId = sr.id
+                    LEFT JOIN basicdetails bd ON inv.basicDetailsId = bd.id
+                    LEFT JOIN personaldetails pd ON inv.personalDetailsId = pd.id
+                    LEFT JOIN nomineedetails nd ON inv.nomineeDetailsId = nd.id
+                    LEFT JOIN documents doc ON inv.documentsId = doc.id
+                    LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id;
+                     `,
                 );
                 if (serviceTypes.length > 0) {
                     return {
