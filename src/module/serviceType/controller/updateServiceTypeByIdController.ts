@@ -26,8 +26,8 @@ export class UpdateServiceTypeByIdController {
 
             if (updateResponse.status === true) {
                 return res.status(200).send({
-                    status: true,
-                    message: serviceTypeUpdatedSuccessfully,
+                    status: updateResponse.status,
+                    message: updateResponse.message,
                     data: updateResponse.data,
                 });
             } else {

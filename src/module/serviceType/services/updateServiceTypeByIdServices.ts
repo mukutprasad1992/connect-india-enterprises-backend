@@ -8,7 +8,8 @@ import {
     failedToUpdateBasicDetails,
     failedToSavePersonalDetails,
     failedToSaveNomineeDetails,
-    failedToSaveDocuments
+    failedToSaveDocuments,
+    UpdatedSuccessfully
 } from '../common/serviceTypeMessage';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
@@ -68,48 +69,33 @@ export class UpdateServiceTypeByIdService {
         occupation: string,
         userId: number
     ): Promise<number | null> {
-        if (id) {
-            const query = `
-          UPDATE personaldetails
-          SET email = ?,
-              mobile = ?,
-              placeOfBirth = ?,
-              income = ?,
-              occupation = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
+        const query = `
+        INSERT INTO personaldetails 
+            (id, email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        ON DUPLICATE KEY UPDATE
+            email = VALUES(email),
+            mobile = VALUES(mobile),
+            placeOfBirth = VALUES(placeOfBirth),
+            income = VALUES(income),
+            occupation = VALUES(occupation),
+            updatedBy = VALUES(createdBy),
+            updatedAt = NOW()
+    `;
 
-            const result: any = await this.dataSource.query(query, [
-                email,
-                mobile,
-                JSON.stringify(placeOfBirth),
-                income,
-                occupation,
-                userId,
-                id,
-            ]);
-
-            return result.affectedRows > 0 ? id : null;
-        } else {
-            const query = `
-          INSERT INTO personaldetails 
-              (email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, ?, NOW())
-        `;
-
-            const result: any = await this.dataSource.query(query, [
-                email,
-                mobile,
-                JSON.stringify(placeOfBirth),
-                income,
-                occupation,
-                userId,
-            ]);
-
-            return result.insertId || null;
+        const result: any = await this.dataSource.query(query, [
+            id,
+            email,
+            mobile,
+            JSON.stringify(placeOfBirth),
+            income,
+            occupation,
+            userId
+        ]);
+        if (result.insertId && result.insertId !== 0) {
+            return result.insertId;
         }
+        return id;
     }
 
     async saveNomineeDetails(
@@ -221,8 +207,28 @@ export class UpdateServiceTypeByIdService {
         try {
             let serviceRequestExists = await this.getServiceRequestById(serviceRequestId);
             const activeSteps = updateData.activeSteps;
-
+            const currentActiveSteps = serviceRequestExists.activeSteps;
             let detailId: number | null = null;
+
+            // map for step order
+            const stepOrder: { [key: string]: number } = {
+                basicDetails: 1,
+                personalDetails: 2,
+                nomineeDetails: 3,
+                documents: 4,
+                review: 5,
+            };
+
+            const requestStepOrder = stepOrder[activeSteps];
+            const currentStepOrder = stepOrder[currentActiveSteps];
+
+            let finalActiveStep = currentActiveSteps;
+
+            if (requestStepOrder > currentStepOrder) {
+                finalActiveStep = activeSteps;
+            } else {
+                finalActiveStep = currentActiveSteps;
+            }
 
             // Step 1: Basic Details
             if (activeSteps === "basicDetails") {
@@ -288,12 +294,11 @@ export class UpdateServiceTypeByIdService {
 
             // Step 5: Review
             else if (activeSteps === "review") {
-                const submitStatus = updateData.submit === 1 ? 'complete' : 'inComplete';
                 await this.dataSource.query(
                     `UPDATE investmentdetails 
          SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
          WHERE serviceRequestId = ?`,
-                    [submitStatus, activeSteps, userId, serviceRequestId]
+                    [updateData.submit, activeSteps, userId, serviceRequestId]
                 );
 
                 return { status: true, message: reviewStepCompletedSuccessfully };
@@ -303,9 +308,9 @@ export class UpdateServiceTypeByIdService {
                 if (serviceRequestExists) {
                     await this.dataSource.query(
                         `UPDATE investmentdetails 
-           SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-           WHERE serviceRequestId = ?`,
-                        [detailId, activeSteps, userId, serviceRequestId]
+                            SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+                            WHERE serviceRequestId = ?`,
+                        [detailId, finalActiveStep, userId, serviceRequestId]
                     );
                 } else {
                     const invQuery = `
@@ -322,10 +327,17 @@ export class UpdateServiceTypeByIdService {
                     ]);
                 }
             }
-
+            const service = activeSteps
+            function formatStepName(step: string): string {
+                return step
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (str) => str.toUpperCase());
+            }
+            const formattedStep = formatStepName(service);
             return {
-                message: serviceTypeUpdatedSuccessfully,
+                message: `${formattedStep} ${UpdatedSuccessfully}`,
                 status: true,
+                data: serviceRequestExists
             };
         } catch (error) {
             return {

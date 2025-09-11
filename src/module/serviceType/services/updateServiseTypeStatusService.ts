@@ -54,8 +54,7 @@ export class UpdateServiceTypeStatusService {
                     data: null
                 };
             }
-
-            const query = `UPDATE investmentdetails SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE id = ?`;
+            const query = `UPDATE investmentdetails SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE serviceRequestId = ?`;
             const updateResult = await this.dataSource.query(query, [status, userId, id]);
             const userIdQuery = `SELECT sr.id, sr.userId, s.serviceRequestId
                                  FROM investmentdetails s
@@ -96,7 +95,7 @@ export class UpdateServiceTypeStatusService {
                         return '';
                 }
             };
-
+            console.log("updateResult------- ", updateResult);
             const formattedServiceSubType = formatServiceSubType(serviceSubType);
             const message = getStatusMessage(status, formattedServiceSubType)
             if (updateResult) {
@@ -141,6 +140,7 @@ export class UpdateServiceTypeStatusService {
 
         }
         catch (error) {
+            console.log("error ", error)
             return {
                 status: false,
                 message: serviceTypeUpdateError,

@@ -16,6 +16,7 @@ import {
     failedToCreateBasicDetails,
     serviceHasBeenCreatedByAUserAndRequiresYourAttention,
     ANew,
+    createdSuccessfully,
 } from '../common/serviceTypeMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
@@ -174,10 +175,10 @@ export class CreateServiceTypeService {
             if (!notification) {
                 return { status: false, message: notificationCreationFailed };
             }
-
+            const service = dto.activeSteps === 'basicDetails' ? 'Basic Details' : 'Investment Details';
             return {
                 status: true,
-                message: serviceTypeCreatedSuccessfully,
+                message: `${service} ${createdSuccessfully}`,
                 data: finalData,
                 notification: { message: yourServiceRequestHasBeenCreatedSuccessfully },
             };
