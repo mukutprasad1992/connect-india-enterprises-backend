@@ -171,7 +171,6 @@ export class UserCreateService {
                 };
             }
         } catch (error) {
-            console.log("error ", error)
             return {
                 status: false,
                 message: anErrorOccurredWhileCreatingTheUser,

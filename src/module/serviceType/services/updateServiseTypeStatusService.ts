@@ -56,9 +56,11 @@ export class UpdateServiceTypeStatusService {
             }
             const query = `UPDATE investmentdetails SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE serviceRequestId = ?`;
             const updateResult = await this.dataSource.query(query, [status, userId, id]);
-            const userIdQuery = `SELECT sr.id, sr.userId, s.serviceRequestId
+            const userIdQuery = `SELECT sr.id, sr.userId, u.email, sst.ledgerType, s.serviceRequestId
                                  FROM investmentdetails s
                                  JOIN servicerequests sr ON s.serviceRequestId = sr.id
+                                 JOIN users u ON sr.userId = u.id
+                                 JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
                                  WHERE s.serviceRequestId = ?;`
             const getUserIdByServiceTypeId = await this.dataSource.query(userIdQuery, [id])
             if (!getUserIdByServiceTypeId) {
@@ -68,17 +70,14 @@ export class UpdateServiceTypeStatusService {
                 }
             }
             const serviceRequiestUserId = getUserIdByServiceTypeId[0].userId
-            const serviceSubType = getUserIdByServiceTypeId[0].serviceSubType
+            const serviceSubType = getUserIdByServiceTypeId[0].ledgerType
             function formatServiceSubType(serviceSubType: string): string {
                 if (!serviceSubType) return '';
 
-                // camelCase → "Mutual Fund"
                 const spaced = serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-                // Capitalize each word
                 const titleCase = spaced.replace(/\b\w/g, char => char.toUpperCase());
 
-                // Wrap in <strong>
                 return `<strong>${titleCase}</strong>`;
             }
             const getStatusMessage = (status: string, formattedServiceSubType: string) => {
@@ -95,7 +94,6 @@ export class UpdateServiceTypeStatusService {
                         return '';
                 }
             };
-            console.log("updateResult------- ", updateResult);
             const formattedServiceSubType = formatServiceSubType(serviceSubType);
             const message = getStatusMessage(status, formattedServiceSubType)
             if (updateResult) {
@@ -140,7 +138,6 @@ export class UpdateServiceTypeStatusService {
 
         }
         catch (error) {
-            console.log("error ", error)
             return {
                 status: false,
                 message: serviceTypeUpdateError,

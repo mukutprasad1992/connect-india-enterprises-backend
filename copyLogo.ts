@@ -18,7 +18,6 @@ async function copyAssets() {
       console.log(`${file} copied successfully to dist folder!`);
     }
   } catch (err) {
-    console.error('Error copying assets:', err);
   }
 }
 copyAssets();

@@ -160,7 +160,6 @@ export class CreateVoucherService {
                 };
             }
         } catch (error) {
-            console.log(error)
             return {
                 status: false,
                 message: anErrorOccurredWhileCreatingTheVoucher,
