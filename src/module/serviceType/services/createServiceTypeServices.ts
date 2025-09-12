@@ -47,10 +47,10 @@ export class CreateServiceTypeService {
         return user.length > 0 ? user[0] : null;
     }
 
-    async getServiceSubTypeId(ServiceSubType: string): Promise<{ id: number } | null> {
+    async getServiceSubTypeId(serviceSubType: string): Promise<{ id: number } | null> {
         const result = await this.dataSource.query(
             'SELECT id FROM servicesubtypes WHERE ledgerType = ?',
-            [ServiceSubType],
+            [serviceSubType],
         );
         return result.length > 0 ? { id: result[0].id } : null;
     }
@@ -92,9 +92,9 @@ export class CreateServiceTypeService {
                 return { status: false, message: userNotFound };
             }
 
-            const serviceSubType = await this.getServiceSubTypeId(dto.ServiceSubType);
+            const serviceSubType = await this.getServiceSubTypeId(dto.serviceSubType);
             if (!serviceSubType) {
-                return { status: false, message: `${invalidServiceSubType} : ${dto.ServiceSubType}` };
+                return { status: false, message: `${invalidServiceSubType} : ${dto.serviceSubType}` };
             }
 
             const serviceRequestId = await this.addServiceRequest(
@@ -158,7 +158,7 @@ export class CreateServiceTypeService {
                 dto.serviceSubType,
             );
 
-            const formattedSubType = dto.ServiceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
+            const formattedSubType = dto.serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
                 message: `${ANew} <strong>${formattedSubType}</strong> ${serviceHasBeenCreatedByAUserAndRequiresYourAttention}`,
                 userRoleId: 3,

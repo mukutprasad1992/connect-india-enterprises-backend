@@ -30,7 +30,7 @@ export class CreateServiceTypeDTO {
                     'number.base': serviceIdMustAbeNumber,
                 }),
 
-            ServiceSubType: Joi.string()
+            serviceSubType: Joi.string()
                 .trim()
                 .required()
                 .messages({
