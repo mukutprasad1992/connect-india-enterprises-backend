@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { UpdateServiceTypeDTO } from '../serviceTypeDTO/updateServiceTypeDTO';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { CreateNotificationDTO } from '../../notificaton/notificationDTO/createNotificationDTO';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
@@ -12,9 +11,15 @@ import {
     serviceTypeUpdatedSuccessfully,
     serviceTypeNotFoundOrNoChangesHaveBeenMade,
     invalidStatusValueProvided,
-    userNotFoundForTheGivenServiceTypeID
+    userNotFoundForTheGivenServiceTypeID,
+    theServiceRequestFor,
+    hasBeenApproved,
+    hasBeenRejected,
+    isCurrentlyInProgress,
+    isPending
 } from '../common/serviceTypeMessage';
 import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
+import { UpdateStatusServiceTypeDTO } from '../serviceTypeDTO/updateStatusInvestmentDTO';
 
 
 @Injectable()
@@ -34,7 +39,7 @@ export class UpdateServiceTypeStatusService {
         return serviceType.length > 0 ? serviceType[0] : null;
     }
 
-    async updateServiceTypeStatus(id: number, updateData: UpdateServiceTypeDTO, userId: number): Promise<any> {
+    async updateServiceTypeStatus(id: number, updateData: UpdateStatusServiceTypeDTO, userId: number): Promise<any> {
         try {
             const { status } = updateData;
 
@@ -83,13 +88,13 @@ export class UpdateServiceTypeStatusService {
             const getStatusMessage = (status: string, formattedServiceSubType: string) => {
                 switch (status) {
                     case 'Approved':
-                        return `The service request for ${formattedServiceSubType} has been approved.`;
+                        return `${theServiceRequestFor} ${formattedServiceSubType} ${hasBeenApproved}`;
                     case 'Rejected':
-                        return `The service request for ${formattedServiceSubType} has been rejected.`;
+                        return `${theServiceRequestFor} ${formattedServiceSubType} ${hasBeenRejected}`;
                     case 'In Progress':
-                        return `The service request for ${formattedServiceSubType} is currently in progress.`;
+                        return `${theServiceRequestFor} ${formattedServiceSubType} ${isCurrentlyInProgress}`;
                     case 'Pending':
-                        return `The service request for ${formattedServiceSubType} is pending.`;
+                        return `${theServiceRequestFor} ${formattedServiceSubType} ${isPending}`;
                     default:
                         return '';
                 }

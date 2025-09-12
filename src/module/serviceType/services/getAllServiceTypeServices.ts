@@ -33,14 +33,14 @@ export class GetALLServiceTypeByIdService {
                         u.firstName,
                         u.lastName,
                         u.email AS userEmail,
+                        u.mobileNo AS userMobile,
+                        u.profileImageKey,
                                 
                         -- Investment
                         inv.id AS investmentId,
                         inv.status,
                         inv.activeSteps,
                         inv.submit,
-                        inv.createdAt AS investmentCreatedAt,
-                        inv.updatedAt AS investmentUpdatedAt,
                                 
                         -- Service SubType
                         sst.ledgerType AS serviceSubTypeName,

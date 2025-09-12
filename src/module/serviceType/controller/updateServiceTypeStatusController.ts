@@ -1,9 +1,9 @@
 import { Controller, Put, Body, Param, Res, UseGuards, Req, UsePipes } from '@nestjs/common';
 import { UpdateServiceTypeStatusService } from '../services/updateServiseTypeStatusService';
-import { UpdateServiceTypeDTO } from '../serviceTypeDTO/updateServiceTypeDTO';
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { ValidationServiceType } from '../common/joiValidationServiceTypePipe';
 import { serviceTypeUpdatedSuccessfully, serviceTypeUpdateError } from '../common/serviceTypeMessage';
+import { UpdateStatusServiceTypeDTO } from '../serviceTypeDTO/updateStatusInvestmentDTO';
 
 @Controller('serviceType/updateStatus/:id')
 export class UpdateServiceTypeStatusController {
@@ -14,14 +14,14 @@ export class UpdateServiceTypeStatusController {
     @Put()
     async updateServiceTypeStatus(
         @Param('id') id: number,
-        @Body(new ValidationServiceType(UpdateServiceTypeDTO.getValidationSchema())) updateServiceTypeDto: UpdateServiceTypeDTO,
+        @Body(new ValidationServiceType(UpdateStatusServiceTypeDTO.getValidationSchema())) updateStatusServiceTypeDTO: UpdateStatusServiceTypeDTO,
         @Res() res,
         @Req() req
     ) {
         try {
             const userId = req.user.id;
-            const { status } = updateServiceTypeDto;
-            const updateResponse = await this.updateServiceTypeStatusService.updateServiceTypeStatus(id, updateServiceTypeDto, userId);
+            const { status } = updateStatusServiceTypeDTO;
+            const updateResponse = await this.updateServiceTypeStatusService.updateServiceTypeStatus(id, updateStatusServiceTypeDTO, userId);
 
             if (updateResponse.status === true) {
                 return res.status(200).send({
