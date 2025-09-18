@@ -3,26 +3,18 @@ import { DataSource } from 'typeorm';
 import { CreateNotificationDTO } from '../../notificaton/notificationDTO/createNotificationDTO';
 import { DeleteServiceTypeByUserSendMailService } from '../../../utils/mailer/deleteServiceTypeByUserSendMail';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
-import { DeletedServiceRequestNotificationService } from '../common/template/DeletedUserNotificationMessage';
-import {
-    serviceTypeDeletionError,
-    serviceTypeDeletedSuccessfully,
-    servicetTypesNotFoundOrAlreadyDeleted,
-    serviceTypeDeletionMailError,
-    serviceRequestDeletedByUser,
-    notificationCreationFailed
-} from '../common/serviceTypeMessage';
+import { insuranceDeletedSuccessfully, insuranceDeletionError, insuranceDeletionMailError, insuranceNotFoundOrAlreadyDeleted, notificationCreationFailed, serviceRequestDeletedByUser } from '../common/insuranceMessage';
+
 
 @Injectable()
-export class DeleteServiceTypeByIdService {
+export class DeleteInsuranceByIdService {
     constructor(
         private readonly dataSource: DataSource,
         private readonly deleteServiceTypeByUserSendMailService: DeleteServiceTypeByUserSendMailService,
         private readonly createNotificationService: CreateNotificationService,
-        private readonly deletedServiceRequestNotificationService: DeletedServiceRequestNotificationService
     ) { }
 
-    async deleteServiceTypeById(id: number, userId: number): Promise<any> {
+    async deleteInsuranceById(id: number, userId: number): Promise<any> {
         try {
             const userIdQuery = `
                  SELECT u.id AS userId, u.email, sr.serviceSubTypeId, sst.ledgerType
@@ -31,21 +23,21 @@ export class DeleteServiceTypeByIdService {
                 JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
                 WHERE sr.id = ?;
             `;
-            const getUserIdByServiceTypeId = await this.dataSource.query(userIdQuery, [id]);
+            const getUserIdByInsuranceId = await this.dataSource.query(userIdQuery, [id]);
 
-            if (!getUserIdByServiceTypeId || getUserIdByServiceTypeId.length === 0) {
+            if (!getUserIdByInsuranceId || getUserIdByInsuranceId.length === 0) {
                 return {
                     status: false,
-                    message: servicetTypesNotFoundOrAlreadyDeleted,
+                    message: insuranceNotFoundOrAlreadyDeleted,
                 };
             }
             const deleteQuery = `
               DELETE i, b, p, n, d, s
-              FROM investmentdetails i
-              LEFT JOIN investmentBasicdetails b ON i.basicDetailsId = b.id
-              LEFT JOIN investmentPersonaldetails p ON i.personalDetailsId = p.id
-              LEFT JOIN investmentnomineedetails n ON i.nomineeDetailsId = n.id
-              LEFT JOIN investmentDocuments d ON i.documentsId = d.id
+              FROM insurancedetails i
+              LEFT JOIN insurancebasicdetails b ON i.basicDetailsId = b.id
+              LEFT JOIN insurancepersonaldetails p ON i.personalDetailsId = p.id
+              LEFT JOIN insurancenomineedetails n ON i.nomineeDetailsId = n.id
+              LEFT JOIN insurancedocuments d ON i.documentsId = d.id
               LEFT JOIN servicerequests s ON s.id = i.serviceRequestId
               WHERE i.serviceRequestId = ?;
             `;
@@ -54,12 +46,12 @@ export class DeleteServiceTypeByIdService {
             if (!result || result.affectedRows === 0) {
                 return {
                     status: false,
-                    message: servicetTypesNotFoundOrAlreadyDeleted,
+                    message: insuranceNotFoundOrAlreadyDeleted,
                 };
             }
-            const email = getUserIdByServiceTypeId[0].email;
-            const serviceSubType = getUserIdByServiceTypeId[0].ledgerType;
-            const serviceRequiestUserId = getUserIdByServiceTypeId[0].userId;
+            const email = getUserIdByInsuranceId[0].email;
+            const serviceSubType = getUserIdByInsuranceId[0].ledgerType;
+            const serviceRequiestUserId = getUserIdByInsuranceId[0].userId;
 
             const notificationPayload: CreateNotificationDTO = {
                 message: serviceRequestDeletedByUser,
@@ -88,18 +80,18 @@ export class DeleteServiceTypeByIdService {
             if (!sendEmailToUser) {
                 return {
                     status: false,
-                    message: serviceTypeDeletionMailError,
+                    message: insuranceDeletionMailError,
                 };
             }
 
             return {
-                message: serviceTypeDeletedSuccessfully,
+                message: insuranceDeletedSuccessfully,
                 status: true,
             };
         } catch (error) {
             return {
                 status: false,
-                message: serviceTypeDeletionError,
+                message: insuranceDeletionError,
                 error: error.message,
             };
         }

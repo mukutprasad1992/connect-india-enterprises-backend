@@ -1,32 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, Timestamp } from 'typeorm';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
 import {
-    serviceTypeUpdateError,
+    insuranceUpdateError,
     reviewStepCompletedSuccessfully,
     failedToUpdateBasicDetails,
     failedToSavePersonalDetails,
     failedToSaveNomineeDetails,
     failedToSaveDocuments,
     updatedSuccessfully
-} from '../common/serviceTypeMessage';
-import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
-import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
+} from '../common/insuranceMessage';
+import { InsuranceSchema } from '../insuranceEntity/insuranceEntity';
 import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
-import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServiceTypeByUserMailService';
+// import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServiceTypeByUserMailService';
 @Injectable()
-export class UpdateServiceTypeByIdService {
+export class UpdateInsuranceByIdService {
     constructor(
         private readonly dataSource: DataSource,
         private readonly createNotificationService: CreateNotificationService,
-        private readonly updatedServiceMessageService: UpdatedServiceMessageService,
-        private readonly updateServiceTypeByUserMailService: UpdateServiceTypeByUserMailService,
+        // private readonly updateServiceTypeByUserMailService: UpdateServiceTypeByUserMailService,
     ) { }
 
-    async getServiceRequestById(serviceRequestId: number): Promise<ServiceTypeSchema | null> {
+    async getServiceRequestById(serviceRequestId: number): Promise<InsuranceSchema | null> {
         const serviceType = await this.dataSource.query(
-            `SELECT * FROM investmentdetails i WHERE i.serviceRequestId = ?; `,
+            `SELECT * FROM insurancedetails i WHERE i.serviceRequestId = ?; `,
             [serviceRequestId]
         );
         return serviceType.length > 0 ? serviceType[0] : null;
@@ -43,7 +41,7 @@ export class UpdateServiceTypeByIdService {
         basicDetailsId: number,
     ): Promise<boolean> {
         const query = `
-      UPDATE investmentBasicdetails
+      UPDATE insurancebasicdetails
       SET aadharNumber = ?, 
           panNumber = ?, 
           updatedBy = ?, 
@@ -61,34 +59,43 @@ export class UpdateServiceTypeByIdService {
 
     async savePersonalDetails(
         id: number | null,
-        email: string,
-        mobile: string,
+        motherName: string,
+        heightCM: string,
         placeOfBirth: { city: string; state: string },
+        weightKG: number,
         income: string,
         occupation: string,
+        smoker: string,
+        alcohol: string,
         userId: number
     ): Promise<number | null> {
         const query = `
-        INSERT INTO investmentpersonaldetails
-            (id, email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        INSERT INTO insurancepersonaldetails
+            (id, motherName, heightCM, placeOfBirth, weightKG, income, occupation, smoker, alcohol, createdBy, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ON DUPLICATE KEY UPDATE
-            email = VALUES(email),
-            mobile = VALUES(mobile),
+            motherName = VALUES(motherName),
+            heightCM = VALUES(heightCM),
             placeOfBirth = VALUES(placeOfBirth),
+            weightKG = VALUES(weightKG),
             income = VALUES(income),
             occupation = VALUES(occupation),
+            smoker = VALUES(smoker),
+            alcohol = VALUES(alcohol),
             updatedBy = VALUES(createdBy),
             updatedAt = NOW()
     `;
 
         const result: any = await this.dataSource.query(query, [
             id,
-            email,
-            mobile,
+            motherName,
+            heightCM,
             JSON.stringify(placeOfBirth),
             income,
+            weightKG,
             occupation,
+            smoker,
+            alcohol,
             userId
         ]);
         if (result.insertId && result.insertId !== 0) {
@@ -99,18 +106,16 @@ export class UpdateServiceTypeByIdService {
 
     async saveNomineeDetails(
         id: number | null,
-        nomineeIdType: string,
-        nomineeId: string,
-        nomineeMobile: string,
+        nomineeName: string,
+        nomineeDOB: Timestamp,
         nomineeRelation: string,
         userId: number
     ): Promise<number | null> {
         if (id) {
             const query = `
-          UPDATE investmentnomineedetails
-          SET nomineeIdType = ?,
-              nomineeId = ?,
-              nomineeMobile = ?,
+          UPDATE insurancenomineedetails
+          SET nomineeName = ?,
+              nomineeDOB = ?,
               nomineeRelation = ?,
               updatedBy = ?, 
               updatedAt = NOW()
@@ -118,9 +123,8 @@ export class UpdateServiceTypeByIdService {
         `;
 
             const result: any = await this.dataSource.query(query, [
-                nomineeIdType,
-                nomineeId,
-                nomineeMobile,
+                nomineeName,
+                nomineeDOB,
                 nomineeRelation,
                 userId,
                 id,
@@ -129,15 +133,13 @@ export class UpdateServiceTypeByIdService {
             return result.affectedRows > 0 ? id : null;
         } else {
             const query = `
-          INSERT INTO investmentnomineedetails
-              (nomineeIdType, nomineeId, nomineeMobile, nomineeRelation, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, NOW())
+          INSERT INTO insurancenomineedetails
+              (nomineeName, nomineeDOB, nomineeRelation, createdBy, createdAt)
+          VALUES (?, ?, ?, ?, NOW())
         `;
-
             const result: any = await this.dataSource.query(query, [
-                nomineeIdType,
-                nomineeId,
-                nomineeMobile,
+                nomineeName,
+                nomineeDOB,
                 nomineeRelation,
                 userId,
             ]);
@@ -157,7 +159,7 @@ export class UpdateServiceTypeByIdService {
     ): Promise<number | null> {
         if (id) {
             const query = `
-          UPDATE investmentDocuments
+          UPDATE insurancedocuments
           SET aadharCardFileKey = ?,
               panCardFileKey = ?,
               bankProofFileKey = ?,
@@ -181,7 +183,7 @@ export class UpdateServiceTypeByIdService {
             return result.affectedRows > 0 ? id : null;
         } else {
             const query = `
-          INSERT INTO investmentDocuments
+          INSERT INTO insurancedocuments
               (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
           VALUES (?, ?, ?, ?, ?, ?, NOW())
         `;
@@ -198,7 +200,7 @@ export class UpdateServiceTypeByIdService {
             return result.insertId || null;
         }
     }
-    async updateServiceTypeById(
+    async updateInsurnaceById(
         serviceRequestId: number,
         userId: number,
         updateData: any
@@ -248,11 +250,14 @@ export class UpdateServiceTypeByIdService {
             else if (activeSteps === "personalDetails") {
                 detailId = await this.savePersonalDetails(
                     serviceRequestExists?.personalDetailsId || null,
-                    updateData.email,
-                    updateData.mobile,
+                    updateData.motherName,
+                    updateData.heightCM,
                     updateData.placeOfBirth,
                     updateData.income,
+                    updateData.weightKG,
                     updateData.occupation,
+                    updateData.smoker,
+                    updateData.alcohol,
                     userId
                 );
                 if (!detailId) {
@@ -264,9 +269,8 @@ export class UpdateServiceTypeByIdService {
             else if (activeSteps === "nomineeDetails") {
                 detailId = await this.saveNomineeDetails(
                     serviceRequestExists?.nomineeDetailsId || null,
-                    updateData.nomineeIdType,
-                    updateData.nomineeId,
-                    updateData.nomineeMobile,
+                    updateData.nomineeName,
+                    updateData.nomineeDOB,
                     updateData.nomineeRelation,
                     userId
                 );
@@ -294,7 +298,7 @@ export class UpdateServiceTypeByIdService {
             // Step 5: Review
             else if (activeSteps === "review") {
                 await this.dataSource.query(
-                    `UPDATE investmentdetails 
+                    `UPDATE insurancedetails
          SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
          WHERE serviceRequestId = ?`,
                     [updateData.submit, activeSteps, userId, serviceRequestId]
@@ -306,14 +310,14 @@ export class UpdateServiceTypeByIdService {
             if (detailId) {
                 if (serviceRequestExists) {
                     await this.dataSource.query(
-                        `UPDATE investmentdetails 
+                        `UPDATE insurancedetails
                             SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
                             WHERE serviceRequestId = ?`,
                         [detailId, finalActiveStep, userId, serviceRequestId]
                     );
                 } else {
                     const invQuery = `
-          INSERT INTO investmentdetails 
+          INSERT INTO insurancedetails
           (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
           VALUES (?, ?, ?, ?, ?, NOW())
         `;
@@ -341,7 +345,7 @@ export class UpdateServiceTypeByIdService {
         } catch (error) {
             return {
                 status: false,
-                message: serviceTypeUpdateError,
+                message: insuranceUpdateError,
                 error: error.message,
             };
         }

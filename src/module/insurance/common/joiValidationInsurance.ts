@@ -5,10 +5,10 @@ import {
     requestBodyIsRequired,
     requestBodyMustBeAJSONObject,
     validationFailed,
-} from './serviceTypeMessage';
+} from './insuranceMessage';
 
 @Injectable()
-export class ValidationServiceType implements PipeTransform {
+export class ValidationInsurance implements PipeTransform {
     constructor(private readonly schema: Joi.ObjectSchema) { }
 
     transform(value: any, metadata: ArgumentMetadata) {

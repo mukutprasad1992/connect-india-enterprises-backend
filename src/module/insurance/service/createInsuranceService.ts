@@ -1,34 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { CreateServiceTypeDTO } from '../serviceTypeDTO/createServiceTypeDTO';
-import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
+import { CreateInsuranceDTO } from '../insuranceDTO/createInsuranceDTO';
+import { InsuranceSchema } from '../insuranceEntity/insuranceEntity';
 import { UserSchema } from '../../user/userEntity/userSchema';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
-import { CreatedServiceSuccessMessageService } from '../common/template/serviceTypeCreatedNotificationMessagetemplate';
 import {
     userNotFound,
-    serviceTypeCreatedSuccessfully,
-    serviceTypeCreationError,
-    failedToRetrieveTheIDOfTheLastInsertedServiceType,
-    yourServiceRequestHasBeenCreatedSuccessfully,
+    failedToRetrieveTheIDOfTheLastInsertedInsurance,
+    yourInsuranceRequestHasBeenCreatedSuccessfully,
     invalidServiceSubType,
-    failedToCreateServiceRequest,
+    failedToCreateInsuranceRequest,
     failedToCreateBasicDetails,
-    serviceHasBeenCreatedByAUserAndRequiresYourAttention,
+    insuranceHasBeenCreatedByAUserAndRequiresYourAttention,
     ANew,
     createdSuccessfully,
-} from '../common/serviceTypeMessage';
+    insuranceCreationError,
+} from '../common/insuranceMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
-import { ServiceTypeMailService } from 'src/utils/mailer/ServiceTypeMailer';
+import { InsuranceMailService } from 'src/utils/mailer/insuranceMailer';
 
 @Injectable()
-export class CreateServiceTypeService {
+export class CreateInsuranceService {
     constructor(
         private readonly dataSource: DataSource,
         private readonly createNotificationService: CreateNotificationService,
-        private readonly createdServiceSuccessMessageService: CreatedServiceSuccessMessageService,
-        private readonly serviceTypeMailService: ServiceTypeMailService,
+        private readonly insuranceMailService: InsuranceMailService,
     ) { }
 
     async getUserById(userId: number): Promise<UserSchema | null> {
@@ -70,14 +67,13 @@ export class CreateServiceTypeService {
         panNumber: string,
     ): Promise<number | null> {
         const query = `
-      INSERT INTO investmentBasicdetails (aadharNumber, panNumber, createdBy, createdAt)
+      INSERT INTO insurancebasicdetails (aadharNumber, panNumber, createdBy, createdAt)
       VALUES (?, ?, ?, NOW())
     `;
         return this.insertAndReturnId(query, [aadharNumber, panNumber, userId]);
     }
 
-    // --- Main Service ---
-    async createServiceType(userId: number, dto: CreateServiceTypeDTO): Promise<any> {
+    async createInsurance(userId: number, dto: CreateInsuranceDTO): Promise<any> {
         try {
             const user = await this.getUserById(userId);
             if (!user) {
@@ -95,56 +91,56 @@ export class CreateServiceTypeService {
                 serviceSubType.id,
             );
             if (!serviceRequestId) {
-                return { status: false, message: failedToCreateServiceRequest };
+                return { status: false, message: failedToCreateInsuranceRequest };
             }
 
-            const basicDetailsId = await this.addBasicDetails(
+            const insuranceBasicDetailsId = await this.addBasicDetails(
                 userId,
                 dto.aadharNumber,
                 dto.panNumber,
             );
-            if (!basicDetailsId) {
+            if (!insuranceBasicDetailsId) {
                 return { status: false, message: failedToCreateBasicDetails };
             }
 
             const invQuery = `
-        INSERT INTO investmentdetails 
+        INSERT INTO insurancedetails
         (basicDetailsId, serviceRequestId, status, activeSteps, createdBy, createdAt)
         VALUES (?, ?, ?, ?, ?, NOW())
       `;
-            const investmentId = await this.insertAndReturnId(invQuery, [
-                basicDetailsId,
+            const insuranceId = await this.insertAndReturnId(invQuery, [
+                insuranceBasicDetailsId,
                 serviceRequestId,
                 dto.status,
                 dto.activeSteps,
                 userId,
             ]);
 
-            if (!investmentId) {
-                return { status: false, message: failedToRetrieveTheIDOfTheLastInsertedServiceType };
+            if (!insuranceId) {
+                return { status: false, message: failedToRetrieveTheIDOfTheLastInsertedInsurance };
             }
 
             const joinedData = await this.dataSource.query(
                 `
-                 SELECT 
+               SELECT
                     sr.id as id,
                     sr.serviceId, sr.serviceSubTypeId,
-                   bd.id as basicDetailsId, bd.aadharNumber, bd.panNumber,
-                   inv.id as investmentId, inv.status, inv.activeSteps, inv.createdAt as investmentCreatedAt,
+                   bd.id as insuranceBasicDetailsId, bd.aadharNumber, bd.panNumber,
+                   ind.id as insuranceId, ind.status, ind.activeSteps, ind.createdAt as insuranceCreatedAt,
                    sst.ledgerType as serviceSubTypeName
-                 FROM investmentdetails inv
-                 INNER JOIN investmentBasicdetails bd ON inv.basicDetailsId = bd.id
-                 INNER JOIN servicerequests sr ON inv.serviceRequestId = sr.id
+                 FROM insurancedetails ind
+                 INNER JOIN insurancebasicdetails bd ON ind.basicDetailsId = bd.id
+                 INNER JOIN servicerequests sr ON ind.serviceRequestId = sr.id
                  INNER JOIN users u ON sr.userId = u.id
                  INNER JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                 WHERE inv.id = ?
+                 WHERE ind.id = ?
                  `,
-                [investmentId],
+                [insuranceId],
             );
 
             const finalData = joinedData[0];
 
-            await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
+            await this.insuranceMailService.emailCreateInsuranceTemplates(
                 user.email,
                 dto.status,
                 dto.serviceSubType,
@@ -152,7 +148,7 @@ export class CreateServiceTypeService {
 
             const formattedSubType = dto.serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `${ANew} <strong>${formattedSubType}</strong> ${serviceHasBeenCreatedByAUserAndRequiresYourAttention}`,
+                message: `${ANew} <strong>${formattedSubType}</strong> ${insuranceHasBeenCreatedByAUserAndRequiresYourAttention}`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,
@@ -167,17 +163,17 @@ export class CreateServiceTypeService {
             if (!notification) {
                 return { status: false, message: notificationCreationFailed };
             }
-            const service = dto.activeSteps === 'basicDetails' ? 'Basic Details' : 'Investment Details';
+            const service = dto.activeSteps === 'basicDetails' ? 'Basic Details' : 'insurance Details';
             return {
                 status: true,
                 message: `${service} ${createdSuccessfully}`,
                 data: finalData,
-                notification: { message: yourServiceRequestHasBeenCreatedSuccessfully },
+                notification: { message: yourInsuranceRequestHasBeenCreatedSuccessfully },
             };
         } catch (error) {
             return {
                 status: false,
-                message: serviceTypeCreationError,
+                message: insuranceCreationError,
                 error: error.message,
             };
         }

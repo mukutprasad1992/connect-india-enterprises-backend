@@ -14,6 +14,8 @@ import { NotificationModule } from './module/notificaton/module/notificationModu
 import { ProfileModule } from './module/profile/module/profileModule';
 import { FileModule } from './module/file/module/fileModule';
 import { CityModule } from './module/city/module/cityModule';
+import { InsuranceModule } from './module/insurance/module/insuranceModule';
+import { LoanModule } from './module/loan/module/loanModule';
 
 @Module({
     imports: [
@@ -31,7 +33,9 @@ import { CityModule } from './module/city/module/cityModule';
         NotificationModule,
         ProfileModule,
         FileModule,
-        CityModule
+        CityModule,
+        InsuranceModule,
+        LoanModule
     ],
 })
 export class AppModule { }

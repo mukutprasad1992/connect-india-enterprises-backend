@@ -1,34 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { CreateServiceTypeDTO } from '../serviceTypeDTO/createServiceTypeDTO';
-import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
+import { CreateLoanDTO } from '../loanDTO/createLoanDTO';
+import { LoanSchema } from '../loanEntity/loanEntity';
 import { UserSchema } from '../../user/userEntity/userSchema';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
-import { CreatedServiceSuccessMessageService } from '../common/template/serviceTypeCreatedNotificationMessagetemplate';
 import {
     userNotFound,
-    serviceTypeCreatedSuccessfully,
-    serviceTypeCreationError,
-    failedToRetrieveTheIDOfTheLastInsertedServiceType,
-    yourServiceRequestHasBeenCreatedSuccessfully,
+    failedToRetrieveTheIDOfTheLastInsertedLoan,
+    yourLoanRequestHasBeenCreatedSuccessfully,
     invalidServiceSubType,
-    failedToCreateServiceRequest,
+    failedToCreateLoanRequest,
     failedToCreateBasicDetails,
-    serviceHasBeenCreatedByAUserAndRequiresYourAttention,
+    loanHasBeenCreatedByAUserAndRequiresYourAttention,
     ANew,
     createdSuccessfully,
-} from '../common/serviceTypeMessage';
+    loanCreationError,
+} from '../common/loanMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
-import { ServiceTypeMailService } from 'src/utils/mailer/ServiceTypeMailer';
+import { LoanMailService } from 'src/utils/mailer/loanMailer';
 
 @Injectable()
-export class CreateServiceTypeService {
+export class CreateLoanService {
     constructor(
         private readonly dataSource: DataSource,
         private readonly createNotificationService: CreateNotificationService,
-        private readonly createdServiceSuccessMessageService: CreatedServiceSuccessMessageService,
-        private readonly serviceTypeMailService: ServiceTypeMailService,
+        private readonly loanMailService: LoanMailService,
     ) { }
 
     async getUserById(userId: number): Promise<UserSchema | null> {
@@ -64,20 +61,22 @@ export class CreateServiceTypeService {
         return this.insertAndReturnId(query, [userId, serviceId, serviceSubTypeId, userId]);
     }
 
-    async addBasicDetails(
+    async addPersonalDetails(
         userId: number,
         aadharNumber: string,
         panNumber: string,
+        motherName: string,
+        maritalStatus: string,
+        currentAddress: string,
     ): Promise<number | null> {
         const query = `
-      INSERT INTO investmentBasicdetails (aadharNumber, panNumber, createdBy, createdAt)
-      VALUES (?, ?, ?, NOW())
+      INSERT INTO loanpersonaldetails (aadharNumber, panNumber, motherName, maritalStatus, currentAddress, createdBy, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, NOW())
     `;
-        return this.insertAndReturnId(query, [aadharNumber, panNumber, userId]);
+        return this.insertAndReturnId(query, [aadharNumber, panNumber, motherName, maritalStatus, currentAddress, userId]);
     }
 
-    // --- Main Service ---
-    async createServiceType(userId: number, dto: CreateServiceTypeDTO): Promise<any> {
+    async createLoan(userId: number, dto: CreateLoanDTO): Promise<any> {
         try {
             const user = await this.getUserById(userId);
             if (!user) {
@@ -95,56 +94,59 @@ export class CreateServiceTypeService {
                 serviceSubType.id,
             );
             if (!serviceRequestId) {
-                return { status: false, message: failedToCreateServiceRequest };
+                return { status: false, message: failedToCreateLoanRequest };
             }
 
-            const basicDetailsId = await this.addBasicDetails(
+            const personalDetailsId = await this.addPersonalDetails(
                 userId,
                 dto.aadharNumber,
                 dto.panNumber,
+                dto.motherName,
+                dto.maritalStatus,
+                dto.currentAddress,
             );
-            if (!basicDetailsId) {
+            if (!personalDetailsId) {
                 return { status: false, message: failedToCreateBasicDetails };
             }
 
             const invQuery = `
-        INSERT INTO investmentdetails 
-        (basicDetailsId, serviceRequestId, status, activeSteps, createdBy, createdAt)
+        INSERT INTO loandetails
+        (personalDetailsId, serviceRequestId, status, activeSteps, createdBy, createdAt)
         VALUES (?, ?, ?, ?, ?, NOW())
       `;
-            const investmentId = await this.insertAndReturnId(invQuery, [
-                basicDetailsId,
+            const insuranceId = await this.insertAndReturnId(invQuery, [
+                personalDetailsId,
                 serviceRequestId,
                 dto.status,
                 dto.activeSteps,
                 userId,
             ]);
 
-            if (!investmentId) {
-                return { status: false, message: failedToRetrieveTheIDOfTheLastInsertedServiceType };
+            if (!insuranceId) {
+                return { status: false, message: failedToRetrieveTheIDOfTheLastInsertedLoan };
             }
 
             const joinedData = await this.dataSource.query(
                 `
-                 SELECT 
+               SELECT
                     sr.id as id,
                     sr.serviceId, sr.serviceSubTypeId,
-                   bd.id as basicDetailsId, bd.aadharNumber, bd.panNumber,
-                   inv.id as investmentId, inv.status, inv.activeSteps, inv.createdAt as investmentCreatedAt,
+                   pd.id as personaldetailsId, pd.aadharNumber, pd.panNumber,
+                   ind.id as insuranceId, ind.status, ind.activeSteps, ind.createdAt as insuranceCreatedAt,
                    sst.ledgerType as serviceSubTypeName
-                 FROM investmentdetails inv
-                 INNER JOIN investmentBasicdetails bd ON inv.basicDetailsId = bd.id
-                 INNER JOIN servicerequests sr ON inv.serviceRequestId = sr.id
+                 FROM loandetails ind
+                 INNER JOIN loanpersonaldetails pd ON ind.personalDetailsId = pd.id
+                 INNER JOIN servicerequests sr ON ind.serviceRequestId = sr.id
                  INNER JOIN users u ON sr.userId = u.id
                  INNER JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                 WHERE inv.id = ?
+                 WHERE ind.id = ?
                  `,
-                [investmentId],
+                [insuranceId],
             );
 
             const finalData = joinedData[0];
 
-            await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
+            await this.loanMailService.emailCreateLoanTemplates(
                 user.email,
                 dto.status,
                 dto.serviceSubType,
@@ -152,7 +154,7 @@ export class CreateServiceTypeService {
 
             const formattedSubType = dto.serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `${ANew} <strong>${formattedSubType}</strong> ${serviceHasBeenCreatedByAUserAndRequiresYourAttention}`,
+                message: `${ANew} <strong>${formattedSubType}</strong> ${loanHasBeenCreatedByAUserAndRequiresYourAttention}`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,
@@ -167,17 +169,17 @@ export class CreateServiceTypeService {
             if (!notification) {
                 return { status: false, message: notificationCreationFailed };
             }
-            const service = dto.activeSteps === 'basicDetails' ? 'Basic Details' : 'Investment Details';
+            const service = dto.activeSteps === 'basicDetails' ? 'Basic Details' : 'insurance Details';
             return {
                 status: true,
                 message: `${service} ${createdSuccessfully}`,
                 data: finalData,
-                notification: { message: yourServiceRequestHasBeenCreatedSuccessfully },
+                notification: { message: yourLoanRequestHasBeenCreatedSuccessfully },
             };
         } catch (error) {
             return {
                 status: false,
-                message: serviceTypeCreationError,
+                message: loanCreationError,
                 error: error.message,
             };
         }

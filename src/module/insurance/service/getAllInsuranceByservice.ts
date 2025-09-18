@@ -1,60 +1,64 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import {
-    serviceTypeNotFound,
-    serviceTypeRetrievalError,
-    serviceTypeRetrievedSuccessfully,
-} from '../common/serviceTypeMessage';
+    insuranceNotFound,
+    insuranceRetrievalError,
+    insuranceRetrievedSuccessfully
+} from '../common/insuranceMessage';
+
 
 @Injectable()
-export class GetServiceTypeByServiceIdService {
+export class GetInsuranceByServiceIdService {
     constructor(private readonly dataSource: DataSource) { }
 
-    async getServiceTypeByServiceId(serviceRequestId: number, userId: number): Promise<any> {
+    async getInsuranceByServiceId(serviceRequestId: number, userId: number): Promise<any> {
         try {
             const result = await this.dataSource.query(
                 `
-                           SELECT
+                     SELECT
                         -- Service Request
                         sr.id,
                         sr.serviceId,
                         sr.serviceSubTypeId,
-                                
+
                         -- User
                         u.id AS userId,
                         u.firstName,
                         u.lastName,
-                        u.email AS userEmail,
-                                
-                        -- Investment
-                        inv.id AS investmentId,
+                        u.mobileNo,
+                        u.email,
+
+                        -- Insurance
+                        inv.id AS insuranceId,
                         inv.status,
                         inv.activeSteps,
                         inv.submit,
-                                
+
                         -- Service SubType
                         sst.ledgerType AS serviceSubTypeName,
-                                
+
                         -- Basic Details
                         bd.id AS basicDetailsId,
                         bd.aadharNumber,
                         bd.panNumber,
-                                
+
                         -- Personal Details
                         pd.id AS personalDetailsId,
-                        pd.email,
-                        pd.mobile,
                         pd.placeOfBirth,
+                        pd.motherName,
+                        pd.heightCM,
+                        pd.weightKG,
+                        pd.smoker,
+                        pd.alcohol,
                         pd.income,
                         pd.occupation,
-                                
+
                         -- Nominee Details
                         nd.id AS nomineeDetailsId,
-                        nd.nomineeIdType,
-                        nd.nomineeId,
-                        nd.nomineeMobile,
+                        nd.nomineeName,
+                        nd.nomineeDOB,
                         nd.nomineeRelation,
-                                
+
                         -- Documents
                         doc.id AS documentsId,
                         doc.aadharCardFileKey,
@@ -62,16 +66,16 @@ export class GetServiceTypeByServiceIdService {
                         doc.bankProofFileKey,
                         doc.salarySlipsFileKey,
                         doc.itrDocumentsFileKey
-                                
+
                     FROM servicerequests sr
                     INNER JOIN users u ON sr.userId = u.id
-                    LEFT JOIN investmentdetails inv ON inv.serviceRequestId = sr.id
-                    LEFT JOIN investmentBasicdetails bd ON inv.basicDetailsId = bd.id
-                    LEFT JOIN investmentpersonaldetails pd ON inv.personalDetailsId = pd.id
-                    LEFT JOIN investmentnomineedetails nd ON inv.nomineeDetailsId = nd.id
-                    LEFT JOIN investmentDocuments doc ON inv.documentsId = doc.id
+                    LEFT JOIN insurancedetails inv ON inv.serviceRequestId = sr.id
+                    LEFT JOIN insurancebasicdetails bd ON inv.basicDetailsId = bd.id
+                    LEFT JOIN insurancepersonaldetails pd ON inv.personalDetailsId = pd.id
+                    LEFT JOIN insurancenomineedetails nd ON inv.nomineeDetailsId = nd.id
+                    LEFT JOIN insurancedocuments doc ON inv.documentsId = doc.id
                     LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                    WHERE sr.serviceId = ? AND sr.userId = ?;
+                    WHERE sr.serviceId = ? AND sr.userId =?;
                      `,
                 [serviceRequestId, userId],
             );
@@ -79,19 +83,19 @@ export class GetServiceTypeByServiceIdService {
             if (result.length === 0) {
                 return {
                     status: false,
-                    message: serviceTypeNotFound,
+                    message: insuranceNotFound,
                 };
             }
 
             return {
                 status: true,
-                message: serviceTypeRetrievedSuccessfully,
+                message: insuranceRetrievedSuccessfully,
                 data: result,
             };
         } catch (error) {
             return {
                 status: false,
-                message: serviceTypeRetrievalError,
+                message: insuranceRetrievalError,
                 error: error.message,
             };
         }
