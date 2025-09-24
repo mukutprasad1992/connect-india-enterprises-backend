@@ -11,10 +11,11 @@ import {
     invalidServiceSubType,
     failedToCreateInsuranceRequest,
     failedToCreateBasicDetails,
-    insuranceHasBeenCreatedByAUserAndRequiresYourAttention,
     ANew,
     createdSuccessfully,
     insuranceCreationError,
+    insuranceHasBeenCreatedBy,
+    AndRequiresYourAttention,
 } from '../common/insuranceMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
@@ -142,13 +143,15 @@ export class CreateInsuranceService {
 
             await this.insuranceMailService.emailCreateInsuranceTemplates(
                 user.email,
+                user.firstName,
+                user.lastName,
                 dto.status,
                 dto.serviceSubType,
             );
 
             const formattedSubType = dto.serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `${ANew} <strong>${formattedSubType}</strong> ${insuranceHasBeenCreatedByAUserAndRequiresYourAttention}`,
+                message: `${ANew} <strong>${formattedSubType}</strong> ${insuranceHasBeenCreatedBy}  <strong>${user?.firstName} ${user?.lastName}</strong> ${AndRequiresYourAttention}`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,

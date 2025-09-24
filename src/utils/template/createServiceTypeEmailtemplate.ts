@@ -1,10 +1,10 @@
 export const emailCreateServiceTypeTemplates = {
-  NewUserRequest: (serviceSubType: string) => {
+  NewUserRequest: (firstName: string, lastName: string, serviceSubType: string) => {
     return `
       <div>
         <h3 >Received Your ${serviceSubType} Request!</h3>
 
-        <p style="font-size: 12px; color: #444;">Hello User      ,</p>
+        <p style="font-size: 12px; color: #444;">Hello <strong>${firstName} ${lastName} </strong>     ,</p>
         <p style="font-size: 12px; color: #444;">Thank you for choosing Connect India Enterprises!</p>
         
         <p style="font-size: 12px; color: #444;">
@@ -23,7 +23,7 @@ export const emailCreateServiceTypeTemplates = {
 
         <p style="font-size: 12px; color: #444;">
           You can track your request and manage your profile anytime:<br />
-          <a href="http://13.201.80.65:3000/authentication/login" >👉 Login to Dashboard</a>
+          <a href="http://localhost:3000/authentication/login" >👉 Login to Dashboard</a>
         </p>
 
         <p style="font-size: 12px; color: #444;">

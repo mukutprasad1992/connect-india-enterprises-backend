@@ -14,9 +14,10 @@ import {
     invalidServiceSubType,
     failedToCreateServiceRequest,
     failedToCreateBasicDetails,
-    serviceHasBeenCreatedByAUserAndRequiresYourAttention,
     ANew,
     createdSuccessfully,
+    serviceHasBeenCreatedBy,
+    AndRequiresYourAttention,
 } from '../common/serviceTypeMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
@@ -146,13 +147,15 @@ export class CreateServiceTypeService {
 
             await this.serviceTypeMailService.emailCreateServiceTypeTemplates(
                 user.email,
+                user.firstName,
+                user.lastName,
                 dto.status,
                 dto.serviceSubType,
             );
 
             const formattedSubType = dto.serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `${ANew} <strong>${formattedSubType}</strong> ${serviceHasBeenCreatedByAUserAndRequiresYourAttention}`,
+                message: `${ANew} <strong>${formattedSubType}</strong> ${serviceHasBeenCreatedBy} <strong>${user?.firstName} ${user?.lastName}</strong> ${AndRequiresYourAttention}`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,

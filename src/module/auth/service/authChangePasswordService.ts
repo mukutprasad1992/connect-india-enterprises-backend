@@ -25,6 +25,8 @@ export class ChangePasswordService {
             return {
                 id: user.id,
                 email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 password: user.password,
                 mobileNo: user.mobileNo,
                 roleId: user.userRole,

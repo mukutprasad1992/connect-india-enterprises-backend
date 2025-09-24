@@ -11,10 +11,11 @@ import {
     invalidServiceSubType,
     failedToCreateLoanRequest,
     failedToCreateBasicDetails,
-    loanHasBeenCreatedByAUserAndRequiresYourAttention,
     ANew,
     createdSuccessfully,
     loanCreationError,
+    loanHasBeenCreatedBy,
+    andrequiresYourAttention,
 } from '../common/loanMessage';
 import { notificationCreationFailed } from '../../notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
@@ -148,13 +149,14 @@ export class CreateLoanService {
 
             await this.loanMailService.emailCreateLoanTemplates(
                 user.email,
+                user.firstName,
+                user.lastName,
                 dto.status,
                 dto.serviceSubType,
             );
-
             const formattedSubType = dto.serviceSubType.replace(/([a-z])([A-Z])/g, '$1 $2');
             const notificationPayload: CreateNotificationDTO = {
-                message: `${ANew} <strong>${formattedSubType}</strong> ${loanHasBeenCreatedByAUserAndRequiresYourAttention}`,
+                message: `${ANew} <strong>${formattedSubType}</strong> ${loanHasBeenCreatedBy} <strong>${user?.firstName} ${user?.lastName}</strong> ${andrequiresYourAttention}`,
                 userRoleId: 3,
                 voucherId: null,
                 isRead: false,

@@ -16,6 +16,12 @@ export class UserSchema {
     @Column({ unique: true, nullable: true })
     email?: string;
 
+    @Column()
+    firstName: string
+
+    @Column()
+    lastName: string
+
     @IsOptional()
     @IsString()
     @Column()

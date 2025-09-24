@@ -17,11 +17,11 @@ export class InsuranceMailService {
         });
     }
 
-    async emailCreateInsuranceTemplates(to: string, status: string, serviceSubType: string) {
+    async emailCreateInsuranceTemplates(to: string, firstName: string, lastName: string, status: string, serviceSubType: string) {
         try {
             const USER_EMAIL = process.env.USER_EMAIL;
 
-            const htmlTemplate = emailCreateServiceTypeTemplates.NewUserRequest(serviceSubType);
+            const htmlTemplate = emailCreateServiceTypeTemplates.NewUserRequest(firstName, lastName, serviceSubType);
             const mailOptions = {
                 from: USER_EMAIL,
                 to,
