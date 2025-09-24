@@ -26,7 +26,7 @@ export class LoanSchema {
     serviceRequestId: number;
 
     @Column()
-    contactdetailsId: number;
+    contactDetailsId: number;
 
     @Column()
     personalDetailsId: number;

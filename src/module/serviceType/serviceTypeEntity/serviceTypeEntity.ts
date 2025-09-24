@@ -48,7 +48,7 @@ export class ServiceTypeSchema {
     activeSteps: string;
 
     @Column()
-    submit: string;
+    submit: number;
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;

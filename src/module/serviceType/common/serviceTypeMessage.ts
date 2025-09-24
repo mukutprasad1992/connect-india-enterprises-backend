@@ -68,3 +68,5 @@ export const requestBodyIsRequired = "Request body is required";
 export const validationFailed = "Validation failed";
 export const requestBodyMustBeAJSONObject = "Request body must be a JSON object";
 export const notificationCreationFailed = "Notification creation failed";
+export const thisUsersFormIsIncompletePleaseAskTheUserToCompleteTheirFormBeforeUpdatingTheStatus = 'This users form is incomplete. Please ask the user to complete their form before updating the status.';
+export const tableNotFound = 'Table not found';

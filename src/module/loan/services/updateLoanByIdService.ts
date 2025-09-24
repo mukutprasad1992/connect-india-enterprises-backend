@@ -4,11 +4,12 @@ import { CreateNotificationService } from '../../notificaton/service/createNotif
 import {
     loanUpdateError,
     reviewStepCompletedSuccessfully,
-    failedToUpdateBasicDetails,
     failedToSavePersonalDetails,
-    failedToSaveNomineeDetails,
     failedToSaveDocuments,
-    updatedSuccessfully
+    updatedSuccessfully,
+    feildToSaveReferenceDetails,
+    feildToSaveContactDetails,
+    feildToSaveEmploymentDetails
 } from '../common/loanMessage';
 import { LoanSchema } from '../loanEntity/loanEntity';
 import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
@@ -271,13 +272,14 @@ export class UpdateLoanByIdService {
             const activeSteps = updateData.activeSteps;
             const currentActiveSteps = serviceRequestExists.activeSteps;
             let detailId: number | null = null;
-            // map for step order
+
             const stepOrder: { [key: string]: number } = {
-                basicDetails: 1,
-                personalDetails: 2,
-                nomineeDetails: 3,
-                documents: 4,
-                review: 5,
+                personalDetails: 1,
+                contactDetails: 2,
+                employmentDetails: 3,
+                referenceDetails: 4,
+                documents: 5,
+                review: 6,
             };
 
             const requestStepOrder = stepOrder[activeSteps];
@@ -304,26 +306,26 @@ export class UpdateLoanByIdService {
                     detailId
                 );
                 if (!updated) {
-                    return { status: false, message: failedToUpdateBasicDetails };
+                    return { status: false, message: failedToSavePersonalDetails };
                 }
                 detailId = serviceRequestExists.personalDetailsId;
             }
 
-            // Step 2: Personal Details
+            // Step 2: contact Details
             else if (activeSteps === "contactDetails") {
                 detailId = await this.saveContactdetails(
-                    serviceRequestExists?.contactdetailsId || null,
+                    serviceRequestExists?.contactDetailsId || null,
                     updateData.yearsOfCity,
                     updateData.alternateNo,
                     updateData.landmark,
                     userId
                 );
                 if (!detailId) {
-                    return { status: false, message: failedToSavePersonalDetails };
+                    return { status: false, message: feildToSaveContactDetails };
                 }
             }
 
-            // Step 3: Nominee Details
+            // Step 3: employment Details
             else if (activeSteps === "employmentDetails") {
                 detailId = await this.saveEmploymentDetails(
                     serviceRequestExists?.employmentDetailsId || null,
@@ -335,7 +337,7 @@ export class UpdateLoanByIdService {
                     userId
                 );
                 if (!detailId) {
-                    return { status: false, message: failedToSaveNomineeDetails };
+                    return { status: false, message: feildToSaveEmploymentDetails };
                 }
             }
             // step 4 reference 
@@ -351,7 +353,7 @@ export class UpdateLoanByIdService {
                     userId
                 );
                 if (!detailId) {
-                    return { status: false, message: "failed reference details" };
+                    return { status: false, message: feildToSaveReferenceDetails };
                 }
             }
             // Step 5: Documents
@@ -365,7 +367,6 @@ export class UpdateLoanByIdService {
                     updateData.bankStatementFileKey,
                     userId
                 );
-                console.log("detailId----", detailId)
                 if (!detailId) {
                     return { status: false, message: failedToSaveDocuments };
                 }
@@ -387,8 +388,8 @@ export class UpdateLoanByIdService {
                 if (serviceRequestExists) {
                     await this.dataSource.query(
                         `UPDATE loandetails
-                            SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-                            WHERE serviceRequestId = ?`,
+                   SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+                WHERE serviceRequestId = ?`,
                         [detailId, finalActiveStep, userId, serviceRequestId]
                     );
                 } else {

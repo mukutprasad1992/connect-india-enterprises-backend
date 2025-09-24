@@ -2,17 +2,36 @@ import { Injectable } from '@nestjs/common';
 import * as Joi from 'joi';
 import { LoanStatus } from '../loanEntity/loanEntity';
 import {
+    aadharCardFileKeyIsRequired,
     aadharNumberIsRequired,
     aadharNumberMustBe12Or16Digits,
     activeStepsIsRequired,
     activeStepsMustBeOneOfBasicDetailsPersonalDetailsNomineeDetailsDocumentsReview,
+    alternatNoIsRequired,
     atLeastOneFieldMustBeProvidedForpdate,
+    bankStatementFileKeyIsRequired,
+    companyExpNoIsRequired,
     currentAddressNameIsRequired,
+    designationIsRequired,
+    landmarkIsRequired,
     maritalStatusNameIsRequired,
     motherNameIsRequired,
+    officeAddressIsRequired,
+    officeMobileNoIsRequired,
+    PANCardFileKeyIsRequired,
     panNumberIsRequired,
     PANnumberMustFollowFormat5Letters4Digits1Letter,
+    photoFileKeyIsRequired,
+    reference1AddressIsRequired,
+    reference1MobileIsRequired,
+    reference1NameIsRequired,
+    reference2AddressIsRequired,
+    reference2MobileIsRequired,
+    reference2NameIsRequired,
+    salarySilipFileKeyIsRequired,
     statusMustBeOneOf,
+    totalWorkExpIsRequired,
+    yearsOfCityIsRequired,
 } from '../common/loanMessage';
 
 @Injectable()
@@ -47,35 +66,73 @@ export class UpdateLoanDTO {
         });
 
         const contactDetailsSchema = Joi.object({
-            alternateNo: Joi.string().required(),
-            yearsOfCity: Joi.string().required(),
-            landmark: Joi.string().required(),
+            alternateNo: Joi.string().required().messages({
+                'any.required': alternatNoIsRequired,
+            }),
+            yearsOfCity: Joi.number().required().messages({
+                'any.required': yearsOfCityIsRequired,
+            }),
+            landmark: Joi.string().required().messages({
+                'any.required': landmarkIsRequired,
+            }),
 
         });
 
         const employmentDetailsSchema = Joi.object({
-            designation: Joi.string().required(),
-            companyExp: Joi.number().required(),
-            totalWorkExp: Joi.number().required(),
-            officeMobile: Joi.string().required(),
-            officeAddress: Joi.string().required()
+            designation: Joi.string().required().messages({
+                'any.required': designationIsRequired,
+            }),
+            companyExp: Joi.number().required().messages({
+                'any.required': companyExpNoIsRequired,
+            }),
+            totalWorkExp: Joi.number().required().messages({
+                'any.required': totalWorkExpIsRequired,
+            }),
+            officeMobile: Joi.string().required().messages({
+                'any.required': officeMobileNoIsRequired,
+            }),
+            officeAddress: Joi.string().required().messages({
+                'any.required': officeAddressIsRequired,
+            }),
         });
 
         const referenceDetailsSchema = Joi.object({
-            ref1Name: Joi.string().required(),
-            ref1Mobile: Joi.string().required(),
-            ref1Address: Joi.string().required(),
-            ref2Name: Joi.string().required(),
-            ref2Mobile: Joi.string().required(),
-            ref2Address: Joi.string().required(),
+            ref1Name: Joi.string().required().messages({
+                'any.required': reference1NameIsRequired,
+            }),
+            ref1Mobile: Joi.string().required().messages({
+                'any.required': reference1MobileIsRequired,
+            }),
+            ref1Address: Joi.string().required().messages({
+                'any.required': reference1AddressIsRequired,
+            }),
+            ref2Name: Joi.string().required().messages({
+                'any.required': reference2NameIsRequired,
+            }),
+            ref2Mobile: Joi.string().required().messages({
+                'any.required': reference2MobileIsRequired,
+            }),
+            ref2Address: Joi.string().required().messages({
+                'any.required': reference2AddressIsRequired,
+            }),
         });
 
         const documentsSchema = Joi.object({
-            aadharCardFileKey: Joi.string().allow(null, '').required(),
-            panCardFileKey: Joi.string().allow(null, '').required(),
-            photoFileKey: Joi.string().allow(null, '').required(),
-            salarySlipsFileKey: Joi.string().allow(null, '').required(),
-            bankStatementFileKey: Joi.string().allow(null, '').required(),
+            aadharCardFileKey: Joi.string().allow(null, '').required().messages({
+                'any.required': aadharCardFileKeyIsRequired,
+            }),
+            panCardFileKey: Joi.string().allow(null, '').required().messages({
+                'any.required': PANCardFileKeyIsRequired,
+            }),
+            photoFileKey: Joi.string().allow(null, '').required().messages({
+                'any.required': photoFileKeyIsRequired,
+            }),
+            salarySlipsFileKey: Joi.string().allow(null, '').required().messages({
+                'any.required': salarySilipFileKeyIsRequired,
+            }),
+            bankStatementFileKey: Joi.string().allow(null, '').required().messages({
+                'any.required': bankStatementFileKeyIsRequired,
+            }),
         });
         const reviewSchema = Joi.object({
             submit: Joi.number().required(),

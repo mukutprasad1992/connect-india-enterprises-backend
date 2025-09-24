@@ -15,6 +15,8 @@ import { GetloanByServiceIdService } from '../services/getAllLoanByIdservice';
 import { LoanMailService } from 'src/utils/mailer/loanMailer';
 import { UpdateLoanByIdController } from '../controller/updateLoanServiceByIdController';
 import { UpdateLoanByIdService } from '../services/updateLoanByIdService';
+import { DeleteLoanByIdController } from '../controller/deleteLoanByIdController';
+import { DeleteLoanByIdService } from '../services/deleteLoanByIdService';
 
 @Module({
     imports: [
@@ -30,7 +32,8 @@ import { UpdateLoanByIdService } from '../services/updateLoanByIdService';
     controllers: [
         CreateLoanController,
         GetAllLoanByServiceServiceIdController,
-        UpdateLoanByIdController
+        UpdateLoanByIdController,
+        DeleteLoanByIdController
     ],
     providers: [
         AuthGuard,
@@ -39,7 +42,8 @@ import { UpdateLoanByIdService } from '../services/updateLoanByIdService';
         DeleteServiceTypeByUserSendMailService,
         CreateLoanService,
         GetloanByServiceIdService,
-        UpdateLoanByIdService
+        UpdateLoanByIdService,
+        DeleteLoanByIdService
     ]
 })
 export class LoanModule { }

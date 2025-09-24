@@ -13,7 +13,7 @@ export class GetAllServiceTypesController {
     async getUserServiceTypes(@Res() res, @Req() req) {
         try {
             const userId = req.user.id;
-            const serviceTypesResponse = await this.getALLServiceTypeByIdService.getAllServiceTypesByUser(userId);
+            const serviceTypesResponse = await this.getALLServiceTypeByIdService.getAllServiceTypesData(userId);
 
             if (serviceTypesResponse.status === true) {
                 return res.status(200).send({

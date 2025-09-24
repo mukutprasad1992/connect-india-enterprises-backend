@@ -22,7 +22,6 @@ export class GetTotalAmountAndServicesByUserIdServiceTypeController {
             const userId = req.user.id;
 
             const serviceTypeResponse = await this.getTotalAmountsAndServicesByUserIdServiceTypeService.getTotalAmountServiceTypeById(userId);
-
             if (serviceTypeResponse.status) {
                 return res.status(200).send({
                     status: true,

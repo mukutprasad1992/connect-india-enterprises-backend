@@ -60,6 +60,7 @@ export class UploadDocumentForServiceTypeByUserService {
                     folderName,
                 },
             };
+
         } catch (error: any) {
             return {
                 status: false,
