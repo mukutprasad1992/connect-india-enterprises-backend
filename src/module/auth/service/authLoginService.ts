@@ -14,72 +14,77 @@ import {
 
 @Injectable()
 export class LoginService {
-    constructor(
-        private readonly dataSource: DataSource,
-    ) { }
+    constructor(private readonly dataSource: DataSource) { }
 
-    async validateUser(email: string, password: string): Promise<UserSchema | null | any> {
+    async validateUser(email: string, password: string): Promise<{ status: boolean; message?: string; user?: UserSchema }> {
         const query = 'SELECT * FROM users WHERE email = ? LIMIT 1';
         const result = await this.dataSource.query(query, [email]);
+
         if (result.length === 0) {
-            return null;
+            return { status: false, message: invalidEmailOrPassword };
         }
+
         const user = result[0];
-        if (bcrypt.compareSync(password, user.password)) {
+
+        // ✅ If user registered with Google
+        if (user.provider && user.provider.toLowerCase() === 'google') {
             return {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                password: user.password,
-                mobileNo: user.mobileNo,
-                roleId: user.roleId,
-                status: user.status,
-                profileImageURL: user.profileImageURL
+                status: false,
+                message: 'This user is registered with Google. Please login with Google, or forget your password to login normally.',
             };
         }
 
-        return null;
-    }
-
-    async statusUser(email: string): Promise<UserSchema | null | any> {
-        const query = 'SELECT * FROM users WHERE email = ? AND status = "Enable" LIMIT 1';
-        const result = await this.dataSource.query(query, [email]);
-
-        if (result.length === 0) {
-            return null;
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return { status: false, message: invalidEmailOrPassword };
         }
 
-        return result[0];
+        return { status: true, user };
+    }
+
+    async statusUser(email: string): Promise<UserSchema | null> {
+        const query = 'SELECT * FROM users WHERE email = ? AND status = "Enable" LIMIT 1';
+        const result = await this.dataSource.query(query, [email]);
+        return result.length > 0 ? result[0] : null;
     }
 
     async login(loginDTO: LoginDTO): Promise<any> {
-        const user = await this.validateUser(loginDTO.email, loginDTO.password);
-        if (!user) {
-            return {
-                status: false,
-                message: invalidEmailOrPassword,
-            };
-        }
-        const userStatus = await this.statusUser(loginDTO.email);
-        if (!userStatus) {
-            return {
-                status: false,
-                message: yourAccountIsBlockedPleaseContactTheAdminToActivateYourAccount,
-            };
-        }
-        const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
         try {
-            const updateQuery = 'UPDATE users SET accessToken = ? WHERE id = ?';
-            const result = await this.dataSource.query(updateQuery, [accessToken, user.id]);
+            const validation = await this.validateUser(loginDTO.email, loginDTO.password);
 
-            if (result.affectedRows === 0) {
+            if (!validation.status) {
+                return {
+                    status: false,
+                    message: validation.message,
+                };
+            }
+
+            const user = validation.user;
+
+            const userStatus = await this.statusUser(loginDTO.email);
+            if (!userStatus) {
+                return {
+                    status: false,
+                    message: yourAccountIsBlockedPleaseContactTheAdminToActivateYourAccount,
+                };
+            }
+
+            const accessToken = jwt.sign(
+                { id: user.id },
+                process.env.JWT_SECRET || 'default_secret',
+                { expiresIn: '1h' }
+            );
+
+            const updateQuery = 'UPDATE users SET accessToken = ? WHERE id = ?';
+            const result: any = await this.dataSource.query(updateQuery, [accessToken, user.id]);
+
+            if (!result || result.affectedRows === 0) {
                 return {
                     status: false,
                     message: anErrorOccurredDuringTheAccessTokenUpdate,
                 };
             }
+
             const { password, ...userWithoutPassword } = user;
             return {
                 status: true,
@@ -96,5 +101,11 @@ export class LoginService {
                 error: error.message,
             };
         }
+    }
+
+    async getUserById(id: number): Promise<any> {
+        const query = 'SELECT * FROM users WHERE id = ? LIMIT 1';
+        const result = await this.dataSource.query(query, [id]);
+        return result.length > 0 ? result[0] : null;
     }
 }

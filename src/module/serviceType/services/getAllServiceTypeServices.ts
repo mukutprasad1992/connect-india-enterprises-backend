@@ -59,7 +59,6 @@ export class GetALLServiceTypeByIdService {
         WHERE sr.serviceId = 1;
       `);
 
-            // ---------------- Insurance Service (serviceId = 3) ----------------
             const insuranceData = await this.dataSource.query(`
         SELECT
           sr.id,
@@ -109,7 +108,6 @@ export class GetALLServiceTypeByIdService {
         WHERE sr.serviceId = 3;
       `);
 
-            // ---------------- Loan Service (serviceId = 4) ----------------
             const loanData = await this.dataSource.query(`
         SELECT
           sr.id,

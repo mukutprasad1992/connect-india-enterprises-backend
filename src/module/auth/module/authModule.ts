@@ -12,11 +12,17 @@ import { ChangePasswordController } from '../controller/authChangePasswordContro
 import { ForgetPasswordController } from '../controller/authForgetPasswordController';
 import { ResetPasswordController } from '../controller/authResetPasswordControoler';
 import { MailService } from '../../../utils/mailer/authMailer';
+import { GoogleStrategy } from 'src/utils/googleStrategy';
+import { FacebookStrategy } from 'src/utils/facebookStrategy';
+import { JwtAuthGuard } from 'src/midlewares/JwtAuthGuard';
+import { FacebookAuthController } from '../controller/facebookAuthController';
+import { GoogleAuthController } from '../controller/googleAuthController';
+import { FacebookAuthService } from '../service/facebookAuthService';
+import { GoogleAuthService } from '../service/googleAuthService';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([UserSchema]),
-        TypeOrmModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
@@ -28,6 +34,8 @@ import { MailService } from '../../../utils/mailer/authMailer';
     ],
     controllers: [
         LoginController,
+        FacebookAuthController,
+        GoogleAuthController,
         ChangePasswordController,
         ForgetPasswordController,
         ResetPasswordController,
@@ -35,9 +43,15 @@ import { MailService } from '../../../utils/mailer/authMailer';
     providers: [
         MailService,
         LoginService,
+        GoogleStrategy,
+        FacebookAuthService,
+        GoogleAuthService,
+        FacebookStrategy,
         ChangePasswordService,
         ForgetPasswordService,
         ResetPasswordService,
+        JwtAuthGuard
     ],
+    exports: [JwtAuthGuard],
 })
 export class AuthModule { }

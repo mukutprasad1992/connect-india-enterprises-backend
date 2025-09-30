@@ -32,6 +32,10 @@ export const failsToMatchTheRequiredPattern = "fails to match the required patte
 export const yourAccountIsBlockedPleaseContactTheAdminToActivateYourAccount = "Your account is blocked. Please contact the admin to activate your account.";
 export const resetTokenNotSaved = "Reset token not saved";
 export const failedToSendResetEmail = "Failed to send reset email";
+export const facebookLoginFailed = "Facebook login failed";
+export const googleLoginFailedNoUserReturned = "Google login failed. No user returned.";
+export const googleLoginFailedTryAgain = "Google login failed. Try again.";
+export const googleCallbackError = "Google callback error:";
 
 export const AuthValidationMessages = {
     email: {
