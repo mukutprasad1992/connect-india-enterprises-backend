@@ -15,7 +15,7 @@ export class GetUserByIdService {
 
     async getUserById(id: number): Promise<any> {
         try {
-            const query = 'SELECT * FROM users WHERE id = ?';
+            const query = 'SELECT * FROM users WHERE id = ? ORDER BY id DESC';
             const user = await this.userRepository.query(query, [id]);
             if (user.length > 0) {
                 return {

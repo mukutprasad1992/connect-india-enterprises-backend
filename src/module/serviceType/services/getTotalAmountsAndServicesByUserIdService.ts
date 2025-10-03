@@ -1,27 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import {
+    errorretrievingTotalAmountsForUserId,
+    fetchedInsuranceTotal,
+    fetchedInvestmentTotal,
+    fetchedLoanTotal,
+    fetchedPoliciesTotal,
+    forUserId,
+    noServiceDataFoundForUserId,
+    roleNotFoundForUserId,
     serviceTypeNotFound,
     serviceTypeTotalAmountRetrievalError,
     serviceTypeTotalAmountRetrievedSuccessfully,
+    serviceTypeTotalsRetrievedSuccessfullyForUserId,
     unauthorizedRole,
+    unauthorizedRoleAccessUserId,
 } from '../common/serviceTypeMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(
+        private readonly dataSource: DataSource,
+        private readonly logger: AppLogger
+    ) { }
 
     async getTotalAmountServiceTypeById(userId: number): Promise<any> {
         try {
             const roleId = await this.getUserRoleId(userId);
-            if (roleId === null) return this.createFailureResponse(serviceTypeNotFound);
+            if (roleId === null) {
+                this.logger.doLog(`${roleNotFoundForUserId} = ${userId}`, 'fail');
+                return this.createFailureResponse(serviceTypeNotFound);
+            }
 
             const isAdmin = roleId === 1;
             const isAgent = roleId === 3;
 
-            if (!isAdmin && !isAgent) return this.createFailureResponse(unauthorizedRole);
+            if (!isAdmin && !isAgent) {
+                this.logger.doLog(`${unauthorizedRoleAccessUserId} = ${userId}, roleId=${roleId}`, 'fail');
+                return this.createFailureResponse(unauthorizedRole);
+            }
 
-            // Fetch totals using serviceRequestId -> userId
+            // Fetch totals
             const investment = await this.fetchTotalInvestment(isAdmin ? null : userId);
             const policy = await this.fetchTotalPolicies(isAdmin ? null : userId);
             const insurance = await this.fetchTotalInsurance(isAdmin ? null : userId);
@@ -34,11 +54,22 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
                 loanTotalServices: loan.total_approved,
             };
 
-            if (!this.hasServiceData(totals)) return this.createFailureResponse(serviceTypeNotFound);
+            if (!this.hasServiceData(totals)) {
+                this.logger.doLog(`${noServiceDataFoundForUserId} = ${userId}`, 'fail');
+                return this.createFailureResponse(serviceTypeNotFound);
+            }
 
             const formattedData = this.formatResponseData(totals);
+            this.logger.doLog(
+                `${serviceTypeTotalsRetrievedSuccessfullyForUserId} = ${userId}`,
+                'success'
+            );
             return this.createSuccessResponse(serviceTypeTotalAmountRetrievedSuccessfully, formattedData);
         } catch (error) {
+            this.logger.doLog(
+                `${errorretrievingTotalAmountsForUserId}= ${userId} error = ${error?.message} `,
+                'fail'
+            );
             return this.createErrorResponse(serviceTypeTotalAmountRetrievalError, error?.message || 'Unknown error');
         }
     }
@@ -46,6 +77,12 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
     private async getUserRoleId(userId: number): Promise<number | null> {
         const query = `SELECT roleId FROM users WHERE id = ? LIMIT 1`;
         const result = await this.dataSource.query(query, [userId]);
+        this.logger.doLog(
+            result.length > 0
+                ? `Fetched roleId = ${result[0].roleId} for userId = ${userId}`
+                : `No role found for userId = ${userId}`,
+            result.length > 0 ? 'success' : 'fail'
+        );
         return result.length > 0 ? result[0].roleId : null;
     }
 
@@ -56,9 +93,13 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
             LEFT JOIN servicerequests sr ON idt.serviceRequestId = sr.id
             WHERE idt.status = 'Approved'
             ${userId ? 'AND sr.userId = ?' : ''}
-        `;
+            `;
         const params = userId ? [userId] : [];
         const result = await this.dataSource.query(query, params);
+        this.logger.doLog(
+            `${fetchedInvestmentTotal} = ${result[0].total_approved} ${forUserId} = ${userId || 'ALL'}`,
+            'success'
+        );
         return result[0];
     }
 
@@ -72,6 +113,10 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
         `;
         const params = userId ? [userId] : [];
         const result = await this.dataSource.query(query, params);
+        this.logger.doLog(
+            `${fetchedPoliciesTotal} = ${result[0].total_approved} ${forUserId} = ${userId || 'ALL'}`,
+            'success'
+        );
         return result[0];
     }
 
@@ -82,9 +127,13 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
             LEFT JOIN servicerequests sr ON ins.serviceRequestId = sr.id
             WHERE ins.status = 'Approved'
             ${userId ? 'AND sr.userId = ?' : ''}
-        `;
+`;
         const params = userId ? [userId] : [];
         const result = await this.dataSource.query(query, params);
+        this.logger.doLog(
+            `${fetchedInsuranceTotal} = ${result[0].total_approved} ${forUserId} = ${userId || 'ALL'}`,
+            'success'
+        );
         return result[0];
     }
 
@@ -95,9 +144,13 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
             LEFT JOIN servicerequests sr ON ld.serviceRequestId = sr.id
             WHERE ld.status = 'Approved'
             ${userId ? 'AND sr.userId = ?' : ''}
-        `;
+`;
         const params = userId ? [userId] : [];
         const result = await this.dataSource.query(query, params);
+        this.logger.doLog(
+            `${fetchedLoanTotal} = ${result[0].total_approved} ${forUserId} = ${userId || 'ALL'}`,
+            'success'
+        );
         return result[0];
     }
 
@@ -111,11 +164,27 @@ export class GetTotalAmountsAndServicesByUserIdServiceTypeService {
     }
 
     private formatResponseData(result: any) {
+        const totalInvestmentAmount = 123400;
+        const totalPolicyAmount = 223400;
+        const totalInsuranceAmount = 323400;
+        const totalLoanAmount = 33400;
         return {
-            Investment: { totalServices: result.investmentTotalServices },
-            Policy: { totalServices: result.policyTotalServices },
-            Insurance: { totalServices: result.insuranceTotalServices },
-            Loan: { totalServices: result.loanTotalServices },
+            Investment: {
+                totalServices: result.investmentTotalServices,
+                totalAmount: totalInvestmentAmount
+            },
+            Policy: {
+                totalServices: result.policyTotalServices,
+                totalAmount: totalPolicyAmount
+            },
+            Insurance: {
+                totalServices: result.insuranceTotalServices,
+                totalAmount: totalInsuranceAmount
+            },
+            Loan: {
+                totalServices: result.loanTotalServices,
+                totalAmount: totalLoanAmount
+            },
         };
     }
 

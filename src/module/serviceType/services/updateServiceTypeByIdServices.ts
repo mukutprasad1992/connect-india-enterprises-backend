@@ -8,13 +8,34 @@ import {
     failedToSavePersonalDetails,
     failedToSaveNomineeDetails,
     failedToSaveDocuments,
-    updatedSuccessfully
+    updatedSuccessfully,
+    errorInUpdateServiceTypeById,
+    insertedNewInvestmentdetailsRecord,
+    andUserId,
+    markingReviewCompleted,
+    fetchingServiceRequestId,
+    insertedRecordWithId,
+    updatingBasicDetailsId,
+    basicDetailsUpdatedSuccessfullyForUserId,
+    failedToUpdateBasicDetailsForUserId,
+    savingPersonalDetailsForUserId,
+    insertedPersonalDetailsId,
+    updatedExistingPersonalDetailsId,
+    savingNomineeDetailsForUserId,
+    nomineeDetailsUpdatedForId,
+    failedToUpdateNomineeDetailsForId,
+    insertedNomineeDetailsId,
+    savingDocumentsForUserId,
+    documentsUpdatedForId,
+    failedToUpdateDocumentsForId,
+    insertedDocumentsId,
+    updatedInvestmentdetailsForServiceRequestId
 } from '../common/serviceTypeMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 import { ServiceTypeSchema } from '../serviceTypeEntity/serviceTypeEntity';
 import { UpdatedServiceMessageService } from '../common/template/serviceTypeUpdateNotificationMessageTemplate';
-import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
-import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
 import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServiceTypeByUserMailService';
+
 @Injectable()
 export class UpdateServiceTypeByIdService {
     constructor(
@@ -22,9 +43,11 @@ export class UpdateServiceTypeByIdService {
         private readonly createNotificationService: CreateNotificationService,
         private readonly updatedServiceMessageService: UpdatedServiceMessageService,
         private readonly updateServiceTypeByUserMailService: UpdateServiceTypeByUserMailService,
+        private readonly logger: AppLogger,
     ) { }
 
     async getServiceRequestById(serviceRequestId: number): Promise<ServiceTypeSchema | null> {
+        this.logger.doLog(`${fetchingServiceRequestId} = ${serviceRequestId}`, 'success');
         const serviceType = await this.dataSource.query(
             `SELECT * FROM investmentdetails i WHERE i.serviceRequestId = ?; `,
             [serviceRequestId]
@@ -34,29 +57,41 @@ export class UpdateServiceTypeByIdService {
 
     private async insertAndReturnId(query: string, params: any[]): Promise<number | null> {
         const result: any = await this.dataSource.query(query, params);
+        if (result?.insertId) {
+            this.logger.doLog(`${insertedRecordWithId} = ${result.insertId}`, 'success');
+        }
         return result && result.insertId ? result.insertId : null;
     }
+
     async updateBasicDetails(
         aadharNumber: string,
         panNumber: string,
         userId: number,
         basicDetailsId: number,
     ): Promise<boolean> {
+        this.logger.doLog(`${updatingBasicDetailsId} = ${basicDetailsId} by userId=${userId}`, 'success');
         const query = `
-      UPDATE investmentBasicdetails
-      SET aadharNumber = ?, 
-          panNumber = ?, 
-          updatedBy = ?, 
-          updatedAt = NOW()
-      WHERE id = ?
-    `;
+            UPDATE investmentBasicdetails
+            SET aadharNumber = ?, 
+                panNumber = ?, 
+                updatedBy = ?, 
+                updatedAt = NOW()
+            WHERE id = ?
+        `;
         const result: any = await this.dataSource.query(query, [
             aadharNumber,
             panNumber,
             userId,
             basicDetailsId,
         ]);
-        return result.affectedRows > 0;
+        const success = result.affectedRows > 0;
+        this.logger.doLog(
+            success
+                ? `${basicDetailsUpdatedSuccessfullyForUserId} = ${userId}`
+                : `${failedToUpdateBasicDetailsForUserId} = ${userId}`,
+            success ? 'success' : 'fail'
+        );
+        return success;
     }
 
     async savePersonalDetails(
@@ -68,20 +103,20 @@ export class UpdateServiceTypeByIdService {
         occupation: string,
         userId: number
     ): Promise<number | null> {
+        this.logger.doLog(`${savingPersonalDetailsForUserId} = ${userId}`, 'success');
         const query = `
-        INSERT INTO investmentpersonaldetails
-            (id, email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-        ON DUPLICATE KEY UPDATE
-            email = VALUES(email),
-            mobile = VALUES(mobile),
-            placeOfBirth = VALUES(placeOfBirth),
-            income = VALUES(income),
-            occupation = VALUES(occupation),
-            updatedBy = VALUES(createdBy),
-            updatedAt = NOW()
-    `;
-
+            INSERT INTO investmentpersonaldetails
+                (id, email, mobile, placeOfBirth, income, occupation, createdBy, createdAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+                email = VALUES(email),
+                mobile = VALUES(mobile),
+                placeOfBirth = VALUES(placeOfBirth),
+                income = VALUES(income),
+                occupation = VALUES(occupation),
+                updatedBy = VALUES(createdBy),
+                updatedAt = NOW()
+        `;
         const result: any = await this.dataSource.query(query, [
             id,
             email,
@@ -92,8 +127,10 @@ export class UpdateServiceTypeByIdService {
             userId
         ]);
         if (result.insertId && result.insertId !== 0) {
+            this.logger.doLog(`${insertedPersonalDetailsId} = ${result.insertId}`, 'success');
             return result.insertId;
         }
+        this.logger.doLog(`${updatedExistingPersonalDetailsId} = ${id}`, 'success');
         return id;
     }
 
@@ -105,18 +142,18 @@ export class UpdateServiceTypeByIdService {
         nomineeRelation: string,
         userId: number
     ): Promise<number | null> {
+        this.logger.doLog(`${savingNomineeDetailsForUserId} = ${userId}`, 'success');
         if (id) {
             const query = `
-          UPDATE investmentnomineedetails
-          SET nomineeIdType = ?,
-              nomineeId = ?,
-              nomineeMobile = ?,
-              nomineeRelation = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
+                UPDATE investmentnomineedetails
+                SET nomineeIdType = ?,
+                    nomineeId = ?,
+                    nomineeMobile = ?,
+                    nomineeRelation = ?,
+                    updatedBy = ?, 
+                    updatedAt = NOW()
+                WHERE id = ?
+            `;
             const result: any = await this.dataSource.query(query, [
                 nomineeIdType,
                 nomineeId,
@@ -125,15 +162,20 @@ export class UpdateServiceTypeByIdService {
                 userId,
                 id,
             ]);
-
-            return result.affectedRows > 0 ? id : null;
+            const success = result.affectedRows > 0;
+            this.logger.doLog(
+                success
+                    ? `${nomineeDetailsUpdatedForId} = ${id}`
+                    : `${failedToUpdateNomineeDetailsForId} = ${id}`,
+                success ? 'success' : 'fail'
+            );
+            return success ? id : null;
         } else {
             const query = `
-          INSERT INTO investmentnomineedetails
-              (nomineeIdType, nomineeId, nomineeMobile, nomineeRelation, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, NOW())
-        `;
-
+                INSERT INTO investmentnomineedetails
+                    (nomineeIdType, nomineeId, nomineeMobile, nomineeRelation, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, ?, NOW())
+            `;
             const result: any = await this.dataSource.query(query, [
                 nomineeIdType,
                 nomineeId,
@@ -141,7 +183,7 @@ export class UpdateServiceTypeByIdService {
                 nomineeRelation,
                 userId,
             ]);
-
+            this.logger.doLog(`${insertedNomineeDetailsId} = ${result.insertId}`, 'success');
             return result.insertId || null;
         }
     }
@@ -155,19 +197,19 @@ export class UpdateServiceTypeByIdService {
         itrDocumentsFileKey: string,
         userId: number
     ): Promise<number | null> {
+        this.logger.doLog(`${savingDocumentsForUserId} = ${userId}`, 'success');
         if (id) {
             const query = `
-          UPDATE investmentDocuments
-          SET aadharCardFileKey = ?,
-              panCardFileKey = ?,
-              bankProofFileKey = ?,
-              salarySlipsFileKey = ?,
-              itrDocumentsFileKey = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
+                UPDATE investmentDocuments
+                SET aadharCardFileKey = ?,
+                    panCardFileKey = ?,
+                    bankProofFileKey = ?,
+                    salarySlipsFileKey = ?,
+                    itrDocumentsFileKey = ?,
+                    updatedBy = ?, 
+                    updatedAt = NOW()
+                WHERE id = ?
+            `;
             const result: any = await this.dataSource.query(query, [
                 aadharCardFileKey,
                 panCardFileKey,
@@ -177,15 +219,20 @@ export class UpdateServiceTypeByIdService {
                 userId,
                 id,
             ]);
-
-            return result.affectedRows > 0 ? id : null;
+            const success = result.affectedRows > 0;
+            this.logger.doLog(
+                success
+                    ? `${documentsUpdatedForId} = ${id}`
+                    : `${failedToUpdateDocumentsForId} = ${id}`,
+                success ? 'success' : 'fail'
+            );
+            return success ? id : null;
         } else {
             const query = `
-          INSERT INTO investmentDocuments
-              (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, ?, NOW())
-        `;
-
+                INSERT INTO investmentDocuments
+                    (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, NOW())
+            `;
             const result: any = await this.dataSource.query(query, [
                 aadharCardFileKey,
                 panCardFileKey,
@@ -194,10 +241,11 @@ export class UpdateServiceTypeByIdService {
                 itrDocumentsFileKey,
                 userId,
             ]);
-
+            this.logger.doLog(`${insertedDocumentsId} = ${result.insertId}`, 'success');
             return result.insertId || null;
         }
     }
+
     async updateServiceTypeById(
         serviceRequestId: number,
         userId: number,
@@ -209,7 +257,6 @@ export class UpdateServiceTypeByIdService {
             const currentActiveSteps = serviceRequestExists.activeSteps;
             let detailId: number | null = null;
 
-            // map for step order
             const stepOrder: { [key: string]: number } = {
                 basicDetails: 1,
                 personalDetails: 2,
@@ -220,16 +267,9 @@ export class UpdateServiceTypeByIdService {
 
             const requestStepOrder = stepOrder[activeSteps];
             const currentStepOrder = stepOrder[currentActiveSteps];
+            let finalActiveStep = requestStepOrder > currentStepOrder ? activeSteps : currentActiveSteps;
 
-            let finalActiveStep = currentActiveSteps;
-
-            if (requestStepOrder > currentStepOrder) {
-                finalActiveStep = activeSteps;
-            } else {
-                finalActiveStep = currentActiveSteps;
-            }
-
-            // Step 1: Basic Details
+            // === Basic Details
             if (activeSteps === "basicDetails") {
                 detailId = serviceRequestExists?.basicDetailsId || null;
                 const updated = await this.updateBasicDetails(
@@ -239,12 +279,13 @@ export class UpdateServiceTypeByIdService {
                     detailId
                 );
                 if (!updated) {
+                    this.logger.doLog(failedToUpdateBasicDetails, 'fail');
                     return { status: false, message: failedToUpdateBasicDetails };
                 }
                 detailId = serviceRequestExists.basicDetailsId;
             }
 
-            // Step 2: Personal Details
+            // === Personal Details
             else if (activeSteps === "personalDetails") {
                 detailId = await this.savePersonalDetails(
                     serviceRequestExists?.personalDetailsId || null,
@@ -256,11 +297,12 @@ export class UpdateServiceTypeByIdService {
                     userId
                 );
                 if (!detailId) {
+                    this.logger.doLog(failedToSavePersonalDetails, 'fail');
                     return { status: false, message: failedToSavePersonalDetails };
                 }
             }
 
-            // Step 3: Nominee Details
+            // === Nominee Details
             else if (activeSteps === "nomineeDetails") {
                 detailId = await this.saveNomineeDetails(
                     serviceRequestExists?.nomineeDetailsId || null,
@@ -271,11 +313,12 @@ export class UpdateServiceTypeByIdService {
                     userId
                 );
                 if (!detailId) {
+                    this.logger.doLog(failedToSaveNomineeDetails, 'fail');
                     return { status: false, message: failedToSaveNomineeDetails };
                 }
             }
 
-            // Step 4: Documents
+            // === Documents
             else if (activeSteps === "documents") {
                 detailId = await this.saveDocuments(
                     serviceRequestExists?.documentsId || null,
@@ -287,22 +330,24 @@ export class UpdateServiceTypeByIdService {
                     userId
                 );
                 if (!detailId) {
+                    this.logger.doLog(failedToSaveDocuments, 'fail');
                     return { status: false, message: failedToSaveDocuments };
                 }
             }
 
-            // Step 5: Review
+            // === Review
             else if (activeSteps === "review") {
                 await this.dataSource.query(
                     `UPDATE investmentdetails 
-         SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-         WHERE serviceRequestId = ?`,
+                        SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+                        WHERE serviceRequestId = ?`,
                     [updateData.submit, activeSteps, userId, serviceRequestId]
                 );
-
+                this.logger.doLog(`${markingReviewCompleted}=${serviceRequestId} ${andUserId}=${userId}`, 'success');
                 return { status: true, message: reviewStepCompletedSuccessfully };
             }
 
+            // Insert or Update `investmentdetails`
             if (detailId) {
                 if (serviceRequestExists) {
                     await this.dataSource.query(
@@ -311,12 +356,13 @@ export class UpdateServiceTypeByIdService {
                             WHERE serviceRequestId = ?`,
                         [detailId, finalActiveStep, userId, serviceRequestId]
                     );
+                    this.logger.doLog(`${updatedInvestmentdetailsForServiceRequestId} = ${serviceRequestId}`, 'success');
                 } else {
                     const invQuery = `
-          INSERT INTO investmentdetails 
-          (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, NOW())
-        `;
+                        INSERT INTO investmentdetails 
+                        (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
+                        VALUES (?, ?, ?, ?, ?, NOW())
+                    `;
                     await this.insertAndReturnId(invQuery, [
                         detailId,
                         serviceRequestId,
@@ -324,21 +370,23 @@ export class UpdateServiceTypeByIdService {
                         activeSteps,
                         userId,
                     ]);
+                    this.logger.doLog(insertedNewInvestmentdetailsRecord, 'success');
                 }
             }
-            const service = activeSteps
+
+            const service = activeSteps;
             function formatStepName(step: string): string {
-                return step
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (str) => str.toUpperCase());
+                return step.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
             }
             const formattedStep = formatStepName(service);
+
             return {
                 message: `${formattedStep} ${updatedSuccessfully}`,
                 status: true,
                 data: serviceRequestExists
             };
         } catch (error) {
+            this.logger.doLog(`${errorInUpdateServiceTypeById} ${error.message}`, 'fail');
             return {
                 status: false,
                 message: serviceTypeUpdateError,

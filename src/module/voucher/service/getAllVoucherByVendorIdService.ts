@@ -22,7 +22,7 @@ export class GetAllVouchersByVendorIdService {
                 LEFT JOIN
                     users u ON v.vendorId = u.id
                 WHERE
-                    v.vendorId = ?;
+                    v.vendorId = ? ORDER BY id DESC;
             `;
 
             const vouchers = await this.dataSource.query(query, [vendorId]);

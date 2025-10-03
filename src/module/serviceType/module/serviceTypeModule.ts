@@ -34,6 +34,7 @@ import { GetTotalAmountsAndServicesByUserIdServiceTypeService } from '../service
 import { DeleteServiceTypeByUserSendMailService } from 'src/utils/mailer/deleteServiceTypeByUserSendMail';
 import { DeletedServiceRequestNotificationService } from '../common/template/DeletedUserNotificationMessage';
 import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServiceTypeByUserMailService';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -61,6 +62,7 @@ import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServi
     ],
     providers: [
         AuthGuard,
+        AppLogger,
         NotificationMailService,
         CreateServiceTypeService,
         GetALLServiceTypeByIdService,

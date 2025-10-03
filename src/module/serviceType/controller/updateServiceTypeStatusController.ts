@@ -11,15 +11,22 @@ import { UpdateServiceTypeStatusService } from '../services/updateServiseTypeSta
 import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { ValidationServiceType } from '../common/joiValidationServiceTypePipe';
 import {
+    byUserId,
+    errorWhileUpdatingServiceTypeStatusServiceTypeId,
+    failedToUpdateServiceTypeStatusServiceTypeId,
+    requestReceivedUpdateStatusOfServiceTypeId,
+    serviceTypeStatusUpdatedSuccessfullyServiceTypeId,
     serviceTypeUpdatedSuccessfully,
     serviceTypeUpdateError,
 } from '../common/serviceTypeMessage';
 import { UpdateStatusServiceTypeDTO } from '../serviceTypeDTO/updateStatusInvestmentDTO';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Controller('serviceType/updateStatus/:id/:serviceId')
 export class UpdateServiceTypeStatusController {
     constructor(
         private readonly updateServiceTypeStatusService: UpdateServiceTypeStatusService,
+        private readonly logger: AppLogger, // ✅ Inject logger
     ) { }
 
     @UseGuards(AuthGuard)
@@ -36,9 +43,14 @@ export class UpdateServiceTypeStatusController {
         @Res() res,
         @Req() req,
     ) {
-        try {
-            const userId = req.user.id;
+        const userId = req.user.id;
 
+        this.logger.doLog(
+            `${requestReceivedUpdateStatusOfServiceTypeId} ${id} (serviceId: ${serviceId}) ${byUserId} ${userId}`,
+            'success',
+        );
+
+        try {
             const updateResponse =
                 await this.updateServiceTypeStatusService.updateServiceTypeStatus(
                     id,
@@ -48,12 +60,22 @@ export class UpdateServiceTypeStatusController {
                 );
 
             if (updateResponse.status === true) {
+                this.logger.doLog(
+                    `${serviceTypeStatusUpdatedSuccessfullyServiceTypeId} ${id}, serviceId: ${serviceId}, userId: ${userId}`,
+                    'success',
+                );
+
                 return res.status(200).send({
                     status: true,
                     message: serviceTypeUpdatedSuccessfully,
                     data: updateResponse.data,
                 });
             } else {
+                this.logger.doLog(
+                    `${failedToUpdateServiceTypeStatusServiceTypeId} ${id}, serviceId: ${serviceId}, userId: ${userId}. Reason: ${updateResponse.message}`,
+                    'fail',
+                );
+
                 return res.status(400).send({
                     status: false,
                     message: updateResponse.message,
@@ -62,6 +84,11 @@ export class UpdateServiceTypeStatusController {
                 });
             }
         } catch (error) {
+            this.logger.doLog(
+                `${errorWhileUpdatingServiceTypeStatusServiceTypeId} ${id}, serviceId: ${serviceId}, userId: ${userId}. Error: ${error.message}`,
+                'fail',
+            );
+
             return res.status(500).send({
                 status: false,
                 message: serviceTypeUpdateError,

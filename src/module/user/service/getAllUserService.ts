@@ -15,7 +15,7 @@ export class GetAllUserService {
 
     async getAllUser(): Promise<any> {
         try {
-            const query = 'SELECT * FROM users';
+            const query = 'SELECT * FROM users ORDER BY id DESC';
             const allUser = await this.userRepository.query(query);
             if (allUser.length > 0) {
                 return {

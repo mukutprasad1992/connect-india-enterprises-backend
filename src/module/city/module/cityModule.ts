@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CityService } from '../service/cityService';
 import { CityController } from '../controller/cityController';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppLogger } from 'src/utils/common/loggerService';
 @Module({
     imports: [
         JwtModule.registerAsync({
@@ -17,6 +18,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         TypeOrmModule,
     ],
     controllers: [CityController],
-    providers: [CityService],
+    providers: [
+        AppLogger,
+        CityService
+    ],
 })
 export class CityModule { }

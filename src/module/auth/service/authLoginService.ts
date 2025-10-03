@@ -4,41 +4,65 @@ import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { LoginDTO } from '../authDTO/loginAuthDTO';
 import { UserSchema } from '../../user/userEntity/userSchema';
+import { AppLogger } from 'src/utils/common/loggerService';
 import {
     userLoginWasSuccessfulWelcomeBack,
     anErrorOccurredDuringTheAccessTokenUpdate,
     anErrorOccurredDuringLoginPleaseTryAgain,
     invalidEmailOrPassword,
-    yourAccountIsBlockedPleaseContactTheAdminToActivateYourAccount
+    yourAccountIsBlockedPleaseContactTheAdminToActivateYourAccount,
+    validatingUserEmail,
+    invalidLoginAttemptEmail,
+    googleProviderLoginAttemptEmail,
+    thisUserIsegisteredWithGooglePleaseLoginWithGoogleOrForgetYourPasswordToLoginNormally,
+    invalidPasswordAttemptEmail,
+    userValidatedSuccessfullyEmail,
+    loginAttemptEmail,
+    loginFailedEmail,
+    blockedUserLoginAttemptEmail,
+    failedToUpdateAccessTokenUserId,
+    loginSuccessfulUserId,
+    errorDuringLoginEmail,
+    fetchingUserById,
+    userNotFoundId,
+    userRetrievedSuccessfullyId,
 } from '../common/authMessage';
 
 @Injectable()
 export class LoginService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(
+        private readonly dataSource: DataSource,
+        private readonly logger: AppLogger,
+    ) { }
 
     async validateUser(email: string, password: string): Promise<{ status: boolean; message?: string; user?: UserSchema }> {
+        this.logger.doLog(`${validatingUserEmail} ${email}`, 'success');
+
         const query = 'SELECT * FROM users WHERE email = ? LIMIT 1';
         const result = await this.dataSource.query(query, [email]);
 
         if (result.length === 0) {
+            this.logger.doLog(`${invalidLoginAttemptEmail} ${email}`, 'fail');
             return { status: false, message: invalidEmailOrPassword };
         }
 
         const user = result[0];
 
-        // ✅ If user registered with Google
         if (user.provider && user.provider.toLowerCase() === 'google') {
+            this.logger.doLog(`${googleProviderLoginAttemptEmail} ${email}`, 'fail');
             return {
                 status: false,
-                message: 'This user is registered with Google. Please login with Google, or forget your password to login normally.',
+                message: thisUserIsegisteredWithGooglePleaseLoginWithGoogleOrForgetYourPasswordToLoginNormally
             };
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
+            this.logger.doLog(`${invalidPasswordAttemptEmail} ${email}`, 'fail');
             return { status: false, message: invalidEmailOrPassword };
         }
 
+        this.logger.doLog(`${userValidatedSuccessfullyEmail} ${email}`, 'success');
         return { status: true, user };
     }
 
@@ -49,20 +73,22 @@ export class LoginService {
     }
 
     async login(loginDTO: LoginDTO): Promise<any> {
+        const email = loginDTO.email;
+        this.logger.doLog(`${loginAttemptEmail} ${email}`, 'success');
+
         try {
-            const validation = await this.validateUser(loginDTO.email, loginDTO.password);
+            const validation = await this.validateUser(email, loginDTO.password);
 
             if (!validation.status) {
-                return {
-                    status: false,
-                    message: validation.message,
-                };
+                this.logger.doLog(`${loginFailedEmail} ${email}. Reason: ${validation.message}`, 'fail');
+                return { status: false, message: validation.message };
             }
 
             const user = validation.user;
+            const userStatus = await this.statusUser(email);
 
-            const userStatus = await this.statusUser(loginDTO.email);
             if (!userStatus) {
+                this.logger.doLog(`${blockedUserLoginAttemptEmail} ${email}`, 'fail');
                 return {
                     status: false,
                     message: yourAccountIsBlockedPleaseContactTheAdminToActivateYourAccount,
@@ -72,29 +98,27 @@ export class LoginService {
             const accessToken = jwt.sign(
                 { id: user.id },
                 process.env.JWT_SECRET || 'default_secret',
-                { expiresIn: '1h' }
+                { expiresIn: '1h' },
             );
 
             const updateQuery = 'UPDATE users SET accessToken = ? WHERE id = ?';
             const result: any = await this.dataSource.query(updateQuery, [accessToken, user.id]);
 
             if (!result || result.affectedRows === 0) {
-                return {
-                    status: false,
-                    message: anErrorOccurredDuringTheAccessTokenUpdate,
-                };
+                this.logger.doLog(`${failedToUpdateAccessTokenUserId} ${user.id}`, 'fail');
+                return { status: false, message: anErrorOccurredDuringTheAccessTokenUpdate };
             }
+
+            this.logger.doLog(`${loginSuccessfulUserId} ${user.id}`, 'success');
 
             const { password, ...userWithoutPassword } = user;
             return {
                 status: true,
                 message: userLoginWasSuccessfulWelcomeBack,
-                data: {
-                    ...userWithoutPassword,
-                    accessToken,
-                },
+                data: { ...userWithoutPassword, accessToken },
             };
         } catch (error) {
+            this.logger.doLog(`${errorDuringLoginEmail} ${email}. Error: ${error.message}`, 'fail');
             return {
                 status: false,
                 message: anErrorOccurredDuringLoginPleaseTryAgain,
@@ -104,8 +128,17 @@ export class LoginService {
     }
 
     async getUserById(id: number): Promise<any> {
+        this.logger.doLog(`${fetchingUserById} ${id}`, 'success');
+
         const query = 'SELECT * FROM users WHERE id = ? LIMIT 1';
         const result = await this.dataSource.query(query, [id]);
-        return result.length > 0 ? result[0] : null;
+
+        if (!result || result.length === 0) {
+            this.logger.doLog(`${userNotFoundId} ${id}`, 'fail');
+            return null;
+        }
+
+        this.logger.doLog(`${userRetrievedSuccessfullyId} ${id}`, 'success');
+        return result[0];
     }
 }

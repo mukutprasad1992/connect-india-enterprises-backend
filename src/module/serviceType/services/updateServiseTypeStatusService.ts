@@ -18,9 +18,29 @@ import {
     isPending,
     tableNotFound,
     thisUsersFormIsIncompletePleaseAskTheUserToCompleteTheirFormBeforeUpdatingTheStatus,
+    tableNotFoundForServiceId,
+    resolvedTable,
+    forServiceId,
+    tableNotFoundWhileFetchingServiceTypeId,
+    serviceTypeRecordFoundId,
+    noRecordFoundForServiceRequestId,
+    inTable,
+    invalidStatusValue,
+    providedByUserId,
+    serviceTypeNotFoundForServiceRequestId,
+    formIncompleteForServiceRequestId,
+    updateQueryExecutedForServiceRequestId,
+    newStatus,
+    noUserFoundForServiceRequestId,
+    notificationCreationFailedForServiceRequestId,
+    notificationEmailSentSuccessfullyToUserId,
+    noChangesMadeForServiceRequestId,
+    serviceTypeStatusUpdatedSuccessfullyServiceRequestId,
+    errorWhileUpdatingServiceTypeStatusServiceRequestId,
 } from '../common/serviceTypeMessage';
 import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
 import { UpdateStatusServiceTypeDTO } from '../serviceTypeDTO/updateStatusInvestmentDTO';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class UpdateServiceTypeStatusService {
@@ -28,6 +48,7 @@ export class UpdateServiceTypeStatusService {
         private readonly dataSource: DataSource,
         private NotificationMailService: NotificationMailService,
         private readonly createNotificationService: CreateNotificationService,
+        private readonly logger: AppLogger,
     ) { }
 
     private async getTableName(serviceId: number): Promise<string> {
@@ -40,23 +61,32 @@ export class UpdateServiceTypeStatusService {
 
         const table = tableMap[serviceId];
         if (!table) {
-            return null
+            this.logger.doLog(`${tableNotFoundForServiceId} = ${serviceId}`, 'fail');
+            return null;
         }
 
+        this.logger.doLog(`${resolvedTable} = ${table} ${forServiceId} = ${serviceId}`, 'success');
         return table;
     }
 
     private async getServiceTypeById(id: number, serviceId: number): Promise<any | null> {
-        const table = await this.getTableName(serviceId)
+        const table = await this.getTableName(serviceId);
         if (!table) {
+            this.logger.doLog(`${tableNotFoundWhileFetchingServiceTypeId} = ${id} serviceId=${serviceId}`, 'fail');
             return {
                 status: false,
                 message: tableNotFound,
                 data: null,
-            }
+            };
         }
-        const query = `SELECT * FROM ${table} WHERE serviceRequestId = ?`
+        const query = `SELECT * FROM ${table} WHERE serviceRequestId = ?`;
         const result = await this.dataSource.query(query, [id]);
+        this.logger.doLog(
+            result.length > 0
+                ? `${serviceTypeRecordFoundId} = ${id} ${inTable} = ${table}`
+                : `${noRecordFoundForServiceRequestId} = ${id} ${inTable} = ${table}`,
+            result.length > 0 ? 'success' : 'fail'
+        );
         return result.length > 0 ? result[0] : null;
     }
 
@@ -69,6 +99,10 @@ export class UpdateServiceTypeStatusService {
         try {
             const { status } = updateData;
             if (!['Approved', 'Rejected', 'In Progress', 'Pending'].includes(status)) {
+                this.logger.doLog(
+                    `${invalidStatusValue} = ${status} ${providedByUserId} = ${userId}`,
+                    'fail'
+                );
                 return {
                     status: false,
                     message: invalidStatusValueProvided,
@@ -78,6 +112,10 @@ export class UpdateServiceTypeStatusService {
 
             const serviceTypeExists = await this.getServiceTypeById(id, serviceId);
             if (!serviceTypeExists) {
+                this.logger.doLog(
+                    `${serviceTypeNotFoundForServiceRequestId} = ${id}, serviceId=${serviceId}`,
+                    'fail'
+                );
                 return {
                     status: false,
                     message: serviceTypeNotFound,
@@ -86,33 +124,49 @@ export class UpdateServiceTypeStatusService {
             }
 
             if (serviceTypeExists.submit !== 1) {
+                this.logger.doLog(
+                    `${formIncompleteForServiceRequestId} = ${id}, userId=${userId}`,
+                    'fail'
+                );
                 return {
                     status: false,
                     message: thisUsersFormIsIncompletePleaseAskTheUserToCompleteTheirFormBeforeUpdatingTheStatus,
                     data: null,
                 };
             }
-            const table = await this.getTableName(serviceId)
+
+            const table = await this.getTableName(serviceId);
             if (!table) {
                 return {
                     status: false,
                     message: tableNotFound,
                     data: null,
-                }
+                };
             }
+
             const updateQuery = `UPDATE ${table} SET status = ?, updatedAt = NOW(), updatedBy = ? WHERE serviceRequestId = ?`;
             const updateResult = await this.dataSource.query(updateQuery, [status, userId, id]);
 
+            this.logger.doLog(
+                `${updateQueryExecutedForServiceRequestId} = ${id}, ${newStatus} = ${status}, updatedBy=${userId}`,
+                'success'
+            );
+
             const userIdQuery = `
-                    SELECT sr.id, sr.userId, u.email, sst.ledgerType
-                    FROM ${table} s
-                    JOIN servicerequests sr ON s.serviceRequestId = sr.id
-                    JOIN users u ON sr.userId = u.id
-                    JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                    WHERE s.serviceRequestId = ?;
-                    `;
+                SELECT sr.id, sr.userId, u.email, sst.ledgerType
+                FROM ${table} s
+                JOIN servicerequests sr ON s.serviceRequestId = sr.id
+                JOIN users u ON sr.userId = u.id
+                JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
+                WHERE s.serviceRequestId = ?;
+            `;
             const getUserIdByServiceTypeId = await this.dataSource.query(userIdQuery, [id]);
+
             if (!getUserIdByServiceTypeId || getUserIdByServiceTypeId.length === 0) {
+                this.logger.doLog(
+                    `${noUserFoundForServiceRequestId} = ${id} serviceId=${serviceId}`,
+                    'fail'
+                );
                 return {
                     status: false,
                     message: userNotFoundForTheGivenServiceTypeID,
@@ -162,7 +216,12 @@ export class UpdateServiceTypeStatusService {
                 const notification = await this.createNotificationService.createNotification(
                     notificationPayload,
                 );
+
                 if (!notification) {
+                    this.logger.doLog(
+                        `${notificationCreationFailedForServiceRequestId} = ${id}, userId=${serviceRequiestUserId}`,
+                        'fail'
+                    );
                     return {
                         status: false,
                         message: notificationCreationFailed,
@@ -171,15 +230,28 @@ export class UpdateServiceTypeStatusService {
 
                 const email = getUserIdByServiceTypeId[0].email;
                 await this.NotificationMailService.sendNotificationEmail(email, status, serviceSubType);
+                this.logger.doLog(
+                    `${notificationEmailSentSuccessfullyToUserId} = ${serviceRequiestUserId}, status=${status}, email=${email}`,
+                    'success'
+                );
             }
 
             if (updateResult.affectedRows === 0) {
+                this.logger.doLog(
+                    `${noChangesMadeForServiceRequestId} = ${id}, userId=${userId}`,
+                    'fail'
+                );
                 return {
                     status: false,
                     message: serviceTypeNotFoundOrNoChangesHaveBeenMade,
                     data: null,
                 };
             }
+
+            this.logger.doLog(
+                `${serviceTypeStatusUpdatedSuccessfullyServiceRequestId} = ${id}, ${newStatus} = ${status}, updatedBy=${userId}`,
+                'success'
+            );
 
             return {
                 status: true,
@@ -192,6 +264,10 @@ export class UpdateServiceTypeStatusService {
                 },
             };
         } catch (error) {
+            this.logger.doLog(
+                `${errorWhileUpdatingServiceTypeStatusServiceRequestId} = ${id}, userId=${userId}, error=${error.message}`,
+                'fail'
+            );
             return {
                 status: false,
                 message: serviceTypeUpdateError,

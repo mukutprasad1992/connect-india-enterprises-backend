@@ -19,6 +19,7 @@ import { FacebookAuthController } from '../controller/facebookAuthController';
 import { GoogleAuthController } from '../controller/googleAuthController';
 import { FacebookAuthService } from '../service/facebookAuthService';
 import { GoogleAuthService } from '../service/googleAuthService';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -41,6 +42,7 @@ import { GoogleAuthService } from '../service/googleAuthService';
         ResetPasswordController,
     ],
     providers: [
+        AppLogger,
         MailService,
         LoginService,
         GoogleStrategy,

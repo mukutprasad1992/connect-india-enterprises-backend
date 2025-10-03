@@ -87,7 +87,7 @@ export class GetloanByServiceIdService {
                      LEFT JOIN loanreferencedetails rd ON ld.referenceDetailsId = rd.id
                     LEFT JOIN loandocuments doc ON ld.documentsId = doc.id
                     LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                    WHERE sr.serviceId = ? AND sr.userId =?;
+                    WHERE sr.serviceId = ? AND sr.userId =? ORDER BY id DESC;
                      `,
                 [serviceRequestId, userId],
             );

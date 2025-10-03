@@ -18,7 +18,7 @@ export class GetAllVendorService {
             const query = `SELECT u.id, u.firstName, u.lastName, u.email, u.mobileNo,
              u.roleId, u.businessName, u.businessRepresentative, u.address, 
              u.vendorCode, u.pinCode, u.status,  u.dateOfBirth, u.profileImageURL, u.createdAt
-             FROM users u WHERE roleId = 2;`;
+             FROM users u WHERE roleId = 2 ORDER BY id DESC;`;
 
             const allUser = await this.userRepository.query(query);
             if (allUser.length > 0) {

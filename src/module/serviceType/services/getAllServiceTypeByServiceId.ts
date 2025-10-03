@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import {
+    fetchingServiceTypeForServiceRequestId,
     serviceTypeNotFound,
     serviceTypeRetrievalError,
     serviceTypeRetrievedSuccessfully,
+    andUserId,
+    noServiceTypeFoundForServiceRequestId,
+    serviceTypeRetrievedSuccessfullyForServiceRequestId,
+    errorRetrievingServiceType
 } from '../common/serviceTypeMessage';
-
+import { AppLogger } from '../../../utils/common/loggerService'
 @Injectable()
 export class GetServiceTypeByServiceIdService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(private readonly dataSource: DataSource,
+        private readonly logger: AppLogger,
+    ) { }
 
     async getServiceTypeByServiceId(serviceRequestId: number, userId: number): Promise<any> {
+        this.logger.doLog(`${fetchingServiceTypeForServiceRequestId}=${serviceRequestId} ${andUserId}=${userId}`, 'success');
         try {
             const result = await this.dataSource.query(
                 `
@@ -71,24 +79,26 @@ export class GetServiceTypeByServiceIdService {
                     LEFT JOIN investmentnomineedetails nd ON inv.nomineeDetailsId = nd.id
                     LEFT JOIN investmentDocuments doc ON inv.documentsId = doc.id
                     LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                    WHERE sr.serviceId = ? AND sr.userId = ?;
+                    WHERE sr.serviceId = ? AND sr.userId = ? ORDER BY id DESC;
                      `,
                 [serviceRequestId, userId],
             );
 
             if (result.length === 0) {
+                this.logger.doLog(`${noServiceTypeFoundForServiceRequestId}=${serviceRequestId} ${andUserId}=${userId}`, 'fail');
                 return {
                     status: false,
                     message: serviceTypeNotFound,
                 };
             }
-
+            this.logger.doLog(`${serviceTypeRetrievedSuccessfullyForServiceRequestId}=${serviceRequestId}  ${andUserId}=${userId}`, 'success');
             return {
                 status: true,
                 message: serviceTypeRetrievedSuccessfully,
                 data: result,
             };
         } catch (error) {
+            this.logger.doLog(`${errorRetrievingServiceType} ${error.message}`, 'fail');
             return {
                 status: false,
                 message: serviceTypeRetrievalError,

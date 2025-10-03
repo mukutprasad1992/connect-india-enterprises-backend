@@ -24,7 +24,7 @@ export class GetVoucherByIdService {
          LEFT JOIN
              users u ON v.vendorId = u.id
          WHERE
-             v.id = ?; 
+             v.id = ? ORDER BY id DESC;
 
             `;
 

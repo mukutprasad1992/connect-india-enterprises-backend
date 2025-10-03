@@ -19,6 +19,7 @@ import { GetAllCustomerController } from '../controller/getAllCustomerController
 import { NotificationModule } from 'src/module/notificaton/module/notificationModule';
 import { NotificationCustomerService } from '../common/template/notificationCreateCustomerMessageTemelate';
 import { UpdateNotificationCustomerService } from '../common/template/notificationUpdateCustomerMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -43,6 +44,7 @@ import { UpdateNotificationCustomerService } from '../common/template/notificati
         GetAllCustomerController,
     ],
     providers: [
+        AppLogger,
         AuthGuard,
         CreateCustomerService,
         GetAllCustomersByVenderService,

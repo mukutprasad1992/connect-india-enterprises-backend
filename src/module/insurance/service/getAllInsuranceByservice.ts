@@ -75,7 +75,7 @@ export class GetInsuranceByServiceIdService {
                     LEFT JOIN insurancenomineedetails nd ON inv.nomineeDetailsId = nd.id
                     LEFT JOIN insurancedocuments doc ON inv.documentsId = doc.id
                     LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                    WHERE sr.serviceId = ? AND sr.userId =?;
+                    WHERE sr.serviceId = ? AND sr.userId =? ORDER BY id DESC;
                      `,
                 [serviceRequestId, userId],
             );
