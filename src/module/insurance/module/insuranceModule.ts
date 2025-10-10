@@ -17,6 +17,7 @@ import { UpdateInsuranceByIdService } from '../service/updateInsuranceService';
 import { DeleteInsuranceByIdController } from '../controller/deleteInsuranceByIdController';
 import { DeleteInsuranceByIdService } from '../service/deleteInsuranceByIdService';
 import { DeleteServiceTypeByUserSendMailService } from 'src/utils/mailer/deleteServiceTypeByUserSendMail';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -37,6 +38,7 @@ import { DeleteServiceTypeByUserSendMailService } from 'src/utils/mailer/deleteS
 
     ],
     providers: [
+        AppLogger,
         AuthGuard,
         NotificationMailService,
         CreateInsuranceService,

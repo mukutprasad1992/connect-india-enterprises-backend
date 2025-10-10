@@ -1,22 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import {
-    S3Client,
-    PutObjectCommand,
-    DeleteObjectCommand,
-    ListObjectVersionsCommand,
-} from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import {
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
-    fileNotUpload,
     fileUploadedSuccessfully,
+    fileNotUpload,
+    AWSBUCKETNAMEIsnotDefinedInEnvironmentVariables,
+    preparingToUploadCouponPDF,
+    couponPDFUploadedSuccessfullyKey,
+    errorUploadingCouponPDFFile,
 } from '../common/message/messageFileUpload';
-import { s3 } from '../../../config/awsConfig'
+import { s3 } from '../../../config/awsConfig';
+import { AppLogger } from 'src/utils/common/loggerService';
+
 @Injectable()
 export class UploadCouponPDFService {
+    constructor(private readonly logger: AppLogger) { }
 
     async uploadFile(file: Express.Multer.File) {
         const bucket = process.env.AWS_BUCKET_NAME;
+
         if (!bucket) {
+            this.logger.doLog(
+                AWSBUCKETNAMEIsnotDefinedInEnvironmentVariables,
+                'error'
+            );
             return {
                 status: false,
                 message: AWSBucketNameIsNotDefinedInEnvironmentVariables,
@@ -24,6 +31,10 @@ export class UploadCouponPDFService {
         }
 
         const key = `couponPDFFile/${Date.now()}-${file.originalname}`;
+        this.logger.doLog(
+            `${preparingToUploadCouponPDF} ${file.originalname} as key: ${key}`,
+            'info'
+        );
 
         const command = new PutObjectCommand({
             Bucket: bucket,
@@ -35,20 +46,32 @@ export class UploadCouponPDFService {
         try {
             await s3.send(command);
 
+            const fileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+            this.logger.doLog(
+                `${couponPDFUploadedSuccessfullyKey} = ${key}, Size=${file.size} bytes, URL=${fileUrl}`,
+                'success'
+            );
+
             return {
                 status: true,
                 message: fileUploadedSuccessfully,
                 data: {
-                    url: `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
+                    url: fileUrl,
                     key,
                     size: file.size,
                     mimetype: file.mimetype,
                 },
             };
         } catch (error: any) {
+            this.logger.doLog(
+                `${errorUploadingCouponPDFFile} = ${file.originalname}, Error=${error.message}`,
+                'error'
+            );
+
             return {
                 status: false,
-                message: error.message,
+                message: fileNotUpload,
+                error: error.message,
             };
         }
     }

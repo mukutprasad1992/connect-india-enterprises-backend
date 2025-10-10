@@ -23,6 +23,7 @@ import { UpdateVoucherStatusByIdController } from '../controller/updateVoucherSt
 import { NotificationModule } from 'src/module/notificaton/module/notificationModule';
 import { SuccessVoucherMessageService } from '../common/template/voucherNotificationSuccessMessageTemplate';
 import { UploadCouponPDFService } from 'src/module/file/service/uploadCouponPDfService';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -46,6 +47,7 @@ import { UploadCouponPDFService } from 'src/module/file/service/uploadCouponPDfS
 
     ],
     providers: [
+        AppLogger,
         AuthGuard,
         CreateVoucherService,
         GetAllVoucherService,

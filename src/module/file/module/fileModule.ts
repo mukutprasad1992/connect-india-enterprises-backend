@@ -13,6 +13,7 @@ import { DeleteProfileImageService } from '../service/deleteProfileImageService'
 import { DeleteProfileImageController } from '../controller/deleteProfileImageController';
 import { UploadDocumentForServiceTypeByUserService } from '../service/uploadDocumnetForServiceTypeByUserService';
 import { UploadDocumentForServiceTypeByUserController } from '../controller/uploadDocumentForServiceTypeByUserController';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { UploadDocumentForServiceTypeByUserController } from '../controller/uplo
 
     ],
     providers: [
+        AppLogger,
         ProfileImageUploadService,
         GetUserByIdService,
         UploadCouponPDFService,

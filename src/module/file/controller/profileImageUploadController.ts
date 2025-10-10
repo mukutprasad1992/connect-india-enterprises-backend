@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Body, HttpException, Res, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Body, Res, Req, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileImageUploadService } from '../service/profileImageUploadService';
 import { FileUploadDto } from '../dto/fileUploadDTO';
@@ -10,9 +10,16 @@ import {
     anUnexpectedErrorOccurredDuringFileUpload,
     AWSBucketName,
     AWSBucketNameIsNotDefinedInEnvironmentVariables,
-    fileNotUploaded
+    fileNotUploaded,
+    profileImageUploadControllerAWSBucketNameNotDefinedInEnvironment,
+    profileImageUploadControllerDeletingExistingProfileImageFromS3,
+    profileImageUploadControllerIncomingProfileImageUploadRequest,
+    profileImageUploadControllerProfileImageUploadedSuccessfully,
+    profileImageUploadControllerProfileImageUploadFailed,
+    profileImageUploadControllerUnexpectedErrorDuringProfileImageUpload
 } from '../common/message/messageFileUpload';
 import { GetUserByIdService } from '../../user/service/getUserByIdService';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Controller('files')
 @UseGuards(AuthGuard)
@@ -21,6 +28,7 @@ export class ProfileImageUploadController {
         private readonly profileImageUploadService: ProfileImageUploadService,
         private readonly configService: ConfigService,
         private readonly userService: GetUserByIdService,
+        private readonly logger: AppLogger
     ) { }
 
     @Post('profileImageUpload')
@@ -31,35 +39,64 @@ export class ProfileImageUploadController {
         @Res() res: Response,
         @Req() req
     ) {
+        const userId = req.user.id;
+        this.logger.doLog(
+            `${profileImageUploadControllerIncomingProfileImageUploadRequest} (userId: ${userId})`,
+            'info'
+        );
+
         try {
-            const userId = req.user.id;
             const bucket = this.configService.get<string>(AWSBucketName);
 
             if (!bucket) {
+                this.logger.doLog(
+                    `${profileImageUploadControllerAWSBucketNameNotDefinedInEnvironment} (userId: ${userId})`,
+                    'warn'
+                );
                 return res.status(400).send({
                     status: false,
                     message: AWSBucketNameIsNotDefinedInEnvironmentVariables,
                     result: null,
                 });
             }
+
             const user = await this.userService.getUserById(userId);
 
-            await this.profileImageUploadService.deleteFileFromS3(user.data.profileImageKey);
+            if (user?.data?.profileImageKey) {
+                this.logger.doLog(
+                    `${profileImageUploadControllerDeletingExistingProfileImageFromS3} (userId: ${userId})`,
+                    'info'
+                );
+                await this.profileImageUploadService.deleteFileFromS3(user.data.profileImageKey);
+            }
 
             const uploadResult = await this.profileImageUploadService.uploadFile(file);
+
             if (uploadResult?.status) {
+                this.logger.doLog(
+                    `${profileImageUploadControllerProfileImageUploadedSuccessfully} (userId: ${userId})`,
+                    'success'
+                );
                 return res.status(200).send({
                     status: true,
                     message: uploadResult.message,
                     result: uploadResult.data,
                 });
             } else {
+                this.logger.doLog(
+                    `${profileImageUploadControllerProfileImageUploadFailed} (userId: ${userId}). Message: ${uploadResult?.message}`,
+                    'warn'
+                );
                 return res.status(400).send({
                     status: false,
                     message: fileNotUploaded,
                 });
             }
         } catch (error: any) {
+            this.logger.doLog(
+                `${profileImageUploadControllerUnexpectedErrorDuringProfileImageUpload} (userId: ${userId}). Error: ${error.message}`,
+                'error'
+            );
             return res.status(500).send({
                 status: false,
                 message: error.message || anUnexpectedErrorOccurredDuringFileUpload,
