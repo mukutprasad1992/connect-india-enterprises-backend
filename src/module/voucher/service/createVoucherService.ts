@@ -10,43 +10,68 @@ import { UploadCouponPDFService } from '../../file/service/uploadCouponPDfServic
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
 import { SuccessVoucherMessageService } from '../common/template/voucherNotificationSuccessMessageTemplate'
 import {
+    alreadyExistsAbortingCreation,
     anErrorOccurredWhileCreatingTheVoucher,
-    aNewcouponhasJustBeenGeneratedFor,
+    aNewCouponHasJustBeenGenerated,
+    checkingIfVoucherCodeAlreadyExists,
+    creatingNotificationForVendor,
+    emailSendingFailedForOneOrBothRecipients,
+    errorWhileCreatingVoucherByUserID,
+    failedToSavePDFURLInDatabase,
     failedToSendEmails,
+    failedToUpdatePDFURLForVoucherID,
     failedToUpdateThePDFURLInTheDatabase,
+    failedToUploadPDF,
+    fetchingFullVoucherDetails,
     fileNotUpload,
-    greatNews,
-    notificationCreationFailed,
-    theyCanRedeemitAtYourStoreSoGetReadyToWelcomeThemWithASmile,
+    insertingVoucherForVendorID,
+    notificationCreatedForVendorID,
+    PDFGeneratedAt,
+    PDFUploadedSuccessfullyURL,
+    PDFURLUpdatedSuccessfullyForVoucherID,
+    savingPDFURLForVoucherID,
+    sendingVoucherCreationEmailsToVendorAndCustomer,
+    updatingVoucherRecordWithUploadedPDFURL,
+    uploadingPDFToCloudStorage,
     voucherCodeIsAlreadyExist,
-    voucherCreatedSuccessfully
+    voucherCreatedSuccessfully,
+    voucherCreatedSuccessfullyByUserID,
+    voucherCreationFailedForUserID,
+    voucherCreationInitiatedByUserID,
+    voucherDetailsFetchedForVoucherID,
+    voucherInsertedSuccessfullyNewVoucherID
 } from '../common/voucherMessage';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
-import { retry } from "rxjs";
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class CreateVoucherService {
     constructor(
         @InjectRepository(VoucherSchema) private userRepository: Repository<VoucherSchema>,
-
         private dataSource: DataSource,
         private VoucherMailService: VoucherMailService,
         private readonly createNotificationService: CreateNotificationService,
         private readonly successVoucherMessageService: SuccessVoucherMessageService,
-        private uploadCouponPDFService: UploadCouponPDFService
+        private uploadCouponPDFService: UploadCouponPDFService,
+        private readonly logger: AppLogger,
     ) { }
 
     async isVoucherCode(voucherCode: string): Promise<boolean> {
+        this.logger.doLog(`${checkingIfVoucherCodeAlreadyExists} ${voucherCode}`, 'info');
         const result = await this.dataSource.query(
             'SELECT voucherCode FROM vouchers WHERE voucherCode = ? LIMIT 1',
             [voucherCode]
         );
+        this.logger.doLog(`Voucher code ${voucherCode} ${result.length > 0 ? 'already exists' : 'is available'}`, 'info');
         return result.length > 0;
     }
 
     async createVoucher(userId: number, ceateVoucherDTO: CeateVoucherDTO): Promise<any> {
+        this.logger.doLog(`${voucherCreationInitiatedByUserID} ${userId}`, 'info');
+
         const voucherCodeExists = await this.isVoucherCode(ceateVoucherDTO.voucherCode);
         if (voucherCodeExists) {
+            this.logger.doLog(`Voucher code ${ceateVoucherDTO.voucherCode} ${alreadyExistsAbortingCreation}`, 'warn');
             return {
                 status: false,
                 message: voucherCodeIsAlreadyExist,
@@ -70,9 +95,12 @@ export class CreateVoucherService {
                        VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, now())`;
 
         try {
+            this.logger.doLog(`${insertingVoucherForVendorID} ${ceateVoucherDTO.vendorId}`, 'info');
             const result = await this.dataSource.query(query, values);
             const voucherId = result.insertId;
+            this.logger.doLog(`${voucherInsertedSuccessfullyNewVoucherID} ${voucherId}`, 'success');
 
+            this.logger.doLog(fetchingFullVoucherDetails, 'info');
             const createdVoucher = await this.dataSource.query(
                 `SELECT
                     v.id, v.amount, v.voucherCode, v.validityFrom, v.validityTo, v.customerId, v.vendorId,
@@ -92,12 +120,17 @@ export class CreateVoucherService {
             );
 
             const voucherDetails = createdVoucher[0];
+            this.logger.doLog(`${voucherDetailsFetchedForVoucherID} ${voucherId}`, 'info');
 
+            this.logger.doLog(sendingVoucherCreationEmailsToVendorAndCustomer, 'info');
             const sendEmailToVendor = await this.VoucherMailService.sendVoucherEmailToVendorCreated(voucherDetails);
             const sendEmailCustomer = await this.VoucherMailService.sendVoucherEmailToCustomerCreated(voucherDetails);
-            const pdfPath = sendEmailCustomer.data.pdfPath
+
+            const pdfPath = sendEmailCustomer.data.pdfPath;
+            this.logger.doLog(`${PDFGeneratedAt} ${pdfPath}`, 'info');
             const pdfBuffer = fs.readFileSync(pdfPath);
             const originalName = path.basename(pdfPath);
+
             const mockFile: Express.Multer.File = {
                 fieldname: 'file',
                 originalname: originalName,
@@ -110,31 +143,32 @@ export class CreateVoucherService {
                 path: pdfPath,
                 stream: null,
             };
+
+            this.logger.doLog(uploadingPDFToCloudStorage, 'info');
             const uploadResult = await this.uploadCouponPDFService.uploadFile(mockFile);
-            const URL = uploadResult.data.url
+            const URL = uploadResult.data.url;
+            this.logger.doLog(`${PDFUploadedSuccessfullyURL} ${URL}`, 'success');
+
             if (!uploadResult) {
-                return {
-                    status: false,
-                    message: fileNotUpload
-                }
+                this.logger.doLog(failedToUploadPDF, 'error');
+                return { status: false, message: fileNotUpload };
             }
+
+            this.logger.doLog(updatingVoucherRecordWithUploadedPDFURL, 'info');
             const saveUrl = await this.saveVoucerPDFFile(URL, voucherId);
             if (saveUrl === false) {
-                return {
-                    staus: false,
-                    message: failedToUpdateThePDFURLInTheDatabase
-                }
+                this.logger.doLog(failedToSavePDFURLInDatabase, 'error');
+                return { staus: false, message: failedToUpdateThePDFURLInTheDatabase };
             }
+
             if (!sendEmailCustomer || !sendEmailToVendor) {
-                return {
-                    status: false,
-                    message: failedToSendEmails
-                };
+                this.logger.doLog(emailSendingFailedForOneOrBothRecipients, 'error');
+                return { status: false, message: failedToSendEmails };
             }
-            // const htmlMessage = await this.successVoucherMessageService.getCouponGeneratedMessage(voucherDetails);
+
+            this.logger.doLog(creatingNotificationForVendor, 'info');
             const notificationPayload: CreateNotificationDTO = {
-                message: `  🎉 Hey ${voucherDetails.vendorName} 🎉<br/>
-                            A new coupon has just been generated!`,
+                message: `🎉 Hey ${voucherDetails.vendorName} 🎉<br/>${aNewCouponHasJustBeenGenerated}`,
                 userRoleId: 1,
                 voucherId: voucherDetails.id,
                 isRead: false,
@@ -145,14 +179,17 @@ export class CreateVoucherService {
             };
 
             await this.createNotificationService.createNotification(notificationPayload);
+            this.logger.doLog(`${notificationCreatedForVendorID} ${ceateVoucherDTO.vendorId}`, 'success');
 
             if (createdVoucher.length > 0) {
+                this.logger.doLog(`${voucherCreatedSuccessfullyByUserID} ${userId}`, 'success');
                 return {
                     status: true,
                     message: voucherCreatedSuccessfully,
                     data: voucherDetails,
                 };
             } else {
+                this.logger.doLog(`${voucherCreationFailedForUserID} ${userId}`, 'warn');
                 return {
                     status: false,
                     message: anErrorOccurredWhileCreatingTheVoucher,
@@ -160,6 +197,7 @@ export class CreateVoucherService {
                 };
             }
         } catch (error) {
+            this.logger.doLog(`${errorWhileCreatingVoucherByUserID} ${userId}, error: ${error.message}`, 'error');
             return {
                 status: false,
                 message: anErrorOccurredWhileCreatingTheVoucher,
@@ -167,24 +205,19 @@ export class CreateVoucherService {
             };
         }
     }
+
     async saveVoucerPDFFile(pdfURL: string, voucherId: number): Promise<any> {
-        const id = voucherId
+        this.logger.doLog(`${savingPDFURLForVoucherID} ${voucherId}`, 'info');
+        const id = voucherId;
         const query = `UPDATE vouchers SET pdfURL = ? WHERE id = ?;`;
 
-        const result = await this.dataSource.query(
-            query,
-            [pdfURL, id]
-        );
+        const result = await this.dataSource.query(query, [pdfURL, id]);
         if (!result) {
-            return {
-                status: false,
-                message: failedToUpdateThePDFURLInTheDatabase
-            }
-        }
-        else {
-            return {
-                data: result
-            };
+            this.logger.doLog(`${failedToUpdatePDFURLForVoucherID} ${voucherId}`, 'error');
+            return { status: false, message: failedToUpdateThePDFURLInTheDatabase };
+        } else {
+            this.logger.doLog(`${PDFURLUpdatedSuccessfullyForVoucherID} ${voucherId}`, 'success');
+            return { data: result };
         }
     }
 }

@@ -7,26 +7,39 @@ import {
     voucherUpdateError,
     voucherStatusUpdatedSuccessfully,
     voucherNotFoundOrNoChangesHaveBeenMade,
-    invalidStatusValueProvided
+    invalidStatusValueProvided,
+    updateVoucherStatusServiceCalledForVoucherId,
+    invalidStatusValueProvidedForVoucherId,
+    voucherNotFoundForVoucherId,
+    noChangesMadeWhileUpdatingVoucherId,
+    voucherStatusUpdatedSuccessfullyForVoucherId,
+    errorUpdatingVoucherStatusForVoucherId
 } from '../common/voucherMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class UpdateVoucherStatusService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(
+        private readonly dataSource: DataSource,
+        private readonly logger: AppLogger,
+    ) { }
 
     async getVoucherById(id: number): Promise<VoucherSchema | null> {
-        const serviceType = await this.dataSource.query(
+        const voucher = await this.dataSource.query(
             'SELECT * FROM vouchers WHERE id = ?',
             [id]
         );
-        return serviceType.length > 0 ? serviceType[0] : null;
+        return voucher.length > 0 ? voucher[0] : null;
     }
 
     async updateVoucherStatus(id: number, updateData: UpdateVoucherDTO, userId: number): Promise<any> {
+        this.logger.doLog(`${updateVoucherStatusServiceCalledForVoucherId} ${id} by userId: ${userId}`, 'info');
+
         try {
             const { status } = updateData;
 
             if (!['Disable'].includes(status)) {
+                this.logger.doLog(`${invalidStatusValueProvidedForVoucherId} ${id} by userId: ${userId}`, 'warn');
                 return {
                     status: false,
                     message: invalidStatusValueProvided,
@@ -34,8 +47,9 @@ export class UpdateVoucherStatusService {
                 };
             }
 
-            const serviceTypeExists = await this.getVoucherById(id);
-            if (!serviceTypeExists) {
+            const voucherExists = await this.getVoucherById(id);
+            if (!voucherExists) {
+                this.logger.doLog(`${voucherNotFoundForVoucherId} ${id}`, 'warn');
                 return {
                     status: false,
                     message: voucherNotFound,
@@ -47,6 +61,7 @@ export class UpdateVoucherStatusService {
             const updateResult = await this.dataSource.query(query, [status, userId, id]);
 
             if (updateResult.affectedRows === 0) {
+                this.logger.doLog(`${noChangesMadeWhileUpdatingVoucherId} ${id}`, 'warn');
                 return {
                     status: false,
                     message: voucherNotFoundOrNoChangesHaveBeenMade,
@@ -54,14 +69,17 @@ export class UpdateVoucherStatusService {
                 };
             }
 
-            const updatedServiceType = await this.getVoucherById(id);
+            const updatedVoucher = await this.getVoucherById(id);
+            this.logger.doLog(`${voucherStatusUpdatedSuccessfullyForVoucherId} ${id} by userId: ${userId}`, 'success');
+
             return {
                 status: true,
                 message: voucherStatusUpdatedSuccessfully,
-                data: updatedServiceType
+                data: updatedVoucher
             };
 
         } catch (error) {
+            this.logger.doLog(`${errorUpdatingVoucherStatusForVoucherId} ${id} by userId: ${userId}, error: ${error.message}`, 'error');
             return {
                 status: false,
                 message: voucherUpdateError,

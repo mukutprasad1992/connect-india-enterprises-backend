@@ -17,6 +17,7 @@ import { UpdateLoanByIdController } from '../controller/updateLoanServiceByIdCon
 import { UpdateLoanByIdService } from '../services/updateLoanByIdService';
 import { DeleteLoanByIdController } from '../controller/deleteLoanByIdController';
 import { DeleteLoanByIdService } from '../services/deleteLoanByIdService';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { DeleteLoanByIdService } from '../services/deleteLoanByIdService';
         DeleteLoanByIdController
     ],
     providers: [
+        AppLogger,
         AuthGuard,
         NotificationMailService,
         LoanMailService,

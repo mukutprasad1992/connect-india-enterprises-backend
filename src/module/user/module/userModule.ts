@@ -21,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UpdateUserStatusService } from '../service/updateUserStatusService';
 import { UpdateUserStatusByIdController } from '../controller/updateUserStatuscontroller';
 import { VendorBlockOrUnblockMailService } from 'src/utils/mailer/vendorBlockOrUnblockMail';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -43,6 +44,7 @@ import { VendorBlockOrUnblockMailService } from 'src/utils/mailer/vendorBlockOrU
 
     ],
     providers: [
+        AppLogger,
         UserCreateService,
         GetAllUserService,
         GetUserByIdService,

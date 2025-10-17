@@ -6,13 +6,28 @@ import { DataSource, Repository } from "typeorm";
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { MailService } from '../../../utils/mailer/authMailer';
+import { AppLogger } from 'src/utils/common/loggerService';
 import {
     userCreatedSuccessfully,
     anErrorOccurredWhileCreatingTheUser,
     emailIsAlreadyExist,
     mobileNoIsAlreadyExist,
     theCreateByFieldCannotBeUpdated,
-    vendorCodeIsAlreadyExist
+    vendorCodeIsAlreadyExist,
+    emailCheckFor,
+    mobileNumberCheckFor,
+    vendorCodeCheckFor,
+    updatedCreatedByForUserID,
+    startingUserCreationForEmail,
+    emailAlreadyExists,
+    mobileNumberAlreadyExists,
+    vendorCodeAlreadyExists,
+    generatedPasswordForUser,
+    failedToUpdateCreatedByForUserID,
+    sentVendorEmailForUserID,
+    sentWelcomeEmailForUserID,
+    userCreatedSuccessfullyID,
+    errorDuringUserCreation
 } from '../common/userMessage';
 
 @Injectable()
@@ -20,7 +35,8 @@ export class UserCreateService {
     constructor(
         @InjectRepository(UserSchema) private userRepository: Repository<UserSchema>,
         private dataSource: DataSource,
-        private mailService: MailService
+        private mailService: MailService,
+        private logger: AppLogger
     ) { }
     private generateRandomPassword(length: number = 10): string {
         if (length < 8) {
@@ -57,6 +73,7 @@ export class UserCreateService {
             'SELECT 1 FROM users WHERE email = ? LIMIT 1',
             [email]
         );
+        this.logger.doLog(`${emailCheckFor} ${email} — exists: ${result.length > 0}`, 'info');
         return result.length > 0;
     }
 
@@ -65,6 +82,7 @@ export class UserCreateService {
             'SELECT 1 FROM users WHERE mobileNo = ? LIMIT 1',
             [mobileNo]
         );
+        this.logger.doLog(`${mobileNumberCheckFor} ${mobileNo} — exists: ${result.length > 0}`, 'info');
         return result.length > 0;
     }
 
@@ -73,6 +91,7 @@ export class UserCreateService {
             'SELECT 1 FROM users WHERE vendorCode = ? LIMIT 1',
             [vendorCode]
         );
+        this.logger.doLog(`${vendorCodeCheckFor} ${vendorCode} — exists: ${result.length > 0}`, 'info');
         return result.length > 0;
     }
 
@@ -86,13 +105,16 @@ export class UserCreateService {
              WHERE id = ?`,
             [createdBy, id]
         );
-
+        this.logger.doLog(`${updatedCreatedByForUserID} ${id}`, 'info');
         return update;
     }
 
     async createUser(createUserDTO: CreateUserDTO): Promise<any> {
+        this.logger.doLog(`${startingUserCreationForEmail} ${createUserDTO.email}`, 'info');
         const emailExists = await this.isEmailExist(createUserDTO.email);
+
         if (emailExists) {
+            this.logger.doLog(`${emailAlreadyExists} ${createUserDTO.email}`, 'warn');
             return {
                 status: false,
                 message: emailIsAlreadyExist,
@@ -101,6 +123,7 @@ export class UserCreateService {
         }
         const mobileExists = await this.isMobileExist(createUserDTO.mobileNo);
         if (mobileExists) {
+            this.logger.doLog(`${mobileNumberAlreadyExists} ${createUserDTO.mobileNo}`, 'warn');
             return {
                 status: false,
                 message: mobileNoIsAlreadyExist,
@@ -110,6 +133,7 @@ export class UserCreateService {
         if (createUserDTO.vendorCode) {
             const vendorCodeExists = await this.isVendorCodeExist(createUserDTO.vendorCode);
             if (vendorCodeExists) {
+                this.logger.doLog(`${vendorCodeAlreadyExists} ${createUserDTO.vendorCode}`, 'warn');
                 return {
                     status: false,
                     message: vendorCodeIsAlreadyExist,
@@ -122,6 +146,7 @@ export class UserCreateService {
         // }
         const password = createUserDTO.password || this.generateRandomPassword();
         const hashedPassword = await bcrypt.hash(password, 10);
+        this.logger.doLog(`${generatedPasswordForUser} ${createUserDTO.email}`, 'info');
         const values = [
             createUserDTO.email,
             hashedPassword,
@@ -142,6 +167,7 @@ export class UserCreateService {
             const userId = result.insertId;
             const updated = await this.updateUser(userId);
             if (!updated) {
+                this.logger.doLog(`${failedToUpdateCreatedByForUserID} ${userId}`, 'error');
                 return {
                     status: false,
                     message: theCreateByFieldCannotBeUpdated,
@@ -153,17 +179,22 @@ export class UserCreateService {
                 [userId]
             );
             if (createUserDTO.roleId === 2) {
+
                 await this.mailService.sendEmailVendorUserCreated(createUserDTO.email, password, createUserDTO.businessRepresentative);
+                this.logger.doLog(`${sentVendorEmailForUserID} ${userId}`, 'info');
             } else if (createUserDTO.roleId === 3) {
                 await this.mailService.sendWelcomeEmailToNewUserCreated(createUserDTO.email);
+                this.logger.doLog(`${sentWelcomeEmailForUserID} ${userId}`, 'info');
             }
             if (createdUser.length > 0) {
+                this.logger.doLog(`${userCreatedSuccessfullyID} ${userId}`, 'success');
                 return {
                     status: true,
                     message: userCreatedSuccessfully,
                     data: createdUser[0]
                 };
             } else {
+                this.logger.doLog(`${userCreatedSuccessfullyID} ${userId}`, 'error');
                 return {
                     status: false,
                     message: anErrorOccurredWhileCreatingTheUser,
@@ -171,6 +202,7 @@ export class UserCreateService {
                 };
             }
         } catch (error) {
+            this.logger.doLog(`${errorDuringUserCreation} ${error.message}`, 'error');
             return {
                 status: false,
                 message: anErrorOccurredWhileCreatingTheUser,

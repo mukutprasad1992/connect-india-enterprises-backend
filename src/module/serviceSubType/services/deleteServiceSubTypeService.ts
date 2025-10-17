@@ -3,14 +3,28 @@ import { DataSource } from 'typeorm';
 import {
     anErrorOccurredWhileDeletingServiceSubType,
     serviceSubTypeNotFound,
-    serviceSubTypeDeletedSuccessfully
+    serviceSubTypeDeletedSuccessfully,
+    attemptingToDeleteServiceSubTypeWithID,
+    serviceSubTypeWithID,
+    notFoundCannotDelete,
+    deletedSuccessfully,
+    errorDeletingServiceSubTypeWithID
 } from '../common/serviceSubTypeMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class DeleteServiceSubTypeByIdService {
-    constructor(private readonly dataSource: DataSource) { }
+    constructor(
+        private readonly dataSource: DataSource,
+        private readonly logger: AppLogger
+    ) { }
 
     async deleteServiceSubTypeById(serviceSubTypeId: number): Promise<any> {
+        this.logger.doLog(
+            `${attemptingToDeleteServiceSubTypeWithID} ${serviceSubTypeId}`,
+            'info'
+        );
+
         try {
             const existingServiceSubType = await this.dataSource.query(
                 'SELECT id FROM serviceSubTypes WHERE id = ?;',
@@ -18,6 +32,10 @@ export class DeleteServiceSubTypeByIdService {
             );
 
             if (!existingServiceSubType.length) {
+                this.logger.doLog(
+                    `${serviceSubTypeWithID} ${serviceSubTypeId} ${notFoundCannotDelete}`,
+                    'warn'
+                );
                 return {
                     status: false,
                     message: serviceSubTypeNotFound,
@@ -30,12 +48,21 @@ export class DeleteServiceSubTypeByIdService {
                 [serviceSubTypeId]
             );
 
+            this.logger.doLog(
+                `${serviceSubTypeWithID} ${serviceSubTypeId} ${deletedSuccessfully}`,
+                'success'
+            );
+
             return {
                 status: true,
                 message: serviceSubTypeDeletedSuccessfully,
                 data: { serviceSubTypeId },
             };
         } catch (error) {
+            this.logger.doLog(
+                `${errorDeletingServiceSubTypeWithID} ${serviceSubTypeId} — ${error.message}`,
+                'error'
+            );
             return {
                 status: false,
                 message: anErrorOccurredWhileDeletingServiceSubType,

@@ -18,6 +18,7 @@ import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTyp
 import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
 import { GetByServiceSubTypeByIdController } from '../controller/getByServiceSubTypeIdController';
 import { GetByServiceSubTypeIdService } from '../services/getByServiceSubTypeIdService'
+import { AppLogger } from 'src/utils/common/loggerService';
 @Module({
     imports: [
         TypeOrmModule.forFeature([ServiceSubTypeSchema]),
@@ -36,6 +37,7 @@ import { GetByServiceSubTypeIdService } from '../services/getByServiceSubTypeIdS
         GetByServiceSubTypeByIdController,
     ],
     providers: [
+        AppLogger,
         AuthGuard,
         CreateServiceSubTypeService,
         GetAllServiceSubTypeService,

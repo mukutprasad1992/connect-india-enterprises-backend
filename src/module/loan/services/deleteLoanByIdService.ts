@@ -3,15 +3,26 @@ import { DataSource } from 'typeorm';
 import { CreateNotificationDTO } from '../../notificaton/notificationDTO/createNotificationDTO';
 import { DeleteServiceTypeByUserSendMailService } from '../../../utils/mailer/deleteServiceTypeByUserSendMail';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
+import { AppLogger } from 'src/utils/common/loggerService';
 import {
+    attemptingToDeleteLoanWithID,
+    deletionEmailSentTo,
+    failedToSendDeletionEmailTo,
+    loanAndRelatedDataDeletedSuccessfullyForServiceRequestId,
     loanDeletedSuccessfully,
     loanDeletionError,
+    loanDeletionErrorForServiceRequestId,
     loanDeletionMailError,
+    loanDeletionProcessCompletedSuccessfullyForServiceRequestId,
+    loanFoundForDeletionServiceRequestId,
     loanNotFoundOrAlreadyDeleted,
+    loanNotFoundOrAlreadyDeletedForServiceRequestId,
+    noRowsDeletedForServiceRequestId,
+    notificationCreatedSuccessfullyForserviceRequestId,
     notificationCreationFailed,
-    serviceRequestDeletedByUser
+    notificationCreationFailedForServiceRequestId,
+    serviceRequestDeletedByUser,
 } from '../common/loanMessage';
-
 
 @Injectable()
 export class DeleteLoanByIdService {
@@ -19,25 +30,29 @@ export class DeleteLoanByIdService {
         private readonly dataSource: DataSource,
         private readonly deleteServiceTypeByUserSendMailService: DeleteServiceTypeByUserSendMailService,
         private readonly createNotificationService: CreateNotificationService,
+        private readonly logger: AppLogger,
     ) { }
 
     async deleteLoanById(id: number, userId: number): Promise<any> {
+        this.logger.doLog(`${attemptingToDeleteLoanWithID} ${id} by userId: ${userId}`, 'info');
+
         try {
+            // Fetch user info and serviceSubType
             const userIdQuery = `
                  SELECT u.id AS userId, u.email, sr.serviceSubTypeId, sst.ledgerType
-                FROM servicerequests sr
-                JOIN users u ON sr.userId = u.id
-                JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
-                WHERE sr.id = ?;
+                 FROM servicerequests sr
+                 JOIN users u ON sr.userId = u.id
+                 JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
+                 WHERE sr.id = ?;
             `;
-            const getUserIdByloanId = await this.dataSource.query(userIdQuery, [id]);
-
-            if (!getUserIdByloanId || getUserIdByloanId.length === 0) {
-                return {
-                    status: false,
-                    message: loanNotFoundOrAlreadyDeleted,
-                };
+            const getUserIdByLoanId = await this.dataSource.query(userIdQuery, [id]);
+            if (!getUserIdByLoanId || getUserIdByLoanId.length === 0) {
+                this.logger.doLog(`${loanNotFoundOrAlreadyDeletedForServiceRequestId} ${id}`, 'warn');
+                return { status: false, message: loanNotFoundOrAlreadyDeleted };
             }
+            this.logger.doLog(`${loanFoundForDeletionServiceRequestId} ${id}`, 'info');
+
+            // Delete loan and related details
             const deleteQuery = `
               DELETE l, c, p, e, r, d , s
               FROM loandetails l
@@ -50,17 +65,17 @@ export class DeleteLoanByIdService {
               WHERE l.serviceRequestId = ?;
             `;
             const result: any = await this.dataSource.query(deleteQuery, [id]);
-
             if (!result || result.affectedRows === 0) {
-                return {
-                    status: false,
-                    message: loanNotFoundOrAlreadyDeleted,
-                };
+                this.logger.doLog(`${noRowsDeletedForServiceRequestId} ${id}`, 'warn');
+                return { status: false, message: loanNotFoundOrAlreadyDeleted };
             }
-            const email = getUserIdByloanId[0].email;
-            const serviceSubType = getUserIdByloanId[0].ledgerType;
-            const serviceRequiestUserId = getUserIdByloanId[0].userId;
+            this.logger.doLog(`${loanAndRelatedDataDeletedSuccessfullyForServiceRequestId} ${id}`, 'success');
 
+            const email = getUserIdByLoanId[0].email;
+            const serviceSubType = getUserIdByLoanId[0].ledgerType;
+            const serviceRequestUserId = getUserIdByLoanId[0].userId;
+
+            // Create notification
             const notificationPayload: CreateNotificationDTO = {
                 message: serviceRequestDeletedByUser,
                 userRoleId: 3,
@@ -68,40 +83,34 @@ export class DeleteLoanByIdService {
                 isRead: false,
                 createdBy: userId,
                 updatedBy: userId,
-                userId: serviceRequiestUserId,
+                userId: serviceRequestUserId,
                 vendorId: null,
                 isUser: 1,
             };
             const notification = await this.createNotificationService.createNotification(notificationPayload);
             if (!notification) {
-                return {
-                    status: false,
-                    message: notificationCreationFailed,
-                };
+                this.logger.doLog(`${notificationCreationFailedForServiceRequestId} ${id}`, 'warn');
+                return { status: false, message: notificationCreationFailed };
             }
+            this.logger.doLog(`${notificationCreatedSuccessfullyForserviceRequestId} ${id}`, 'success');
 
-            // Send email
+            // Send email to user
             const sendEmailToUser = await this.deleteServiceTypeByUserSendMailService.deleteSirviceTypeSendEmail(
                 email,
                 serviceSubType
             );
             if (!sendEmailToUser) {
-                return {
-                    status: false,
-                    message: loanDeletionMailError,
-                };
+                this.logger.doLog(`${failedToSendDeletionEmailTo} ${email}`, 'error');
+                return { status: false, message: loanDeletionMailError };
             }
+            this.logger.doLog(`${deletionEmailSentTo} ${email} successfully`, 'success');
 
-            return {
-                message: loanDeletedSuccessfully,
-                status: true,
-            };
-        } catch (error) {
-            return {
-                status: false,
-                message: loanDeletionError,
-                error: error.message,
-            };
+            this.logger.doLog(`${loanDeletionProcessCompletedSuccessfullyForServiceRequestId} ${id}`, 'success');
+
+            return { message: loanDeletedSuccessfully, status: true };
+        } catch (error: any) {
+            this.logger.doLog(`${loanDeletionErrorForServiceRequestId} ${id}: ${error.message}`, 'error');
+            return { status: false, message: loanDeletionError, error: error.message };
         }
     }
 }

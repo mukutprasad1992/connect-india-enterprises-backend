@@ -8,55 +8,53 @@ import {
     failedToSavePersonalDetails,
     failedToSaveNomineeDetails,
     failedToSaveDocuments,
-    updatedSuccessfully
+    updatedSuccessfully,
+    updateInsuranceServiceStartUpdating,
+    updateInsuranceServiceInvalidStep,
+    updateInsuranceServiceUpdatedSuccessfully,
+    updateInsuranceServiceUnexpectedError,
+    insuranceRequestNotFound,
 } from '../common/insuranceMessage';
 import { InsuranceSchema } from '../insuranceEntity/insuranceEntity';
 import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
 import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
-// import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServiceTypeByUserMailService';
+import { AppLogger } from 'src/utils/common/loggerService';
+
 @Injectable()
 export class UpdateInsuranceByIdService {
     constructor(
         private readonly dataSource: DataSource,
         private readonly createNotificationService: CreateNotificationService,
-        // private readonly updateServiceTypeByUserMailService: UpdateServiceTypeByUserMailService,
+        private readonly logger: AppLogger,
     ) { }
 
+    // 🔹 Fetch existing insurance request
     async getServiceRequestById(serviceRequestId: number): Promise<InsuranceSchema | null> {
         const serviceType = await this.dataSource.query(
-            `SELECT * FROM insurancedetails i WHERE i.serviceRequestId = ?; `,
+            `SELECT * FROM insurancedetails WHERE serviceRequestId = ?;`,
             [serviceRequestId]
         );
         return serviceType.length > 0 ? serviceType[0] : null;
     }
 
+    // 🔹 Common helper for insert + return ID
     private async insertAndReturnId(query: string, params: any[]): Promise<number | null> {
         const result: any = await this.dataSource.query(query, params);
         return result && result.insertId ? result.insertId : null;
     }
-    async updateBasicDetails(
-        aadharNumber: string,
-        panNumber: string,
-        userId: number,
-        basicDetailsId: number,
-    ): Promise<boolean> {
+
+    // 🔹 Update Basic Details
+    async updateBasicDetails(aadharNumber: string, panNumber: string, userId: number, basicDetailsId: number): Promise<boolean> {
         const query = `
-      UPDATE insurancebasicdetails
-      SET aadharNumber = ?, 
-          panNumber = ?, 
-          updatedBy = ?, 
-          updatedAt = NOW()
-      WHERE id = ?
-    `;
-        const result: any = await this.dataSource.query(query, [
-            aadharNumber,
-            panNumber,
-            userId,
-            basicDetailsId,
-        ]);
+            UPDATE insurancebasicdetails
+            SET aadharNumber = ?, panNumber = ?, updatedBy = ?, updatedAt = NOW()
+            WHERE id = ?
+        `;
+        const result: any = await this.dataSource.query(query, [aadharNumber, panNumber, userId, basicDetailsId]);
         return result.affectedRows > 0;
     }
 
+    // 🔹 Save Personal Details (Insert / Update)
     async savePersonalDetails(
         id: number | null,
         motherName: string,
@@ -70,40 +68,38 @@ export class UpdateInsuranceByIdService {
         userId: number
     ): Promise<number | null> {
         const query = `
-        INSERT INTO insurancepersonaldetails
-            (id, motherName, heightCM, placeOfBirth, weightKG, income, occupation, smoker, alcohol, createdBy, createdAt)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-        ON DUPLICATE KEY UPDATE
-            motherName = VALUES(motherName),
-            heightCM = VALUES(heightCM),
-            placeOfBirth = VALUES(placeOfBirth),
-            weightKG = VALUES(weightKG),
-            income = VALUES(income),
-            occupation = VALUES(occupation),
-            smoker = VALUES(smoker),
-            alcohol = VALUES(alcohol),
-            updatedBy = VALUES(createdBy),
-            updatedAt = NOW()
-    `;
-
+            INSERT INTO insurancepersonaldetails
+                (id, motherName, heightCM, placeOfBirth, weightKG, income, occupation, smoker, alcohol, createdBy, createdAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+                motherName = VALUES(motherName),
+                heightCM = VALUES(heightCM),
+                placeOfBirth = VALUES(placeOfBirth),
+                weightKG = VALUES(weightKG),
+                income = VALUES(income),
+                occupation = VALUES(occupation),
+                smoker = VALUES(smoker),
+                alcohol = VALUES(alcohol),
+                updatedBy = VALUES(createdBy),
+                updatedAt = NOW()
+        `;
         const result: any = await this.dataSource.query(query, [
             id,
             motherName,
             heightCM,
             JSON.stringify(placeOfBirth),
-            income,
             weightKG,
+            income,
             occupation,
             smoker,
             alcohol,
             userId
         ]);
-        if (result.insertId && result.insertId !== 0) {
-            return result.insertId;
-        }
+        if (result.insertId && result.insertId !== 0) return result.insertId;
         return id;
     }
 
+    // 🔹 Save Nominee Details (Insert / Update)
     async saveNomineeDetails(
         id: number | null,
         nomineeName: string,
@@ -113,41 +109,24 @@ export class UpdateInsuranceByIdService {
     ): Promise<number | null> {
         if (id) {
             const query = `
-          UPDATE insurancenomineedetails
-          SET nomineeName = ?,
-              nomineeDOB = ?,
-              nomineeRelation = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
-            const result: any = await this.dataSource.query(query, [
-                nomineeName,
-                nomineeDOB,
-                nomineeRelation,
-                userId,
-                id,
-            ]);
-
+                UPDATE insurancenomineedetails
+                SET nomineeName = ?, nomineeDOB = ?, nomineeRelation = ?, updatedBy = ?, updatedAt = NOW()
+                WHERE id = ?
+            `;
+            const result: any = await this.dataSource.query(query, [nomineeName, nomineeDOB, nomineeRelation, userId, id]);
             return result.affectedRows > 0 ? id : null;
         } else {
             const query = `
-          INSERT INTO insurancenomineedetails
-              (nomineeName, nomineeDOB, nomineeRelation, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, NOW())
-        `;
-            const result: any = await this.dataSource.query(query, [
-                nomineeName,
-                nomineeDOB,
-                nomineeRelation,
-                userId,
-            ]);
-
+                INSERT INTO insurancenomineedetails
+                    (nomineeName, nomineeDOB, nomineeRelation, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, NOW())
+            `;
+            const result: any = await this.dataSource.query(query, [nomineeName, nomineeDOB, nomineeRelation, userId]);
             return result.insertId || null;
         }
     }
 
+    // 🔹 Save Documents (Insert / Update)
     async saveDocuments(
         id: number | null,
         aadharCardFileKey: string,
@@ -159,17 +138,10 @@ export class UpdateInsuranceByIdService {
     ): Promise<number | null> {
         if (id) {
             const query = `
-          UPDATE insurancedocuments
-          SET aadharCardFileKey = ?,
-              panCardFileKey = ?,
-              bankProofFileKey = ?,
-              salarySlipsFileKey = ?,
-              itrDocumentsFileKey = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
+                UPDATE insurancedocuments
+                SET aadharCardFileKey = ?, panCardFileKey = ?, bankProofFileKey = ?, salarySlipsFileKey = ?, itrDocumentsFileKey = ?, updatedBy = ?, updatedAt = NOW()
+                WHERE id = ?
+            `;
             const result: any = await this.dataSource.query(query, [
                 aadharCardFileKey,
                 panCardFileKey,
@@ -179,15 +151,13 @@ export class UpdateInsuranceByIdService {
                 userId,
                 id,
             ]);
-
             return result.affectedRows > 0 ? id : null;
         } else {
             const query = `
-          INSERT INTO insurancedocuments
-              (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, ?, NOW())
-        `;
-
+                INSERT INTO insurancedocuments
+                    (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, NOW())
+            `;
             const result: any = await this.dataSource.query(query, [
                 aadharCardFileKey,
                 panCardFileKey,
@@ -196,23 +166,27 @@ export class UpdateInsuranceByIdService {
                 itrDocumentsFileKey,
                 userId,
             ]);
-
             return result.insertId || null;
         }
     }
-    async updateInsurnaceById(
-        serviceRequestId: number,
-        userId: number,
-        updateData: any
-    ): Promise<any> {
-        try {
-            let serviceRequestExists = await this.getServiceRequestById(serviceRequestId);
-            const activeSteps = updateData.activeSteps;
-            const currentActiveSteps = serviceRequestExists.activeSteps;
-            let detailId: number | null = null;
 
-            // map for step order
-            const stepOrder: { [key: string]: number } = {
+    // 🔹 Main Function: Update Insurance by Service ID
+    async updateInsuranceById(serviceRequestId: number, userId: number, updateData: any): Promise<any> {
+        this.logger.doLog(
+            `${updateInsuranceServiceStartUpdating} (serviceRequestId: ${serviceRequestId}, userId: ${userId})`,
+            'info'
+        );
+
+        try {
+            const existing = await this.getServiceRequestById(serviceRequestId);
+            if (!existing) {
+                return { status: false, message: insuranceRequestNotFound };
+            }
+
+            const activeSteps = updateData.activeSteps;
+            const currentActiveSteps = existing.activeSteps;
+
+            const stepOrder: Record<string, number> = {
                 basicDetails: 1,
                 personalDetails: 2,
                 nomineeDetails: 3,
@@ -220,69 +194,60 @@ export class UpdateInsuranceByIdService {
                 review: 5,
             };
 
-            const requestStepOrder = stepOrder[activeSteps];
-            const currentStepOrder = stepOrder[currentActiveSteps];
-
-            let finalActiveStep = currentActiveSteps;
-
-            if (requestStepOrder > currentStepOrder) {
-                finalActiveStep = activeSteps;
-            } else {
-                finalActiveStep = currentActiveSteps;
+            if (!stepOrder[activeSteps]) {
+                this.logger.doLog(updateInsuranceServiceInvalidStep, 'warn');
+                return { status: false, message: updateInsuranceServiceInvalidStep };
             }
 
-            // Step 1: Basic Details
-            if (activeSteps === "basicDetails") {
-                detailId = serviceRequestExists?.basicDetailsId || null;
+            const finalActiveStep =
+                stepOrder[activeSteps] > stepOrder[currentActiveSteps]
+                    ? activeSteps
+                    : currentActiveSteps;
+
+            let detailId: number | null = null;
+
+            // 🧩 Handle Each Step Separately
+            if (activeSteps === 'basicDetails') {
                 const updated = await this.updateBasicDetails(
                     updateData.aadharNumber,
                     updateData.panNumber,
                     userId,
-                    detailId
+                    existing.basicDetailsId
                 );
-                if (!updated) {
-                    return { status: false, message: failedToUpdateBasicDetails };
-                }
-                detailId = serviceRequestExists.basicDetailsId;
+                if (!updated) return { status: false, message: failedToUpdateBasicDetails };
+                detailId = existing.basicDetailsId;
             }
 
-            // Step 2: Personal Details
-            else if (activeSteps === "personalDetails") {
+            else if (activeSteps === 'personalDetails') {
                 detailId = await this.savePersonalDetails(
-                    serviceRequestExists?.personalDetailsId || null,
+                    existing.personalDetailsId || null,
                     updateData.motherName,
                     updateData.heightCM,
                     updateData.placeOfBirth,
-                    updateData.income,
                     updateData.weightKG,
+                    updateData.income,
                     updateData.occupation,
                     updateData.smoker,
                     updateData.alcohol,
                     userId
                 );
-                if (!detailId) {
-                    return { status: false, message: failedToSavePersonalDetails };
-                }
+                if (!detailId) return { status: false, message: failedToSavePersonalDetails };
             }
 
-            // Step 3: Nominee Details
-            else if (activeSteps === "nomineeDetails") {
+            else if (activeSteps === 'nomineeDetails') {
                 detailId = await this.saveNomineeDetails(
-                    serviceRequestExists?.nomineeDetailsId || null,
+                    existing.nomineeDetailsId || null,
                     updateData.nomineeName,
                     updateData.nomineeDOB,
                     updateData.nomineeRelation,
                     userId
                 );
-                if (!detailId) {
-                    return { status: false, message: failedToSaveNomineeDetails };
-                }
+                if (!detailId) return { status: false, message: failedToSaveNomineeDetails };
             }
 
-            // Step 4: Documents
-            else if (activeSteps === "documents") {
+            else if (activeSteps === 'documents') {
                 detailId = await this.saveDocuments(
-                    serviceRequestExists?.documentsId || null,
+                    existing.documentsId || null,
                     updateData.aadharCardFileKey,
                     updateData.panCardFileKey,
                     updateData.bankProofFileKey,
@@ -290,59 +255,59 @@ export class UpdateInsuranceByIdService {
                     updateData.itrDocumentsFileKey,
                     userId
                 );
-                if (!detailId) {
-                    return { status: false, message: failedToSaveDocuments };
-                }
+                if (!detailId) return { status: false, message: failedToSaveDocuments };
             }
 
-            // Step 5: Review
-            else if (activeSteps === "review") {
+            else if (activeSteps === 'review') {
                 await this.dataSource.query(
-                    `UPDATE insurancedetails
-         SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-         WHERE serviceRequestId = ?`,
+                    `UPDATE insurancedetails SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW() WHERE serviceRequestId = ?`,
                     [updateData.submit, activeSteps, userId, serviceRequestId]
                 );
-
                 return { status: true, message: reviewStepCompletedSuccessfully };
             }
 
+            // 🔹 Update main insurance table with latest step
             if (detailId) {
-                if (serviceRequestExists) {
-                    await this.dataSource.query(
-                        `UPDATE insurancedetails
-                            SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-                            WHERE serviceRequestId = ?`,
-                        [detailId, finalActiveStep, userId, serviceRequestId]
-                    );
-                } else {
-                    const invQuery = `
-          INSERT INTO insurancedetails
-          (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, NOW())
-        `;
-                    await this.insertAndReturnId(invQuery, [
-                        detailId,
-                        serviceRequestId,
-                        updateData.status || "active",
-                        activeSteps,
-                        userId,
-                    ]);
-                }
+                await this.dataSource.query(
+                    `UPDATE insurancedetails SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW() WHERE serviceRequestId = ?`,
+                    [detailId, finalActiveStep, userId, serviceRequestId]
+                );
             }
-            const service = activeSteps
-            function formatStepName(step: string): string {
-                return step
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (str) => str.toUpperCase());
-            }
-            const formattedStep = formatStepName(service);
-            return {
+
+            // 🔹 Send Notification
+            const formattedStep = activeSteps.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+            const notificationPayload: CreateNotificationDTO = {
                 message: `${formattedStep} ${updatedSuccessfully}`,
+                userRoleId: 3,
+                voucherId: null,
+                isRead: false,
+                createdBy: userId,
+                updatedBy: userId,
+                userId,
+                vendorId: null,
+                isUser: 1,
+            };
+
+            const notification = await this.createNotificationService.createNotification(notificationPayload);
+            if (!notification) {
+                this.logger.doLog(notificationCreationFailed, 'warn');
+            }
+
+            this.logger.doLog(
+                `${updateInsuranceServiceUpdatedSuccessfully} (serviceRequestId: ${serviceRequestId}, userId: ${userId})`,
+                'success'
+            );
+
+            return {
                 status: true,
-                data: serviceRequestExists
+                message: `${formattedStep} ${updatedSuccessfully}`,
+                data: existing,
             };
         } catch (error) {
+            this.logger.doLog(
+                `${updateInsuranceServiceUnexpectedError} (serviceRequestId: ${serviceRequestId}, userId: ${userId}): ${error.message}`,
+                'error'
+            );
             return {
                 status: false,
                 message: insuranceUpdateError,

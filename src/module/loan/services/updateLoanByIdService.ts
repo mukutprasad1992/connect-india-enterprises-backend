@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Timestamp } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { CreateNotificationService } from '../../notificaton/service/createNotificationService';
+import { AppLogger } from 'src/utils/common/loggerService';
 import {
     loanUpdateError,
     reviewStepCompletedSuccessfully,
@@ -9,33 +10,62 @@ import {
     updatedSuccessfully,
     feildToSaveReferenceDetails,
     feildToSaveContactDetails,
-    feildToSaveEmploymentDetails
+    feildToSaveEmploymentDetails,
+    errorUpdatingLoanId,
+    completedSuccessfullyForLoanId,
+    reviewStepCompletedForLoanId,
+    failedToSaveDocumentsForLoanId,
+    failedToSaveReferenceDetailsForLoanId,
+    failedToSaveEmploymentDetailsForLoanId,
+    failedToSaveContactDetailsForLoanId,
+    failedToSavePersonalDetailsForLoanId,
+    startingLoanUpdateForServiceRequestId,
+    documentsInsertedWithID,
+    savingDocumentDetailsForUserId,
+    referenceDetailsInsertedWithID,
+    referenceDetailsUpdate,
+    savingReferenceDetailsForUserId,
+    employmentDetailsInsertedWithID,
+    employmentDetailsUpdate,
+    savingEmploymentDetailsForUserId,
+    contactDetailsSavedWithID,
+    savingContactDetailsForUserId,
+    personalDetailsUpdate,
+    updatingPersonalDetailsForUserId,
+    insertReturnedId,
+    executingInsertQueryParamsHidden,
+    serviceRequest,
+    fetchingLoanDetailsForServiceRequestId
 } from '../common/loanMessage';
 import { LoanSchema } from '../loanEntity/loanEntity';
-import { notificationCreationFailed } from 'src/module/notificaton/common/notificationMessage';
-import { CreateNotificationDTO } from 'src/module/notificaton/notificationDTO/createNotificationDTO';
-import { number } from 'joi';
-// import { UpdateServiceTypeByUserMailService } from 'src/utils/mailer/updateServiceTypeByUserMailService';
+
 @Injectable()
 export class UpdateLoanByIdService {
     constructor(
         private readonly dataSource: DataSource,
         private readonly createNotificationService: CreateNotificationService,
-        // private readonly updateServiceTypeByUserMailService: UpdateServiceTypeByUserMailService,
+        private readonly logger: AppLogger,
     ) { }
 
     async getServiceRequestById(serviceRequestId: number): Promise<LoanSchema | null> {
+        this.logger.doLog(`${fetchingLoanDetailsForServiceRequestId} ${serviceRequestId}`, 'info');
         const serviceType = await this.dataSource.query(
-            `SELECT * FROM loandetails l WHERE l.serviceRequestId = ?; `,
+            `SELECT * FROM loandetails l WHERE l.serviceRequestId = ?;`,
             [serviceRequestId]
         );
-        return serviceType.length > 0 ? serviceType[0] : null;
+        const exists = serviceType.length > 0 ? serviceType[0] : null;
+        this.logger.doLog(`${serviceRequest} ${serviceRequestId} ${exists ? 'found' : 'not found'}`, 'info');
+        return exists;
     }
 
     private async insertAndReturnId(query: string, params: any[]): Promise<number | null> {
+        this.logger.doLog(executingInsertQueryParamsHidden, 'info');
         const result: any = await this.dataSource.query(query, params);
-        return result && result.insertId ? result.insertId : null;
+        const id = result && result.insertId ? result.insertId : null;
+        this.logger.doLog(`${insertReturnedId} ${id}`, 'info');
+        return id;
     }
+
     async updatePersonalDetails(
         aadharNumber: string,
         panNumber: string,
@@ -45,17 +75,18 @@ export class UpdateLoanByIdService {
         userId: number,
         basicDetailsId: number,
     ): Promise<boolean> {
+        this.logger.doLog(`${updatingPersonalDetailsForUserId} ${userId}, basicDetailsId: ${basicDetailsId}`, 'info');
         const query = `
-      UPDATE loanpersonaldetails
-      SET aadharNumber = ?, 
-          panNumber = ?, 
-          motherName= ?,
-          maritalStatus= ?,
-          currentAddress = ?,
-          updatedBy = ?, 
-          updatedAt = NOW()
-      WHERE id = ?
-    `;
+            UPDATE loanpersonaldetails
+            SET aadharNumber = ?, 
+                panNumber = ?, 
+                motherName= ?,
+                maritalStatus= ?,
+                currentAddress = ?,
+                updatedBy = ?, 
+                updatedAt = NOW()
+            WHERE id = ?
+        `;
         const result: any = await this.dataSource.query(query, [
             aadharNumber,
             panNumber,
@@ -65,8 +96,11 @@ export class UpdateLoanByIdService {
             userId,
             basicDetailsId,
         ]);
-        return result.affectedRows > 0;
+        const success = result.affectedRows > 0;
+        this.logger.doLog(`${personalDetailsUpdate} ${success ? 'successful' : 'failed'}`, success ? 'success' : 'warn');
+        return success;
     }
+
     async saveContactdetails(
         id: number | null,
         yearsOfCity: number,
@@ -74,18 +108,18 @@ export class UpdateLoanByIdService {
         landmark: string,
         userId: number,
     ): Promise<number | null> {
+        this.logger.doLog(`${savingContactDetailsForUserId} ${userId}, contactId: ${id}`, 'info');
         const query = `
-        INSERT INTO loancontactdetails
-            (id, yearsOfCity, alternateNo, landmark, createdBy, createdAt)
-        VALUES (?, ?, ?, ?, ?, NOW())
-        ON DUPLICATE KEY UPDATE
-            yearsOfCity = VALUES(yearsOfCity),
-            alternateNo = VALUES(alternateNo),
-            landmark = VALUES(landmark),
-            updatedBy = VALUES(createdBy),
-            updatedAt = NOW()
-    `;
-
+            INSERT INTO loancontactdetails
+                (id, yearsOfCity, alternateNo, landmark, createdBy, createdAt)
+            VALUES (?, ?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+                yearsOfCity = VALUES(yearsOfCity),
+                alternateNo = VALUES(alternateNo),
+                landmark = VALUES(landmark),
+                updatedBy = VALUES(createdBy),
+                updatedAt = NOW()
+        `;
         const result: any = await this.dataSource.query(query, [
             id,
             yearsOfCity,
@@ -93,11 +127,9 @@ export class UpdateLoanByIdService {
             landmark,
             userId
         ]);
-
-        if (result.insertId && result.insertId !== 0) {
-            return result.insertId;
-        }
-        return id;
+        const detailId = result.insertId && result.insertId !== 0 ? result.insertId : id;
+        this.logger.doLog(`${contactDetailsSavedWithID} ${detailId}`, 'info');
+        return detailId;
     }
 
     async saveEmploymentDetails(
@@ -109,19 +141,20 @@ export class UpdateLoanByIdService {
         totalWorkExp: number,
         userId: number
     ): Promise<number | null> {
+        this.logger.doLog(`${savingEmploymentDetailsForUserId} ${userId}, employmentId: ${id}`, 'info');
+
         if (id) {
             const query = `
-          UPDATE loanemploymentdetails
-          SET designation = ?,
-              companyExp = ?,
-              officeMobile = ?,
-              officeAddress = ?,
-              totalWorkExp = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
+                UPDATE loanemploymentdetails
+                SET designation = ?,
+                    companyExp = ?,
+                    officeMobile = ?,
+                    officeAddress = ?,
+                    totalWorkExp = ?,
+                    updatedBy = ?, 
+                    updatedAt = NOW()
+                WHERE id = ?
+            `;
             const result: any = await this.dataSource.query(query, [
                 designation,
                 companyExp,
@@ -131,14 +164,15 @@ export class UpdateLoanByIdService {
                 userId,
                 id,
             ]);
-
-            return result.affectedRows > 0 ? id : null;
+            const success = result.affectedRows > 0;
+            this.logger.doLog(`${employmentDetailsUpdate} ${success ? 'successful' : 'failed'}`, success ? 'success' : 'warn');
+            return success ? id : null;
         } else {
             const query = `
-          INSERT INTO loanemploymentdetails
-              (designation, companyExp, officeMobile, officeAddress, totalWorkExp, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, ?, NOW())
-        `;
+                INSERT INTO loanemploymentdetails
+                    (designation, companyExp, officeMobile, officeAddress, totalWorkExp, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, NOW())
+            `;
             const result: any = await this.dataSource.query(query, [
                 designation,
                 companyExp,
@@ -147,11 +181,11 @@ export class UpdateLoanByIdService {
                 totalWorkExp,
                 userId,
             ]);
-
-            return result.insertId || null;
+            const insertedId = result.insertId || null;
+            this.logger.doLog(`${employmentDetailsInsertedWithID} ${insertedId}`, 'info');
+            return insertedId;
         }
     }
-
 
     async saveReferencedetails(
         id: number | null,
@@ -163,20 +197,21 @@ export class UpdateLoanByIdService {
         ref2Address: string,
         userId: number
     ): Promise<number | null> {
+        this.logger.doLog(`${savingReferenceDetailsForUserId} ${userId}, referenceId: ${id}`, 'info');
+
         if (id) {
             const query = `
-          UPDATE loanreferencedetails
-          SET ref1Name = ?,
-              ref1Mobile = ?,
-              ref1Address = ?,
-              ref2Name = ?,
-              ref2Mobile = ?,
-              ref2Address = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
+                UPDATE loanreferencedetails
+                SET ref1Name = ?,
+                    ref1Mobile = ?,
+                    ref1Address = ?,
+                    ref2Name = ?,
+                    ref2Mobile = ?,
+                    ref2Address = ?,
+                    updatedBy = ?, 
+                    updatedAt = NOW()
+                WHERE id = ?
+            `;
             const result: any = await this.dataSource.query(query, [
                 ref1Name,
                 ref1Mobile,
@@ -187,14 +222,15 @@ export class UpdateLoanByIdService {
                 userId,
                 id,
             ]);
-
-            return result.affectedRows > 0 ? id : null;
+            const success = result.affectedRows > 0;
+            this.logger.doLog(`${referenceDetailsUpdate} ${success ? 'successful' : 'failed'}`, success ? 'success' : 'warn');
+            return success ? id : null;
         } else {
             const query = `
-          INSERT INTO loanreferencedetails
-              (ref1Name, ref1Mobile, ref1Address, ref2Name, ref2Mobile, ref2Address, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-        `;
+                INSERT INTO loanreferencedetails
+                    (ref1Name, ref1Mobile, ref1Address, ref2Name, ref2Mobile, ref2Address, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            `;
             const result: any = await this.dataSource.query(query, [
                 ref1Name,
                 ref1Mobile,
@@ -204,11 +240,11 @@ export class UpdateLoanByIdService {
                 ref2Address,
                 userId,
             ]);
-
-            return result.insertId || null;
+            const insertedId = result.insertId || null;
+            this.logger.doLog(`${referenceDetailsInsertedWithID} ${insertedId}`, 'info');
+            return insertedId;
         }
     }
-
 
     async saveDocuments(
         id: number | null,
@@ -219,19 +255,20 @@ export class UpdateLoanByIdService {
         bankStatementFileKey: string,
         userId: number
     ): Promise<number | null> {
+        this.logger.doLog(`${savingDocumentDetailsForUserId} ${userId}, documentsId: ${id}`, 'info');
+
         if (id) {
             const query = `
-          UPDATE loandocuments
-          SET aadharCardFileKey = ?,
-              panCardFileKey = ?,
-              photoFileKey = ?,
-              salarySlipsFileKey = ?,
-              bankStatementFileKey = ?,
-              updatedBy = ?, 
-              updatedAt = NOW()
-          WHERE id = ?
-        `;
-
+                UPDATE loandocuments
+                SET aadharCardFileKey = ?,
+                    panCardFileKey = ?,
+                    photoFileKey = ?,
+                    salarySlipsFileKey = ?,
+                    bankStatementFileKey = ?,
+                    updatedBy = ?, 
+                    updatedAt = NOW()
+                WHERE id = ?
+            `;
             const result: any = await this.dataSource.query(query, [
                 aadharCardFileKey,
                 panCardFileKey,
@@ -241,15 +278,15 @@ export class UpdateLoanByIdService {
                 userId,
                 id,
             ]);
-
-            return result.affectedRows > 0 ? id : null;
+            const success = result.affectedRows > 0;
+            this.logger.doLog(`Documents update ${success ? 'successful' : 'failed'}`, success ? 'success' : 'warn');
+            return success ? id : null;
         } else {
             const query = `
-          INSERT INTO loandocuments
-              (aadharCardFileKey, panCardFileKey, photoFileKey, salarySlipsFileKey, bankStatementFileKey, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, ?, NOW())
-        `;
-
+                INSERT INTO loandocuments
+                    (aadharCardFileKey, panCardFileKey, photoFileKey, salarySlipsFileKey, bankStatementFileKey, createdBy, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, NOW())
+            `;
             const result: any = await this.dataSource.query(query, [
                 aadharCardFileKey,
                 panCardFileKey,
@@ -258,19 +295,22 @@ export class UpdateLoanByIdService {
                 bankStatementFileKey,
                 userId,
             ]);
-
-            return result.insertId || null;
+            const insertedId = result.insertId || null;
+            this.logger.doLog(`${documentsInsertedWithID} ${insertedId}`, 'info');
+            return insertedId;
         }
     }
+
     async updateLoanById(
         serviceRequestId: number,
         userId: number,
         updateData: any
     ): Promise<any> {
+        this.logger.doLog(`${startingLoanUpdateForServiceRequestId} ${serviceRequestId}, userId: ${userId}`, 'info');
         try {
             let serviceRequestExists = await this.getServiceRequestById(serviceRequestId);
             const activeSteps = updateData.activeSteps;
-            const currentActiveSteps = serviceRequestExists.activeSteps;
+            const currentActiveSteps = serviceRequestExists?.activeSteps;
             let detailId: number | null = null;
 
             const stepOrder: { [key: string]: number } = {
@@ -283,121 +323,122 @@ export class UpdateLoanByIdService {
             };
 
             const requestStepOrder = stepOrder[activeSteps];
-            const currentStepOrder = stepOrder[currentActiveSteps];
-
-            let finalActiveStep = currentActiveSteps;
+            const currentStepOrder = currentActiveSteps ? stepOrder[currentActiveSteps] : 0;
+            let finalActiveStep = currentActiveSteps || activeSteps;
 
             if (requestStepOrder > currentStepOrder) {
                 finalActiveStep = activeSteps;
-            } else {
-                finalActiveStep = currentActiveSteps;
             }
 
-            // Step 1: personal Details
-            if (activeSteps === "personalDetails") {
-                detailId = serviceRequestExists?.personalDetailsId || null;
-                const updated = await this.updatePersonalDetails(
-                    updateData.aadharNumber,
-                    updateData.panNumber,
-                    updateData.motherName,
-                    updateData.maritalStatus,
-                    updateData.currentAddress,
-                    userId,
-                    detailId
-                );
-                if (!updated) {
-                    return { status: false, message: failedToSavePersonalDetails };
-                }
-                detailId = serviceRequestExists.personalDetailsId;
+            // Step handling
+            switch (activeSteps) {
+                case 'personalDetails':
+                    detailId = serviceRequestExists?.personalDetailsId || null;
+                    const updatedPersonal = await this.updatePersonalDetails(
+                        updateData.aadharNumber,
+                        updateData.panNumber,
+                        updateData.motherName,
+                        updateData.maritalStatus,
+                        updateData.currentAddress,
+                        userId,
+                        detailId
+                    );
+                    if (!updatedPersonal) {
+                        this.logger.doLog(`${failedToSavePersonalDetailsForLoanId} ${serviceRequestId}`, 'warn');
+                        return { status: false, message: failedToSavePersonalDetails };
+                    }
+                    detailId = serviceRequestExists?.personalDetailsId;
+                    break;
+
+                case 'contactDetails':
+                    detailId = await this.saveContactdetails(
+                        serviceRequestExists?.contactDetailsId || null,
+                        updateData.yearsOfCity,
+                        updateData.alternateNo,
+                        updateData.landmark,
+                        userId
+                    );
+                    if (!detailId) {
+                        this.logger.doLog(`${failedToSaveContactDetailsForLoanId} ${serviceRequestId}`, 'warn');
+                        return { status: false, message: feildToSaveContactDetails };
+                    }
+                    break;
+
+                case 'employmentDetails':
+                    detailId = await this.saveEmploymentDetails(
+                        serviceRequestExists?.employmentDetailsId || null,
+                        updateData.designation,
+                        updateData.companyExp,
+                        updateData.officeMobile,
+                        updateData.officeAddress,
+                        updateData.totalWorkExp,
+                        userId
+                    );
+                    if (!detailId) {
+                        this.logger.doLog(`${failedToSaveEmploymentDetailsForLoanId} ${serviceRequestId}`, 'warn');
+                        return { status: false, message: feildToSaveEmploymentDetails };
+                    }
+                    break;
+
+                case 'referenceDetails':
+                    detailId = await this.saveReferencedetails(
+                        serviceRequestExists?.referenceDetailsId || null,
+                        updateData.ref1Name,
+                        updateData.ref1Mobile,
+                        updateData.ref1Address,
+                        updateData.ref2Name,
+                        updateData.ref2Mobile,
+                        updateData.ref2Address,
+                        userId
+                    );
+                    if (!detailId) {
+                        this.logger.doLog(`${failedToSaveReferenceDetailsForLoanId} ${serviceRequestId}`, 'warn');
+                        return { status: false, message: feildToSaveReferenceDetails };
+                    }
+                    break;
+
+                case 'documents':
+                    detailId = await this.saveDocuments(
+                        serviceRequestExists?.documentsId || null,
+                        updateData.aadharCardFileKey,
+                        updateData.panCardFileKey,
+                        updateData.photoFileKey,
+                        updateData.salarySlipsFileKey,
+                        updateData.bankStatementFileKey,
+                        userId
+                    );
+                    if (!detailId) {
+                        this.logger.doLog(`${failedToSaveDocumentsForLoanId} ${serviceRequestId}`, 'warn');
+                        return { status: false, message: failedToSaveDocuments };
+                    }
+                    break;
+
+                case 'review':
+                    await this.dataSource.query(
+                        `UPDATE loandetails
+                         SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+                         WHERE serviceRequestId = ?`,
+                        [updateData.submit, activeSteps, userId, serviceRequestId]
+                    );
+                    this.logger.doLog(`${reviewStepCompletedForLoanId} ${serviceRequestId}`, 'success');
+                    return { status: true, message: reviewStepCompletedSuccessfully };
             }
 
-            // Step 2: contact Details
-            else if (activeSteps === "contactDetails") {
-                detailId = await this.saveContactdetails(
-                    serviceRequestExists?.contactDetailsId || null,
-                    updateData.yearsOfCity,
-                    updateData.alternateNo,
-                    updateData.landmark,
-                    userId
-                );
-                if (!detailId) {
-                    return { status: false, message: feildToSaveContactDetails };
-                }
-            }
-
-            // Step 3: employment Details
-            else if (activeSteps === "employmentDetails") {
-                detailId = await this.saveEmploymentDetails(
-                    serviceRequestExists?.employmentDetailsId || null,
-                    updateData.designation,
-                    updateData.companyExp,
-                    updateData.officeMobile,
-                    updateData.officeAddress,
-                    updateData.totalWorkExp,
-                    userId
-                );
-                if (!detailId) {
-                    return { status: false, message: feildToSaveEmploymentDetails };
-                }
-            }
-            // step 4 reference 
-            else if (activeSteps === "referenceDetails") {
-                detailId = await this.saveReferencedetails(
-                    serviceRequestExists?.referenceDetailsId || null,
-                    updateData.ref1Name,
-                    updateData.ref1Mobile,
-                    updateData.ref1Address,
-                    updateData.ref2Name,
-                    updateData.ref2Mobile,
-                    updateData.ref2Address,
-                    userId
-                );
-                if (!detailId) {
-                    return { status: false, message: feildToSaveReferenceDetails };
-                }
-            }
-            // Step 5: Documents
-            else if (activeSteps === "documents") {
-                detailId = await this.saveDocuments(
-                    serviceRequestExists?.documentsId || null,
-                    updateData.aadharCardFileKey,
-                    updateData.panCardFileKey,
-                    updateData.photoFileKey,
-                    updateData.salarySlipsFileKey,
-                    updateData.bankStatementFileKey,
-                    userId
-                );
-                if (!detailId) {
-                    return { status: false, message: failedToSaveDocuments };
-                }
-            }
-
-            // Step 5: Review
-            else if (activeSteps === "review") {
-                await this.dataSource.query(
-                    `UPDATE loandetails
-         SET submit = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-         WHERE serviceRequestId = ?`,
-                    [updateData.submit, activeSteps, userId, serviceRequestId]
-                );
-
-                return { status: true, message: reviewStepCompletedSuccessfully };
-            }
-
+            // Update loandetails table
             if (detailId) {
                 if (serviceRequestExists) {
                     await this.dataSource.query(
                         `UPDATE loandetails
-                   SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
-                WHERE serviceRequestId = ?`,
+                         SET ${activeSteps}Id = ?, activeSteps = ?, updatedBy = ?, updatedAt = NOW()
+                         WHERE serviceRequestId = ?`,
                         [detailId, finalActiveStep, userId, serviceRequestId]
                     );
                 } else {
                     const invQuery = `
-          INSERT INTO loandetails
-          (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
-          VALUES (?, ?, ?, ?, ?, NOW())
-        `;
+                        INSERT INTO loandetails
+                        (${activeSteps}Id, serviceRequestId, status, activeSteps, createdBy, createdAt)
+                        VALUES (?, ?, ?, ?, ?, NOW())
+                    `;
                     await this.insertAndReturnId(invQuery, [
                         detailId,
                         serviceRequestId,
@@ -407,23 +448,25 @@ export class UpdateLoanByIdService {
                     ]);
                 }
             }
-            const service = activeSteps
-            function formatStepName(step: string): string {
-                return step
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (str) => str.toUpperCase());
-            }
-            const formattedStep = formatStepName(service);
+
+            const formatStepName = (step: string) =>
+                step.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase());
+            const formattedStep = formatStepName(activeSteps);
+
+            this.logger.doLog(`Step ${formattedStep} ${completedSuccessfullyForLoanId} ${serviceRequestId}`, 'success');
+
             return {
                 message: `${formattedStep} ${updatedSuccessfully}`,
                 status: true,
                 data: serviceRequestExists
             };
+
         } catch (error) {
+            this.logger.doLog(`${errorUpdatingLoanId} ${serviceRequestId}, error: ${error.message}`, 'error');
             return {
                 status: false,
                 message: loanUpdateError,
-                error: error.message,
+                error: error.message
             };
         }
     }

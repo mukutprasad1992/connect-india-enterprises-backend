@@ -6,17 +6,24 @@ import { CreateNotificationDTO } from '../notificationDTO/createNotificationDTO'
 import {
     notificationCreatedSuccessfully,
     errorWhileCreatingNotification,
-    notificationCreationFailed
+    notificationCreationFailed,
+    creatingNotificationForUserRoleId,
+    notificationInsertedWithId,
+    notificationFetchedSuccessfullyForId,
+    failedToFetchNotificationAfterCreationId
 } from '../common/notificationMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class CreateNotificationService {
     constructor(
         @InjectRepository(NotificationSchema) private notificationRepo: Repository<NotificationSchema>,
-        private dataSource: DataSource
+        private dataSource: DataSource,
+        private readonly logger: AppLogger
     ) { }
 
     async createNotification(dto: CreateNotificationDTO): Promise<any> {
+        this.logger.doLog(`${creatingNotificationForUserRoleId} = ${dto.userRoleId}, userId=${dto.userId}`, 'info');
 
         const values = [
             dto.message,
@@ -38,18 +45,22 @@ export class CreateNotificationService {
         try {
             const result = await this.dataSource.query(query, values);
             const notificationId = result.insertId;
+            this.logger.doLog(`${notificationInsertedWithId} = ${notificationId}`, 'success');
+
             const notification = await this.dataSource.query(
                 `SELECT * FROM notifications WHERE id = ? LIMIT 1`,
                 [notificationId]
             );
 
             if (notification.length > 0) {
+                this.logger.doLog(`${notificationFetchedSuccessfullyForId} = ${notificationId}`, 'success');
                 return {
                     status: true,
                     message: notificationCreatedSuccessfully,
                     data: notification[0],
                 };
             } else {
+                this.logger.doLog(`${failedToFetchNotificationAfterCreationId} = ${notificationId}`, 'warn');
                 return {
                     status: false,
                     message: errorWhileCreatingNotification,
@@ -57,7 +68,7 @@ export class CreateNotificationService {
                 };
             }
         } catch (error) {
-            console.error(notificationCreationFailed, error);
+            this.logger.doLog(`${notificationCreationFailed}: ${error.message}`, 'error');
             return {
                 status: false,
                 message: errorWhileCreatingNotification,

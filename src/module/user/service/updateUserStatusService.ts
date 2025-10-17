@@ -2,19 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserSchema } from '../userEntity/userSchema';
 import { UpdateUserDTO } from '../userDTO/updateUserDTO';
-import { VendorBlockOrUnblockMailService } from '../../../utils/mailer/vendorBlockOrUnblockMail'
+import { VendorBlockOrUnblockMailService } from '../../../utils/mailer/vendorBlockOrUnblockMail';
+import { AppLogger } from 'src/utils/common/loggerService';
 import {
+    errorOccurredWhileUpdatingStatusForUserId,
+    failedToSendMailForUserId,
     invalidStatusValueProvided,
+    invalidStatusValueProvidedForUserId,
+    noChangesMadeWhileUpdatingStatusForUserId,
+    startingStatusUpdateForUserId,
     userIdNotFound,
+    userNotFoundForId,
     userNotFoundOrNoChangesHaveBeenMade,
     userStatusUpdatedSuccessfully,
+    userStatusUpdatedSuccessfullyForId,
     userUpdateError,
 } from '../common/userMessage';
 
 @Injectable()
 export class UpdateUserStatusService {
-    constructor(private readonly dataSource: DataSource,
-        private readonly vendorBlockOrUnblockMailService: VendorBlockOrUnblockMailService
+    constructor(
+        private readonly dataSource: DataSource,
+        private readonly vendorBlockOrUnblockMailService: VendorBlockOrUnblockMailService,
+        private readonly logger: AppLogger
     ) { }
 
     async getUserById(id: number): Promise<UserSchema | null | any> {
@@ -30,11 +40,13 @@ export class UpdateUserStatusService {
         updateData: UpdateUserDTO,
         userId: number
     ): Promise<any> {
+        this.logger.doLog(`${startingStatusUpdateForUserId} ${id}`, 'info');
+
         try {
             const { status } = updateData;
 
-
             if (status !== 'Enable' && status !== 'Disable') {
+                this.logger.doLog(`${invalidStatusValueProvidedForUserId} ${id}`, 'warn');
                 return {
                     status: false,
                     message: invalidStatusValueProvided,
@@ -44,6 +56,7 @@ export class UpdateUserStatusService {
 
             const userExists = await this.getUserById(id);
             if (!userExists) {
+                this.logger.doLog(`${userNotFoundForId} ${id}`, 'warn');
                 return {
                     status: false,
                     message: userIdNotFound,
@@ -59,6 +72,7 @@ export class UpdateUserStatusService {
             ]);
 
             if (updateResult.affectedRows === 0) {
+                this.logger.doLog(`${noChangesMadeWhileUpdatingStatusForUserId} ${id}`, 'warn');
                 return {
                     status: false,
                     message: userNotFoundOrNoChangesHaveBeenMade,
@@ -67,8 +81,11 @@ export class UpdateUserStatusService {
             }
 
             const updatedUser = await this.getUserById(id);
+            this.logger.doLog(`${userStatusUpdatedSuccessfullyForId} ${id} to ${status}`, 'success');
+
             const mail = await this.vendorBlockOrUnblockMailService.emailVendorBlockOrUnblock(updatedUser.email, status, updatedUser.businessName);
             if (!mail) {
+                this.logger.doLog(`${failedToSendMailForUserId} ${id}`, 'warn');
                 return {
                     status: false,
                     message: "Fail mail",
@@ -81,6 +98,7 @@ export class UpdateUserStatusService {
                 data: updatedUser,
             };
         } catch (error) {
+            this.logger.doLog(`${errorOccurredWhileUpdatingStatusForUserId} ${id}, error: ${error.message}`, 'error');
             return {
                 status: false,
                 message: userUpdateError,

@@ -5,12 +5,19 @@ import { AuthGuard } from '../../../midlewares/authenticationMiddleware';
 import { ValidationServiceSubType } from '../common/joiServiceSubType';
 import {
     anErrorOccurredWhileCreatingTheServiceSubType,
-    createServiceSubTypeSuccessfully
+    errorCreatingServiceSubTypeByUserID,
+    failedToCreateServiceSubTypeByUserID,
+    initiatedServiceSubTypeCreation,
+    serviceSubTypeCreatedSuccessfullyByUserID
 } from '../common/serviceSubTypeMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Controller('serviceSubType/createServiceSubType')
 export class CreateServiceSubTypeController {
-    constructor(private readonly createServiceSubTypeService: CreateServiceSubTypeService) { }
+    constructor(
+        private readonly createServiceSubTypeService: CreateServiceSubTypeService,
+        private readonly logger: AppLogger
+    ) { }
 
     @UseGuards(AuthGuard)
     @Post()
@@ -19,16 +26,27 @@ export class CreateServiceSubTypeController {
         @Res() res,
         @Req() req
     ) {
+        const userId = req.user.id;
+        this.logger.doLog(`User ID: ${userId} ${initiatedServiceSubTypeCreation}`, 'info');
+
         try {
-            const userId = req.user.id;
             const serviceSubTypeResponse = await this.createServiceSubTypeService.createServiceSubType(serviceSubTypeDTO, userId);
+
             if (serviceSubTypeResponse.status === true) {
+                this.logger.doLog(
+                    `${serviceSubTypeCreatedSuccessfullyByUserID} ${userId}`,
+                    'success'
+                );
                 return res.status(201).send({
                     status: serviceSubTypeResponse.status,
                     message: serviceSubTypeResponse.message,
                     result: serviceSubTypeResponse.data
                 });
             } else {
+                this.logger.doLog(
+                    `${failedToCreateServiceSubTypeByUserID} ${userId} — Reason: ${serviceSubTypeResponse.message}`,
+                    'warn'
+                );
                 return res.status(400).send({
                     status: serviceSubTypeResponse.status,
                     message: serviceSubTypeResponse.message,
@@ -37,6 +55,10 @@ export class CreateServiceSubTypeController {
                 });
             }
         } catch (error) {
+            this.logger.doLog(
+                `${errorCreatingServiceSubTypeByUserID} ${userId} — ${error.message}`,
+                'error'
+            );
             return res.status(500).send({
                 status: false,
                 message: anErrorOccurredWhileCreatingTheServiceSubType,

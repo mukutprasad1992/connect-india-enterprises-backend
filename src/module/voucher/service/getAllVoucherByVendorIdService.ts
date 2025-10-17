@@ -1,12 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { errorRetrievingVouchers, voucherRecordNotFound, vouchersRetrievedSuccessfully } from '../common/voucherMessage';
+import {
+    errorRetrievingVouchers,
+    errorRetrievingVouchersForVendorId,
+    getAllVouchersByVendorIdServiceCalledForVendorId,
+    noVouchersFoundForVendorId,
+    voucherRecordNotFound,
+    vouchersRetrievedSuccessfully,
+    vouchersRetrievedSuccessfullyForVendorId
+} from '../common/voucherMessage';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class GetAllVouchersByVendorIdService {
-    constructor(private dataSource: DataSource) { }
+    constructor(
+        private dataSource: DataSource,
+        private readonly logger: AppLogger,
+    ) { }
 
     async getAllVouchersByVendorId(vendorId: number): Promise<any> {
+        this.logger.doLog(`${getAllVouchersByVendorIdServiceCalledForVendorId} ${vendorId}`, 'info');
+
         try {
             const query = `
                 SELECT
@@ -28,6 +42,7 @@ export class GetAllVouchersByVendorIdService {
             const vouchers = await this.dataSource.query(query, [vendorId]);
 
             if (vouchers.length === 0) {
+                this.logger.doLog(`${noVouchersFoundForVendorId} ${vendorId}`, 'warn');
                 return {
                     status: false,
                     message: voucherRecordNotFound,
@@ -35,12 +50,16 @@ export class GetAllVouchersByVendorIdService {
                 };
             }
 
+            this.logger.doLog(`${vouchersRetrievedSuccessfullyForVendorId} ${vendorId}. Count: ${vouchers.length}`, 'success');
+
             return {
                 status: true,
                 message: vouchersRetrievedSuccessfully,
                 data: vouchers,
             };
         } catch (error) {
+            this.logger.doLog(`${errorRetrievingVouchersForVendorId} ${vendorId}, error: ${error.message}`, 'error');
+
             return {
                 status: false,
                 message: errorRetrievingVouchers,

@@ -12,6 +12,7 @@ import { UpdateIsReadByIdController } from '../controller/UpdateIsReadByIdContro
 import { GetAllUserNotificationService } from '../service/getAllUserNotificationService';
 import { GetAllUserNotificationController } from '../controller/getAllUserNotificationController';
 import { UserSchema } from '../../user/userEntity/userSchema';
+import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { UserSchema } from '../../user/userEntity/userSchema';
         GetAllUserNotificationController,
     ],
     providers: [
+        AppLogger,
         CreateNotificationService,
         GetAllNotificationService,
         UpdateIsReadByIdService,
