@@ -2,15 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './appModule';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule,{cors : true});
 
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        'http://localhost:3000',
+        'http://3.237.2.74:3001',
         'http://localhost:3001',
-        'http://13.201.80.65:3000',
-        'http://13.201.80.65:3001',
         'http://localhost:54099'
       ];
 
@@ -21,11 +19,11 @@ async function bootstrap() {
       }
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type, Authorization',X-Requested-With,
     credentials: true,
   });
 
-  await app.listen(process.env.PORT || 4000);
+  await app.listen(process.env.PORT || 3000);
 }
 
 bootstrap();
