@@ -74,10 +74,10 @@ export class GetServiceTypeByServiceIdService {
                     FROM servicerequests sr
                     INNER JOIN users u ON sr.userId = u.id
                     LEFT JOIN investmentdetails inv ON inv.serviceRequestId = sr.id
-                    LEFT JOIN investmentBasicdetails bd ON inv.basicDetailsId = bd.id
+                    LEFT JOIN investmentbasicdetails bd ON inv.basicDetailsId = bd.id
                     LEFT JOIN investmentpersonaldetails pd ON inv.personalDetailsId = pd.id
                     LEFT JOIN investmentnomineedetails nd ON inv.nomineeDetailsId = nd.id
-                    LEFT JOIN investmentDocuments doc ON inv.documentsId = doc.id
+                    LEFT JOIN investmentdocuments doc ON inv.documentsId = doc.id
                     LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
                     WHERE sr.serviceId = ? AND sr.userId = ? ORDER BY id DESC;
                      `,

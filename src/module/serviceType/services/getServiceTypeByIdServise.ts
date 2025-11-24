@@ -23,7 +23,7 @@ export class GetServiceTypeByIdService {
 
         try {
             const serviceType = await this.dataSource.query(
-                `SELECT id, serviceId, serviceName, status, createdAt, updatedAt
+                `SELECT id, serviceId, status, createdAt, updatedAt
                  FROM servicetypes WHERE serviceId = ? LIMIT 1`,
                 [id],
             );

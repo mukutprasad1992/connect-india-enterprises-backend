@@ -200,7 +200,7 @@ export class UpdateServiceTypeByIdService {
         this.logger.doLog(`${savingDocumentsForUserId} = ${userId}`, 'success');
         if (id) {
             const query = `
-                UPDATE investmentDocuments
+                UPDATE investmentdocuments
                 SET aadharCardFileKey = ?,
                     panCardFileKey = ?,
                     bankProofFileKey = ?,
@@ -229,7 +229,7 @@ export class UpdateServiceTypeByIdService {
             return success ? id : null;
         } else {
             const query = `
-                INSERT INTO investmentDocuments
+                INSERT INTO investmentdocuments
                     (aadharCardFileKey, panCardFileKey, bankProofFileKey, salarySlipsFileKey, itrDocumentsFileKey, createdBy, createdAt)
                 VALUES (?, ?, ?, ?, ?, ?, NOW())
             `;

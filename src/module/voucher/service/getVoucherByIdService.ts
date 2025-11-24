@@ -16,7 +16,7 @@ export class GetVoucherByIdService {
         try {
             const query = `
                 SELECT
-                    v.id, v.amount, v.voucherCode, v.validityFrom, v.validityTo, v.vendorCode, v.customerId, v.vendorId,
+                    v.id, v.amount, v.voucherCode, v.validityFrom, v.validityTo, v.customerId, v.vendorId,
                     c.name AS customerName, c.address AS customerAddress, c.phone AS customerPhone, c.email AS customerEmail,
                     c.pincode AS customerPincode, u.email AS vendorEmail, u.mobileNo AS vendorMobileNo, u.businessName AS vendorBusinessName,
                     u.businessRepresentative AS vendorBusinessRepresentative, u.pinCode AS vendorPincode, u.vendorCode AS vendorCode, u.address AS vendorAddress, v.pdfURL AS pdfURL,

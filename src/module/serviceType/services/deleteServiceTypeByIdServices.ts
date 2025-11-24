@@ -62,10 +62,10 @@ export class DeleteServiceTypeByIdService {
             const deleteQuery = `
                 DELETE i, b, p, n, d, s
                 FROM investmentdetails i
-                LEFT JOIN investmentBasicdetails b ON i.basicDetailsId = b.id
+                LEFT JOIN investmentbasicdetails b ON i.basicDetailsId = b.id
                 LEFT JOIN investmentPersonaldetails p ON i.personalDetailsId = p.id
                 LEFT JOIN investmentnomineedetails n ON i.nomineeDetailsId = n.id
-                LEFT JOIN investmentDocuments d ON i.documentsId = d.id
+                LEFT JOIN investmentdocuments d ON i.documentsId = d.id
                 LEFT JOIN servicerequests s ON s.id = i.serviceRequestId
                 WHERE i.serviceRequestId = ?;
             `;
