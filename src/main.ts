@@ -2,18 +2,17 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './appModule';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        'http://localhost:3000',
-        'http://localhost:3001',
         'http://3.237.2.74:3000',
         'http://3.237.2.74:3001',
+        'http://localhost:3000',
+        'http://localhost:3001',
         'http://localhost:54099'
       ];
-
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
