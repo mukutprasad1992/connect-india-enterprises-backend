@@ -10,7 +10,7 @@ async function bootstrap() {
         'http://localhost:3000',
         'http://localhost:3001',
         'http://3.237.2.74:3000',
-        'http://3.237.2.74:3001'
+        'http://3.237.2.74:3001',
         'http://localhost:54099'
       ];
 
