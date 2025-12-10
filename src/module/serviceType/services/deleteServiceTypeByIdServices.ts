@@ -63,7 +63,7 @@ export class DeleteServiceTypeByIdService {
                 DELETE i, b, p, n, d, s
                 FROM investmentdetails i
                 LEFT JOIN investmentbasicdetails b ON i.basicDetailsId = b.id
-                LEFT JOIN investmentPersonaldetails p ON i.personalDetailsId = p.id
+                LEFT JOIN investmentpersonaldetails p ON i.personalDetailsId = p.id
                 LEFT JOIN investmentnomineedetails n ON i.nomineeDetailsId = n.id
                 LEFT JOIN investmentdocuments d ON i.documentsId = d.id
                 LEFT JOIN servicerequests s ON s.id = i.serviceRequestId

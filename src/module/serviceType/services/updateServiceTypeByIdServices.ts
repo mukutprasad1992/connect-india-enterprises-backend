@@ -71,7 +71,7 @@ export class UpdateServiceTypeByIdService {
     ): Promise<boolean> {
         this.logger.doLog(`${updatingBasicDetailsId} = ${basicDetailsId} by userId=${userId}`, 'success');
         const query = `
-            UPDATE investmentBasicdetails
+            UPDATE investmentbasicdetails
             SET aadharNumber = ?, 
                 panNumber = ?, 
                 updatedBy = ?, 

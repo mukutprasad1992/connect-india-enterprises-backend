@@ -71,7 +71,7 @@ export class CreateServiceTypeService {
 
     async addBasicDetails(userId: number, aadharNumber: string, panNumber: string): Promise<number | null> {
         const query = `
-            INSERT INTO investmentBasicdetails (aadharNumber, panNumber, createdBy, createdAt)
+            INSERT INTO investmentbasicdetails (aadharNumber, panNumber, createdBy, createdAt)
             VALUES (?, ?, ?, NOW())
         `;
         return this.insertAndReturnId(query, [aadharNumber, panNumber, userId]);
@@ -136,7 +136,7 @@ export class CreateServiceTypeService {
                     inv.id as investmentId, inv.status, inv.activeSteps, inv.createdAt as investmentCreatedAt,
                     sst.ledgerType as serviceSubTypeName
                  FROM investmentdetails inv
-                 INNER JOIN investmentBasicdetails bd ON inv.basicDetailsId = bd.id
+                 INNER JOIN investmentbasicdetails bd ON inv.basicDetailsId = bd.id
                  INNER JOIN servicerequests sr ON inv.serviceRequestId = sr.id
                  INNER JOIN users u ON sr.userId = u.id
                  INNER JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
