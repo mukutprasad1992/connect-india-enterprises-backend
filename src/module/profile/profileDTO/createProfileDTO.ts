@@ -18,6 +18,6 @@ export class CreateUserDto {
         createdBy: Joi.number().integer().optional(),
         address: Joi.string().max(255).optional().allow(null, ''),
         pinCode: Joi.number().integer().optional(),
-        profileImageURL: Joi.string().max(100).optional().allow(null, ''),
+        profileImageURL: Joi.string().max(500).optional().allow(null, ''),
     });
 }

@@ -42,11 +42,17 @@ export class CreateProfileService {
         const updatedAt = new Date();
 
         const query = `
-      UPDATE users SET
-        firstName = ?, lastName = ?, mobileNo = ?, createdBy = ?, address = ?, pinCode = ?,
-        profileImageURL = ?,
-      WHERE id = ?
-    `;
+  UPDATE users SET
+    firstName = ?, 
+    lastName = ?, 
+    mobileNo = ?, 
+    createdBy = ?, 
+    address = ?, 
+    pinCode = ?, 
+    profileImageURL = ?, 
+    updatedAt = ?
+  WHERE id = ?
+`;
 
         const values = [
             firstName,
@@ -60,8 +66,11 @@ export class CreateProfileService {
             userId,
         ];
 
+        const getUpdatedResponse = await this.dataSource.query(query, values);
+
         try {
-            await this.dataSource.query(query, values);
+            const getUpdatedResponse = await this.dataSource.query(query, values);
+            console.log('Update Response:', getUpdatedResponse);
             const updatedUser = await this.getUserByUserId(userId);
             if (!updatedUser) {
                 return {
@@ -75,6 +84,7 @@ export class CreateProfileService {
                 data: updatedUser,
             };
         } catch (error) {
+            console.log('Error while updating profile:', error);
             return {
                 status: false,
                 message: anErrorOccurredWhileUpdatingTheProfile,
