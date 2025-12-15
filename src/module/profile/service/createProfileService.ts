@@ -41,18 +41,7 @@ export class CreateProfileService {
 
         const updatedAt = new Date();
 
-        const query = `
-  UPDATE users SET
-    firstName = ?, 
-    lastName = ?, 
-    mobileNo = ?, 
-    createdBy = ?, 
-    address = ?, 
-    pinCode = ?, 
-    profileImageURL = ?, 
-    updatedAt = ?
-  WHERE id = ?
-`;
+        const query = `UPDATE users SET firstName = ?, lastName = ?, mobileNo = ?, createdBy = ?, address = ?, pinCode = ?, profileImageURL = ?, updatedAt = ? WHERE id = ?`;
 
         const values = [
             firstName,
