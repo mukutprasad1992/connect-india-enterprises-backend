@@ -7,7 +7,6 @@ import {
     anErrorOccurredWhileUpdatingTheVoucher,
     errorUpdatingVoucherId,
     updateVoucherServiceCalledForVoucherId,
-    voucherCodeIsAlreadyExist,
     voucherUpdatedSuccessfully,
     voucherUpdatedSuccessfullyForVoucherId,
     voucherUpdateFailedNoRowsAffectedForVoucherId,
