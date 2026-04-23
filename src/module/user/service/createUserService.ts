@@ -121,6 +121,7 @@ export class UserCreateService {
                 data: null
             };
         }
+
         const mobileExists = await this.isMobileExist(createUserDTO.mobileNo);
         if (mobileExists) {
             this.logger.doLog(`${mobileNumberAlreadyExists} ${createUserDTO.mobileNo}`, 'warn');
