@@ -22,38 +22,38 @@ import { UpdateNotificationCustomerService } from '../common/template/notificati
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([CustomerSchema]),
-        TypeOrmModule,
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-        }),
-        NotificationModule,
-    ],
-    controllers: [
-        CreateCustomerController,
-        GetCustomerByVendorController,
-        UpdateCustomerController,
-        DeleteCustomerByIdController,
-        GetCustomerByVendorIdController,
-        GetAllCustomerController,
-    ],
-    providers: [
-        AppLogger,
-        AuthGuard,
-        CreateCustomerService,
-        GetAllCustomersByVenderService,
-        UpdateCustomerService,
-        DeleteCustomerByIdService,
-        GetAllCustomersByVenderIdService,
-        GetAllCustomerService,
-        NotificationCustomerService,
-        UpdateNotificationCustomerService,
-    ],
+  imports: [
+    TypeOrmModule.forFeature([CustomerSchema]),
+    TypeOrmModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
+    NotificationModule,
+  ],
+  controllers: [
+    CreateCustomerController,
+    GetCustomerByVendorController,
+    UpdateCustomerController,
+    DeleteCustomerByIdController,
+    GetCustomerByVendorIdController,
+    GetAllCustomerController,
+  ],
+  providers: [
+    AppLogger,
+    AuthGuard,
+    CreateCustomerService,
+    GetAllCustomersByVenderService,
+    UpdateCustomerService,
+    DeleteCustomerByIdService,
+    GetAllCustomersByVenderIdService,
+    GetAllCustomerService,
+    NotificationCustomerService,
+    UpdateNotificationCustomerService,
+  ],
 })
-export class CustomerModule { }
+export class CustomerModule {}

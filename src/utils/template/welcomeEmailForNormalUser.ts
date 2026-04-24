@@ -1,4 +1,4 @@
-export const welcomeEmailSubject = "Welcome to Connect India Enterprises!";
+export const welcomeEmailSubject = 'Welcome to Connect India Enterprises!';
 export const welcomeEmailForNormailUser = `
             <div style="line-height: 1.5;"> 
 
@@ -19,4 +19,3 @@ export const welcomeEmailForNormailUser = `
             </div>
 
         `;
-

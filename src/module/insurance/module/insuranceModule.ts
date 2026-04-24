@@ -20,33 +20,32 @@ import { DeleteServiceTypeByUserSendMailService } from 'src/utils/mailer/deleteS
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        ConfigModule,
-        TypeOrmModule.forFeature([InsuranceSchema, UserSchema]),
-        TypeOrmModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '1h' },
-        }),
-        NotificationModule,
-    ],
-    controllers: [
-        CreateInsuranceController,
-        GetAllInsuranceByServiceServiceIdController,
-        UpdateInsuranceByIdController,
-        DeleteInsuranceByIdController
-
-    ],
-    providers: [
-        AppLogger,
-        AuthGuard,
-        NotificationMailService,
-        CreateInsuranceService,
-        InsuranceMailService,
-        GetInsuranceByServiceIdService,
-        UpdateInsuranceByIdService,
-        DeleteInsuranceByIdService,
-        DeleteServiceTypeByUserSendMailService
-    ]
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forFeature([InsuranceSchema, UserSchema]),
+    TypeOrmModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+    NotificationModule,
+  ],
+  controllers: [
+    CreateInsuranceController,
+    GetAllInsuranceByServiceServiceIdController,
+    UpdateInsuranceByIdController,
+    DeleteInsuranceByIdController,
+  ],
+  providers: [
+    AppLogger,
+    AuthGuard,
+    NotificationMailService,
+    CreateInsuranceService,
+    InsuranceMailService,
+    GetInsuranceByServiceIdService,
+    UpdateInsuranceByIdService,
+    DeleteInsuranceByIdService,
+    DeleteServiceTypeByUserSendMailService,
+  ],
 })
-export class InsuranceModule { }
+export class InsuranceModule {}

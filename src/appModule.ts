@@ -18,24 +18,24 @@ import { InsuranceModule } from './module/insurance/module/insuranceModule';
 import { LoanModule } from './module/loan/module/loanModule';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        TypeOrmModule.forRoot(databaseConfig),
-        TypeOrmModule,
-        UserModule,
-        AuthModule,
-        ServiceSubTypeModule,
-        ServiceTypeModule,
-        ServiceModule,
-        CustomerModule,
-        VoucherModule,
-        AiModule,
-        NotificationModule,
-        ProfileModule,
-        FileModule,
-        CityModule,
-        InsuranceModule,
-        LoanModule
-    ],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule,
+    UserModule,
+    AuthModule,
+    ServiceSubTypeModule,
+    ServiceTypeModule,
+    ServiceModule,
+    CustomerModule,
+    VoucherModule,
+    AiModule,
+    NotificationModule,
+    ProfileModule,
+    FileModule,
+    CityModule,
+    InsuranceModule,
+    LoanModule,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

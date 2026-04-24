@@ -1,7 +1,7 @@
-export function sendEmailToCustomerForVoucherCreated(voucherDetails:any) {
-    const validityFrom = voucherDetails.validityFrom.toISOString().split('T')[0]; 
-    const validityTo = voucherDetails.validityTo.toISOString().split('T')[0]; 
-    return `<div style="line-height: 1.5; font-family: Arial, sans-serif;">
+export function sendEmailToCustomerForVoucherCreated(voucherDetails: any) {
+  const validityFrom = voucherDetails.validityFrom.toISOString().split('T')[0];
+  const validityTo = voucherDetails.validityTo.toISOString().split('T')[0];
+  return `<div style="line-height: 1.5; font-family: Arial, sans-serif;">
 
     <h2 style="color:#1c813f;">🎉 Your Voucher Has Been Created Successfully! 🎉</h2>
     
@@ -31,6 +31,3 @@ export function sendEmailToCustomerForVoucherCreated(voucherDetails:any) {
 </div>
 `;
 }
-
-
-

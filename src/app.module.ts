@@ -15,21 +15,21 @@ import { ProfileModule } from './module/profile/module/profileModule';
 import { FileModule } from './module/file/module/fileModule';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        TypeOrmModule.forRoot(databaseConfig),
-        TypeOrmModule,
-        UserModule,
-        AuthModule,
-        ServiceSubTypeModule,
-        ServiceTypeModule,
-        ServiceModule,
-        CustomerModule,
-        VoucherModule,
-        AiModule,
-        NotificationModule,
-        ProfileModule,
-        FileModule
-    ],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule,
+    UserModule,
+    AuthModule,
+    ServiceSubTypeModule,
+    ServiceTypeModule,
+    ServiceModule,
+    CustomerModule,
+    VoucherModule,
+    AiModule,
+    NotificationModule,
+    ProfileModule,
+    FileModule,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

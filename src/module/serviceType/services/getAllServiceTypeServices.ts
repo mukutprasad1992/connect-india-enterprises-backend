@@ -2,35 +2,38 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import {
-    allServiceTypesRetrievedSuccessfullyTotalRecords,
-    errorFetchingServiceTypes,
-    fetchingAllServiceTypesDataForUserId,
-    fetchingInsuranceData,
-    fetchingInvestmentData,
-    fetchingLoanData,
-    insuranceDataRetrieved,
-    investmentDataRetrieved,
-    loanDataRetrieved,
-    noServiceTypesFoundForUserId,
-    serviceTypeNotFound,
-    serviceTypeRetrievalError,
-    serviceTypesRetrievedSuccessfully,
+  allServiceTypesRetrievedSuccessfullyTotalRecords,
+  errorFetchingServiceTypes,
+  fetchingAllServiceTypesDataForUserId,
+  fetchingInsuranceData,
+  fetchingInvestmentData,
+  fetchingLoanData,
+  insuranceDataRetrieved,
+  investmentDataRetrieved,
+  loanDataRetrieved,
+  noServiceTypesFoundForUserId,
+  serviceTypeNotFound,
+  serviceTypeRetrievalError,
+  serviceTypesRetrievedSuccessfully,
 } from '../common/serviceTypeMessage';
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class GetALLServiceTypeByIdService {
-    constructor(
-        private readonly dataSource: DataSource,
-        private readonly logger: AppLogger,
-    ) { }
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly logger: AppLogger,
+  ) {}
 
-    async getAllServiceTypesData(userId: number): Promise<any> {
-        this.logger.doLog(`${fetchingAllServiceTypesDataForUserId}=${userId}`, 'success');
+  async getAllServiceTypesData(userId: number): Promise<any> {
+    this.logger.doLog(
+      `${fetchingAllServiceTypesDataForUserId}=${userId}`,
+      'success',
+    );
 
-        try {
-            this.logger.doLog(`${fetchingInvestmentData}`, 'success');
-            const investmentData = await this.dataSource.query(`
+    try {
+      this.logger.doLog(`${fetchingInvestmentData}`, 'success');
+      const investmentData = await this.dataSource.query(`
                 SELECT
                   sr.id,
                   sr.serviceId,
@@ -76,10 +79,13 @@ export class GetALLServiceTypeByIdService {
                 LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
                 WHERE sr.serviceId = 1 ORDER BY id DESC;
             `);
-            this.logger.doLog(`${investmentDataRetrieved} ${investmentData.length} records`, 'success');
+      this.logger.doLog(
+        `${investmentDataRetrieved} ${investmentData.length} records`,
+        'success',
+      );
 
-            this.logger.doLog(`${fetchingInsuranceData}`, 'success');
-            const insuranceData = await this.dataSource.query(`
+      this.logger.doLog(`${fetchingInsuranceData}`, 'success');
+      const insuranceData = await this.dataSource.query(`
                 SELECT
                   sr.id,
                   sr.serviceId,
@@ -127,10 +133,13 @@ export class GetALLServiceTypeByIdService {
                 LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
                 WHERE sr.serviceId = 3 ORDER BY id DESC;
             `);
-            this.logger.doLog(`${insuranceDataRetrieved} ${insuranceData.length} records`, 'success');
+      this.logger.doLog(
+        `${insuranceDataRetrieved} ${insuranceData.length} records`,
+        'success',
+      );
 
-            this.logger.doLog(`${fetchingLoanData}`, 'success');
-            const loanData = await this.dataSource.query(`
+      this.logger.doLog(`${fetchingLoanData}`, 'success');
+      const loanData = await this.dataSource.query(`
                 SELECT
                   sr.id,
                   sr.serviceId,
@@ -186,32 +195,44 @@ export class GetALLServiceTypeByIdService {
                 LEFT JOIN servicesubtypes sst ON sr.serviceSubTypeId = sst.id
                 WHERE sr.serviceId = 4 ORDER BY id DESC;
             `);
-            this.logger.doLog(`${loanDataRetrieved} ${loanData.length} records`, 'success');
+      this.logger.doLog(
+        `${loanDataRetrieved} ${loanData.length} records`,
+        'success',
+      );
 
-            const allData = [...investmentData, ...insuranceData, ...loanData];
+      const allData = [...investmentData, ...insuranceData, ...loanData];
 
-            if (allData.length > 0) {
-                this.logger.doLog(`${allServiceTypesRetrievedSuccessfullyTotalRecords} ${allData.length} `, 'success');
-                return {
-                    status: true,
-                    message: serviceTypesRetrievedSuccessfully,
-                    data: allData,
-                };
-            } else {
-                this.logger.doLog(`${noServiceTypesFoundForUserId} = ${userId}`, 'fail');
-                return {
-                    status: false,
-                    message: serviceTypeNotFound,
-                    data: null,
-                };
-            }
-        } catch (error) {
-            this.logger.doLog(`${errorFetchingServiceTypes} ${error.message} `, 'fail');
-            return {
-                status: false,
-                message: serviceTypeRetrievalError,
-                error: error.message,
-            };
-        }
+      if (allData.length > 0) {
+        this.logger.doLog(
+          `${allServiceTypesRetrievedSuccessfullyTotalRecords} ${allData.length} `,
+          'success',
+        );
+        return {
+          status: true,
+          message: serviceTypesRetrievedSuccessfully,
+          data: allData,
+        };
+      } else {
+        this.logger.doLog(
+          `${noServiceTypesFoundForUserId} = ${userId}`,
+          'fail',
+        );
+        return {
+          status: false,
+          message: serviceTypeNotFound,
+          data: null,
+        };
+      }
+    } catch (error: any) {
+      this.logger.doLog(
+        `${errorFetchingServiceTypes} ${error.message} `,
+        'fail',
+      );
+      return {
+        status: false,
+        message: serviceTypeRetrievalError,
+        error: error.message,
+      };
     }
+  }
 }

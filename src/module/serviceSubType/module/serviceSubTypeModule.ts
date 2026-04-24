@@ -17,35 +17,35 @@ import { UpdateServiceSubTypeByIdService } from '../services/updateServiceSubTyp
 import { DeleteServiceSubTypeByIdService } from '../services/deleteServiceSubTypeService';
 import { GetServiceSubTypeByServiceIdService } from '../services/getAllServiceSubTypeByServiceIdService';
 import { GetByServiceSubTypeByIdController } from '../controller/getByServiceSubTypeIdController';
-import { GetByServiceSubTypeIdService } from '../services/getByServiceSubTypeIdService'
+import { GetByServiceSubTypeIdService } from '../services/getByServiceSubTypeIdService';
 import { AppLogger } from 'src/utils/common/loggerService';
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([ServiceSubTypeSchema]),
-        TypeOrmModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '1h' },
-        }),
-    ],
-    controllers: [
-        CreateServiceSubTypeController,
-        GetAllServiceSubTypeController,
-        UpdateServiceSubTypeByIdController,
-        DeleteServiceSubTypeByIdController,
-        GetServiceSubTypeByServiceIdController,
-        GetByServiceSubTypeByIdController,
-    ],
-    providers: [
-        AppLogger,
-        AuthGuard,
-        CreateServiceSubTypeService,
-        GetAllServiceSubTypeService,
-        UpdateServiceSubTypeByIdService,
-        DeleteServiceSubTypeByIdService,
-        GetServiceSubTypeByServiceIdService,
-        GetByServiceSubTypeIdService,
-    ],
-    exports: [CreateServiceSubTypeService],
+  imports: [
+    TypeOrmModule.forFeature([ServiceSubTypeSchema]),
+    TypeOrmModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+  ],
+  controllers: [
+    CreateServiceSubTypeController,
+    GetAllServiceSubTypeController,
+    UpdateServiceSubTypeByIdController,
+    DeleteServiceSubTypeByIdController,
+    GetServiceSubTypeByServiceIdController,
+    GetByServiceSubTypeByIdController,
+  ],
+  providers: [
+    AppLogger,
+    AuthGuard,
+    CreateServiceSubTypeService,
+    GetAllServiceSubTypeService,
+    UpdateServiceSubTypeByIdService,
+    DeleteServiceSubTypeByIdService,
+    GetServiceSubTypeByServiceIdService,
+    GetByServiceSubTypeIdService,
+  ],
+  exports: [CreateServiceSubTypeService],
 })
-export class ServiceSubTypeModule { }
+export class ServiceSubTypeModule {}

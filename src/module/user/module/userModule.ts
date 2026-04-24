@@ -24,37 +24,36 @@ import { VendorBlockOrUnblockMailService } from 'src/utils/mailer/vendorBlockOrU
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([UserSchema]),
-        TypeOrmModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '1h' },
-        }),
-        ConfigModule.forRoot(),
-    ],
-    controllers: [
-        CreateUserController,
-        GetAllUserController,
-        GetUserByIdController,
-        UpdateUserController,
-        DeleteUserController,
-        GetAllVendorController,
-        UpdateUserStatusByIdController,
-
-    ],
-    providers: [
-        AppLogger,
-        UserCreateService,
-        GetAllUserService,
-        GetUserByIdService,
-        UpdateUserService,
-        DeleteUserService,
-        GetAllVendorService,
-        UpdateUserStatusService,
-        AuthGuard,
-        MailService,
-        VendorBlockOrUnblockMailService
-    ],
+  imports: [
+    TypeOrmModule.forFeature([UserSchema]),
+    TypeOrmModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+    ConfigModule.forRoot(),
+  ],
+  controllers: [
+    CreateUserController,
+    GetAllUserController,
+    GetUserByIdController,
+    UpdateUserController,
+    DeleteUserController,
+    GetAllVendorController,
+    UpdateUserStatusByIdController,
+  ],
+  providers: [
+    AppLogger,
+    UserCreateService,
+    GetAllUserService,
+    GetUserByIdService,
+    UpdateUserService,
+    DeleteUserService,
+    GetAllVendorService,
+    UpdateUserStatusService,
+    AuthGuard,
+    MailService,
+    VendorBlockOrUnblockMailService,
+  ],
 })
-export class UserModule { }
+export class UserModule {}

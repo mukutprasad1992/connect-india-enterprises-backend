@@ -4,12 +4,12 @@ import { ServiceType } from '../serviceEntity/serviceEntity';
 
 @Injectable()
 export class UpdateServiceDTO {
-    serviceType?: ServiceType;
-    description?: string;
+  serviceType?: ServiceType;
+  description?: string;
 
-    static serviceSchema = Joi.object({
-        serviceType: Joi.string()
-            .valid(...Object.values(ServiceType))
-            .optional(),
-    });
+  static serviceSchema = Joi.object({
+    serviceType: Joi.string()
+      .valid(...Object.values(ServiceType))
+      .optional(),
+  });
 }

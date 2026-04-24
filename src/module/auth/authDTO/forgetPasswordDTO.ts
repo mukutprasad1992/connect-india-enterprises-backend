@@ -4,9 +4,9 @@ import { AuthValidationMessages } from '../common/authMessage';
 
 @Injectable()
 export class ForgetPasswordDTO {
-    email: string;
+  email: string;
 
-    static forgetPasswordSchema = Joi.object({
-        email: Joi.string().email().required(),
-    });
+  static forgetPasswordSchema = Joi.object({
+    email: Joi.string().email().required(),
+  });
 }

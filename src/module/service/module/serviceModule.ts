@@ -16,31 +16,31 @@ import { DeleteServiceByIdService } from '../services/deleteServiceByIdServices'
 import { DeleteServiceByIdController } from '../controller/deleteServiceByIdControoler';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([ServiceSchema]),
-        TypeOrmModule,
-        JwtModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-        }),
-    ],
-    controllers: [
-        CreateServiceController,
-        GetAllServicesController,
-        GetServiceByIdController,
-        UpdateServiceByIdController,
-        DeleteServiceByIdController,
-    ],
-    providers: [
-        AuthGuard,
-        CreateServiceService,
-        GetALLServiceByIdmentService,
-        GetServiceByIdService,
-        UpdateServiceByIdService,
-        DeleteServiceByIdService,
-    ],
+  imports: [
+    TypeOrmModule.forFeature([ServiceSchema]),
+    TypeOrmModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
+  ],
+  controllers: [
+    CreateServiceController,
+    GetAllServicesController,
+    GetServiceByIdController,
+    UpdateServiceByIdController,
+    DeleteServiceByIdController,
+  ],
+  providers: [
+    AuthGuard,
+    CreateServiceService,
+    GetALLServiceByIdmentService,
+    GetServiceByIdService,
+    UpdateServiceByIdService,
+    DeleteServiceByIdService,
+  ],
 })
-export class ServiceModule { }
+export class ServiceModule {}

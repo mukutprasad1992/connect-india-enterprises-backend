@@ -1,8 +1,10 @@
 export const emailDeleteServiceTypeTemplates = {
-    NewUserRequest: (serviceSubType: string) => { /* ... */ },
+  NewUserRequest: (serviceSubType: string) => {
+    /* ... */
+  },
 
-    ServiceTypeDeleted: (serviceSubType: string) => {
-        return `
+  ServiceTypeDeleted: (serviceSubType: string) => {
+    return `
         <div>
           <h3>Notice: ${serviceSubType} Request Removed</h3>
   
@@ -33,5 +35,5 @@ export const emailDeleteServiceTypeTemplates = {
           </p>
         </div>
       `;
-    }
+  },
 };

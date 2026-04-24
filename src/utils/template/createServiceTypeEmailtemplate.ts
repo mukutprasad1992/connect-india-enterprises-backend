@@ -1,5 +1,9 @@
 export const emailCreateServiceTypeTemplates = {
-  NewUserRequest: (firstName: string, lastName: string, serviceSubType: string) => {
+  NewUserRequest: (
+    firstName: string,
+    lastName: string,
+    serviceSubType: string,
+  ) => {
     return `
       <div>
         <h3 >Received Your ${serviceSubType} Request!</h3>
@@ -38,5 +42,5 @@ export const emailCreateServiceTypeTemplates = {
         </p>
       </div>
     `;
-  }
+  },
 };

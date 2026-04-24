@@ -1,7 +1,12 @@
-export const collaboratorUserEmailSubject = "Your Account Has Been Created Successfully"
+export const collaboratorUserEmailSubject =
+  'Your Account Has Been Created Successfully';
 
-export function getCollaboratorUserCreatedEmailMessage(userId:any, Password:any, businessRepresentative:any ) {
-    return `
+export function getCollaboratorUserCreatedEmailMessage(
+  userId: any,
+  Password: any,
+  businessRepresentative: any,
+) {
+  return `
             <div style="line-height: 1.5;"> 
             
             <h2 style="color:#1c813f;">🎉 Account Created Successfully! 🎉</h2>
@@ -29,6 +34,3 @@ export function getCollaboratorUserCreatedEmailMessage(userId:any, Password:any,
 
         `;
 }
-
-
-

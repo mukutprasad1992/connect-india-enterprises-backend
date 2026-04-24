@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DeletedServiceRequestNotificationService {
-    private template: string = `
+  private template: string = `
     <html>
       <head>
         <style>
@@ -69,8 +69,8 @@ export class DeletedServiceRequestNotificationService {
     </html>
   `;
 
-    getMessage(details: { serviceSubType: string }): string {
-        const { serviceSubType = 'Service' } = details;
-        return this.template.replace(/{serviceSubType}/g, serviceSubType);
-    }
+  getMessage(details: { serviceSubType: string }): string {
+    const { serviceSubType = 'Service' } = details;
+    return this.template.replace(/{serviceSubType}/g, serviceSubType);
+  }
 }

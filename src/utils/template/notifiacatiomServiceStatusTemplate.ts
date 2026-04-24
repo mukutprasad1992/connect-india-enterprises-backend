@@ -135,5 +135,5 @@ export const emailTemplates = {
         </p>
       </div>
     `;
-  }
+  },
 };

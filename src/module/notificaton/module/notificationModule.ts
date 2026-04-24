@@ -15,30 +15,30 @@ import { UserSchema } from '../../user/userEntity/userSchema';
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([NotificationSchema, UserSchema]),
-        TypeOrmModule,
-        JwtModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-        }),
-    ],
-    controllers: [
-        CreateNotificationController,
-        GetAllNotificationController,
-        UpdateIsReadByIdController,
-        GetAllUserNotificationController,
-    ],
-    providers: [
-        AppLogger,
-        CreateNotificationService,
-        GetAllNotificationService,
-        UpdateIsReadByIdService,
-        GetAllUserNotificationService,
-    ],
-    exports: [CreateNotificationService],
+  imports: [
+    TypeOrmModule.forFeature([NotificationSchema, UserSchema]),
+    TypeOrmModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
+  ],
+  controllers: [
+    CreateNotificationController,
+    GetAllNotificationController,
+    UpdateIsReadByIdController,
+    GetAllUserNotificationController,
+  ],
+  providers: [
+    AppLogger,
+    CreateNotificationService,
+    GetAllNotificationService,
+    UpdateIsReadByIdService,
+    GetAllUserNotificationService,
+  ],
+  exports: [CreateNotificationService],
 })
-export class NotificationModule { }
+export class NotificationModule {}

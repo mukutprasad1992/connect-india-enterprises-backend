@@ -26,40 +26,38 @@ import { UploadCouponPDFService } from 'src/module/file/service/uploadCouponPDfS
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([VoucherSchema]),
-        TypeOrmModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '1h' },
-        }),
-        ConfigModule.forRoot(),
-        NotificationModule
-    ],
-    controllers: [
-        CreateVoucherController,
-        GetAllVoucherController,
-        GetVoucherByIdController,
-        UpdateVoucherByIdController,
-        DeleteVoucherByIdController,
-        GetAllVoucherByVendorIdController,
-        UpdateVoucherStatusByIdController,
-
-    ],
-    providers: [
-        AppLogger,
-        AuthGuard,
-        CreateVoucherService,
-        GetAllVoucherService,
-        GetVoucherByIdService,
-        UpdateVoucherService,
-        VoucherMailService,
-        DeleteVoucherByIdService,
-        GetAllVouchersByVendorIdService,
-        UpdateVoucherStatusService,
-        SuccessVoucherMessageService,
-        UploadCouponPDFService,
-
-    ],
+  imports: [
+    TypeOrmModule.forFeature([VoucherSchema]),
+    TypeOrmModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+    ConfigModule.forRoot(),
+    NotificationModule,
+  ],
+  controllers: [
+    CreateVoucherController,
+    GetAllVoucherController,
+    GetVoucherByIdController,
+    UpdateVoucherByIdController,
+    DeleteVoucherByIdController,
+    GetAllVoucherByVendorIdController,
+    UpdateVoucherStatusByIdController,
+  ],
+  providers: [
+    AppLogger,
+    AuthGuard,
+    CreateVoucherService,
+    GetAllVoucherService,
+    GetVoucherByIdService,
+    UpdateVoucherService,
+    VoucherMailService,
+    DeleteVoucherByIdService,
+    GetAllVouchersByVendorIdService,
+    UpdateVoucherStatusService,
+    SuccessVoucherMessageService,
+    UploadCouponPDFService,
+  ],
 })
-export class VoucherModule { }
+export class VoucherModule {}

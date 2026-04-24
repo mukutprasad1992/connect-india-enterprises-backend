@@ -48,14 +48,18 @@ export class MailService {
         message: passwordResetEmailSentSuccessfully,
         data: mail,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         error: error.message,
       };
     }
   }
-  async sendEmailVendorUserCreated(to: string, Password: string, businessRepresentative: any) {
+  async sendEmailVendorUserCreated(
+    to: string,
+    Password: string,
+    businessRepresentative: any,
+  ) {
     try {
       const userId = to;
       const USER_EMAIL = process.env.USER_EMAIL;
@@ -63,7 +67,7 @@ export class MailService {
       const message = await getCollaboratorUserCreatedEmailMessage(
         userId,
         Password,
-        businessRepresentative
+        businessRepresentative,
       );
 
       const mailOptions = {
@@ -79,7 +83,7 @@ export class MailService {
         message: collaboratorEmailSentSucessfully,
         data: mail,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         error: error.message,
@@ -107,7 +111,7 @@ export class MailService {
         message: welcomeEmailSentSucessfully,
         data: mail,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         error: error.message,
@@ -116,7 +120,7 @@ export class MailService {
   }
   async sendVoucherEmailToVenderCreated(createdVoucher) {
     try {
-      const to = createdVoucher.email
+      const to = createdVoucher.email;
       const USER_EMAIL = process.env.USER_EMAIL;
       const subject = welcomeEmailSubject;
       const template = welcomeEmailForNormailUser;
@@ -135,7 +139,7 @@ export class MailService {
         message: welcomeEmailSentSucessfully,
         data: mail,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: false,
         error: error.message,

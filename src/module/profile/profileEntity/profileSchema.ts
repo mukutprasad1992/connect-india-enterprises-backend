@@ -1,77 +1,77 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import {
-    IsDateString,
-    IsInt,
-    IsOptional,
-    IsString,
-    Length,
+  IsDateString,
+  IsInt,
+  IsOptional,
+  IsString,
+  Length,
 } from 'class-validator';
 
 @Entity({ name: 'users' })
 export class UserSchema {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @IsString()
-    @Length(1, 15)
-    @Column({ type: 'varchar', length: 15 })
-    mobileNo: string;
+  @IsString()
+  @Length(1, 15)
+  @Column({ type: 'varchar', length: 15 })
+  mobileNo: string;
 
-    @IsOptional()
-    @IsInt()
-    @Column({ type: 'int', nullable: true })
-    createdBy: number;
+  @IsOptional()
+  @IsInt()
+  @Column({ type: 'int', nullable: true })
+  createdBy: number;
 
-    @IsOptional()
-    @IsInt()
-    @Column({ type: 'int', nullable: true })
-    updatedBy: number;
+  @IsOptional()
+  @IsInt()
+  @Column({ type: 'int', nullable: true })
+  updatedBy: number;
 
-    @CreateDateColumn({ type: 'timestamp' })
-    createdAt: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 
-    @UpdateDateColumn({ type: 'timestamp' })
-    updatedAt: Date;
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 
-    @IsOptional()
-    @IsString()
-    @Length(1, 255)
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    address: string;
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address: string;
 
-    @IsOptional()
-    @IsInt()
-    @Column({ type: 'int', nullable: true })
-    pinCode: number;
+  @IsOptional()
+  @IsInt()
+  @Column({ type: 'int', nullable: true })
+  pinCode: number;
 
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    firstName: string;
+  @IsString()
+  @Length(1, 100)
+  @Column({ type: 'varchar', length: 100 })
+  firstName: string;
 
-    @IsString()
-    @Length(1, 100)
-    @Column({ type: 'varchar', length: 100 })
-    lastName: string;
+  @IsString()
+  @Length(1, 100)
+  @Column({ type: 'varchar', length: 100 })
+  lastName: string;
 
-    @IsOptional()
-    @IsString()
-    @Column({ type: 'varchar', })
-    profileImageURL: string;
+  @IsOptional()
+  @IsString()
+  @Column({ type: 'varchar' })
+  profileImageURL: string;
 
-    @IsOptional()
-    @IsString()
-    @Column({ type: 'varchar', })
-    profileImageKey: string
+  @IsOptional()
+  @IsString()
+  @Column({ type: 'varchar' })
+  profileImageKey: string;
 
-    @IsOptional()
-    @IsDateString()
-    @Column({ type: 'date' })
-    dateOfBirth: string;
+  @IsOptional()
+  @IsDateString()
+  @Column({ type: 'date' })
+  dateOfBirth: string;
 }

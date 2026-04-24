@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UpdateNotificationCustomerService {
-    async sendCustomerDetailsNotification(customer: any): Promise<string> {
-        const message = `
+  async sendCustomerDetailsNotification(customer: any): Promise<string> {
+    const message = `
         <html>
           <head>
             <style>
@@ -72,6 +72,6 @@ export class UpdateNotificationCustomerService {
           </body>
         </html>
         `;
-        return message;
-    }
+    return message;
+  }
 }

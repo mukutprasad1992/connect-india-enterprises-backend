@@ -1,27 +1,27 @@
-import { blockedSubjects, unblockedSubjects } from "../common/common";
+import { blockedSubjects, unblockedSubjects } from '../common/common';
 
 export const emailVendorStatusTemplate = {
-    VendorStatus: (status: string, businessName: string) => {
-        const normalizedStatus = status.trim().toLowerCase();
-        const isBlocked = normalizedStatus === 'disable';
+  VendorStatus: (status: string, businessName: string) => {
+    const normalizedStatus = status.trim().toLowerCase();
+    const isBlocked = normalizedStatus === 'disable';
 
-        const actionMessage = isBlocked
-            ? 'your collaborator account has been <strong style="color: red;">Blocked</strong>'
-            : 'your collaborator account has been <strong style="color: green;">Unblocked</strong>';
+    const actionMessage = isBlocked
+      ? 'your collaborator account has been <strong style="color: red;">Blocked</strong>'
+      : 'your collaborator account has been <strong style="color: green;">Unblocked</strong>';
 
-        const nextSteps = isBlocked
-            ? 'If you believe this was a mistake or need assistance, please contact our support team immediately.'
-            : 'We’re excited to welcome you back! You may now access all vendor features without restriction.';
+    const nextSteps = isBlocked
+      ? 'If you believe this was a mistake or need assistance, please contact our support team immediately.'
+      : 'We’re excited to welcome you back! You may now access all vendor features without restriction.';
 
-        const specialNote = isBlocked
-            ? `<p style="font-size: 12px; color: red;">
+    const specialNote = isBlocked
+      ? `<p style="font-size: 12px; color: red;">
          ⚠️ Please get in touch with <strong>Connect India Enterprises</strong> to resolve this issue and restore your access.
         </p>`
-            : `<p style="font-size: 12px; color: green;">
+      : `<p style="font-size: 12px; color: green;">
           Congratulations! Your access has been successfully restored.
         </p>`;
 
-        return `
+    return `
       <div>
         <p style="font-size: 12px; color: #444;">Hello ${businessName},</p>
         <p style="font-size: 12px; color: #444;">Thank you for being a valued part of Connect India Enterprises.</p>
@@ -54,5 +54,5 @@ export const emailVendorStatusTemplate = {
         </p>
       </div>
     `;
-    }
+  },
 };

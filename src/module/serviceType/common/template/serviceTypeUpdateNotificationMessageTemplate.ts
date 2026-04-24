@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UpdatedServiceMessageService {
-    private template: string = `
+  private template: string = `
     <html>
       <head>
         <style>
@@ -83,26 +83,26 @@ export class UpdatedServiceMessageService {
     </html>
   `;
 
-    getMessageFromUpdatedService(details: Record<string, any>): string {
-        const {
-            serviceSubType = 'Service',
-            amount = '0.00',
-            duration = 'N/A',
-            comment = '',
-            fromTime = 'N/A',
-            toTime = 'N/A'
-        } = details;
+  getMessageFromUpdatedService(details: Record<string, any>): string {
+    const {
+      serviceSubType = 'Service',
+      amount = '0.00',
+      duration = 'N/A',
+      comment = '',
+      fromTime = 'N/A',
+      toTime = 'N/A',
+    } = details;
 
-        const commentSection = comment
-            ? `<p><strong>Comment:</strong> ${comment}</p>`
-            : '';
+    const commentSection = comment
+      ? `<p><strong>Comment:</strong> ${comment}</p>`
+      : '';
 
-        return this.template
-            .replace(/{serviceSubType}/g, serviceSubType)
-            .replace('{amount}', amount)
-            .replace('{duration}', duration)
-            .replace('{fromTime}', fromTime)
-            .replace('{toTime}', toTime)
-            .replace('{commentSection}', commentSection);
-    }
+    return this.template
+      .replace(/{serviceSubType}/g, serviceSubType)
+      .replace('{amount}', amount)
+      .replace('{duration}', duration)
+      .replace('{fromTime}', fromTime)
+      .replace('{toTime}', toTime)
+      .replace('{commentSection}', commentSection);
+  }
 }

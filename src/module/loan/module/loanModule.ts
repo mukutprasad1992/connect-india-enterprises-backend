@@ -20,32 +20,32 @@ import { DeleteLoanByIdService } from '../services/deleteLoanByIdService';
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        ConfigModule,
-        TypeOrmModule.forFeature([LoanSchema, UserSchema]),
-        TypeOrmModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
-            signOptions: { expiresIn: '1h' },
-        }),
-        NotificationModule,
-    ],
-    controllers: [
-        CreateLoanController,
-        GetAllLoanByServiceServiceIdController,
-        UpdateLoanByIdController,
-        DeleteLoanByIdController
-    ],
-    providers: [
-        AppLogger,
-        AuthGuard,
-        NotificationMailService,
-        LoanMailService,
-        DeleteServiceTypeByUserSendMailService,
-        CreateLoanService,
-        GetloanByServiceIdService,
-        UpdateLoanByIdService,
-        DeleteLoanByIdService
-    ]
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forFeature([LoanSchema, UserSchema]),
+    TypeOrmModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+    NotificationModule,
+  ],
+  controllers: [
+    CreateLoanController,
+    GetAllLoanByServiceServiceIdController,
+    UpdateLoanByIdController,
+    DeleteLoanByIdController,
+  ],
+  providers: [
+    AppLogger,
+    AuthGuard,
+    NotificationMailService,
+    LoanMailService,
+    DeleteServiceTypeByUserSendMailService,
+    CreateLoanService,
+    GetloanByServiceIdService,
+    UpdateLoanByIdService,
+    DeleteLoanByIdService,
+  ],
 })
-export class LoanModule { }
+export class LoanModule {}

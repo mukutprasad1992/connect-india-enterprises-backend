@@ -22,38 +22,38 @@ import { GoogleAuthService } from '../service/googleAuthService';
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([UserSchema]),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-            inject: [ConfigService],
-        }),
-    ],
-    controllers: [
-        LoginController,
-        FacebookAuthController,
-        GoogleAuthController,
-        ChangePasswordController,
-        ForgetPasswordController,
-        ResetPasswordController,
-    ],
-    providers: [
-        AppLogger,
-        MailService,
-        LoginService,
-        GoogleStrategy,
-        FacebookAuthService,
-        GoogleAuthService,
-        FacebookStrategy,
-        ChangePasswordService,
-        ForgetPasswordService,
-        ResetPasswordService,
-        JwtAuthGuard
-    ],
-    exports: [JwtAuthGuard],
+  imports: [
+    TypeOrmModule.forFeature([UserSchema]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [
+    LoginController,
+    FacebookAuthController,
+    GoogleAuthController,
+    ChangePasswordController,
+    ForgetPasswordController,
+    ResetPasswordController,
+  ],
+  providers: [
+    AppLogger,
+    MailService,
+    LoginService,
+    GoogleStrategy,
+    FacebookAuthService,
+    GoogleAuthService,
+    FacebookStrategy,
+    ChangePasswordService,
+    ForgetPasswordService,
+    ResetPasswordService,
+    JwtAuthGuard,
+  ],
+  exports: [JwtAuthGuard],
 })
-export class AuthModule { }
+export class AuthModule {}

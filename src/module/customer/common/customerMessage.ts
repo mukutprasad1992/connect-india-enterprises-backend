@@ -1,98 +1,146 @@
-
 export const customerCreatedSuccessfully = 'Customer created successfully';
 export const customerCreationError = 'Error creating customer';
-export const failedToRetrieveTheIDOfTheLastInsertedCustomer = 'Failed to retrieve the ID of the last inserted customer';
+export const failedToRetrieveTheIDOfTheLastInsertedCustomer =
+  'Failed to retrieve the ID of the last inserted customer';
 export const customerNotFound = 'Customer not found';
-export const customerWithThisEmailAlreadyExists = "Customer with this email already exists.";
-export const vendorNotFound = "Vendor not found.";
-export const customersRetrievedSuccessfully = "Customers retrieved successfully.";
-export const anErrorOccurredWhileFetchingCustomers = "An error occurred while fetching customers.";
-export const errorFetchingVendorById = "Error fetching vendor by id:";
-export const customerUpdatedSuccessfully = "Customer updated successfully.";
-export const failedToUpdateCustomer = "Failed to update customer.";
-export const customerUpdationError = "Customer updation error.";
-export const customerSuccessfullyDeleted = "Customer successfully deleted.";
-export const anErrorOccurredWhileDeletingCustomers = "An error occurred while deleting customers.";
-export const customerDetailsUpdatedByVendor = "Customer Details Updated by Vendor ";
-export const newCustomerCreatedForVendor = "New Customer Created for Vendor ";
-export const fetchingCustomerByID = "Fetching customer by ID";
-export const customerFetched = "Customer fetched:";
-export const attemptingToCreateCustomer = "Attempting to create customer:";
-export const customerWithEmail = "Customer with email";
+export const customerWithThisEmailAlreadyExists =
+  'Customer with this email already exists.';
+export const vendorNotFound = 'Vendor not found.';
+export const customersRetrievedSuccessfully =
+  'Customers retrieved successfully.';
+export const anErrorOccurredWhileFetchingCustomers =
+  'An error occurred while fetching customers.';
+export const errorFetchingVendorById = 'Error fetching vendor by id:';
+export const customerUpdatedSuccessfully = 'Customer updated successfully.';
+export const failedToUpdateCustomer = 'Failed to update customer.';
+export const customerUpdationError = 'Customer updation error.';
+export const customerSuccessfullyDeleted = 'Customer successfully deleted.';
+export const anErrorOccurredWhileDeletingCustomers =
+  'An error occurred while deleting customers.';
+export const customerDetailsUpdatedByVendor =
+  'Customer Details Updated by Vendor ';
+export const newCustomerCreatedForVendor = 'New Customer Created for Vendor ';
+export const fetchingCustomerByID = 'Fetching customer by ID';
+export const customerFetched = 'Customer fetched:';
+export const attemptingToCreateCustomer = 'Attempting to create customer:';
+export const customerWithEmail = 'Customer with email';
 export const alreadyExists = 'already exists';
-export const vendorNotFoundForID = "Vendor not found for ID:";
-export const customerInsertQueryExecuted = "Customer insert query executed"
-export const failedToRetrieveLastInsertedCustomerID = "Failed to retrieve last inserted customer ID";
-export const notificationCreationFailedForCustomerID = "Notification creation failed for customer ID:";
-export const customerCreateSuccessfullyWithID = "Customer created successfully with ID:";
-export const customerCreationQueryFailed = "Customer creation query failed";
+export const vendorNotFoundForID = 'Vendor not found for ID:';
+export const customerInsertQueryExecuted = 'Customer insert query executed';
+export const failedToRetrieveLastInsertedCustomerID =
+  'Failed to retrieve last inserted customer ID';
+export const notificationCreationFailedForCustomerID =
+  'Notification creation failed for customer ID:';
+export const customerCreateSuccessfullyWithID =
+  'Customer created successfully with ID:';
+export const customerCreationQueryFailed = 'Customer creation query failed';
 export const errorCreatingCustomer = 'Error creating customer:';
-export const checkingIfCustomerExistsWithEmail = "Checking if customer exists with email:";
-export const fetchingVendorByID = "Fetching vendor by ID:";
-export const attemptingToDeleteCustomerWithID = "Attempting to delete customer with ID:";
-export const customerNotFoundWithID = "Customer not found with ID:";
-export const noCustomerDeletedForID = "No customer deleted for ID:";
-export const customerDeletedSuccessfullyID = "Customer deleted successfully. ID:";
-export const errorDeletingCustomerWithID = "Error deleting customer with ID";
+export const checkingIfCustomerExistsWithEmail =
+  'Checking if customer exists with email:';
+export const fetchingVendorByID = 'Fetching vendor by ID:';
+export const attemptingToDeleteCustomerWithID =
+  'Attempting to delete customer with ID:';
+export const customerNotFoundWithID = 'Customer not found with ID:';
+export const noCustomerDeletedForID = 'No customer deleted for ID:';
+export const customerDeletedSuccessfullyID =
+  'Customer deleted successfully. ID:';
+export const errorDeletingCustomerWithID = 'Error deleting customer with ID';
 export const customerFetchResultForID = 'Customer fetch result for ID';
-export const errorFetchingCustomerWithID = "Error fetching customer with ID";
-export const fetchingCustomersForVendorId = "Fetching customers for vendorId";
-export const vendorNotFoundWithId = "Vendor not found with id";
+export const errorFetchingCustomerWithID = 'Error fetching customer with ID';
+export const fetchingCustomersForVendorId = 'Fetching customers for vendorId';
+export const vendorNotFoundWithId = 'Vendor not found with id';
 export const noCustomersFoundForVendorId = 'No customers found for vendorId';
-export const customersRetrievedSuccessfullyForVendorId = "Customers retrieved successfully for vendorId";
-export const errorFetchingCustomersForVendorId = "Error fetching customers for vendorId";
-export const fetchingVendorById = "Fetching vendor by id";
-export const vendorFoundWithId = "Vendor found with id";
-export const fetchingAllCustomersForUserId = "Fetching all customers for userId:";
-export const vendorNotFoundForUserId = "Vendor not found for userId:";
-export const userFoundUserId = "User found. userId:";
-export const noCustomersFoundForUserId = "No customers found for userId:";
-export const customersRetrievedSuccessfullyForUserId = "Customers retrieved successfully for userId:";
-export const errorFetchingCustomersForUserId = "Error fetching customers for userId:";
-export const fetchingUserByID = "Fetching user by ID:";
-export const errorFetchingUserWithID = "Error fetching user with ID";
-export const fetchingAllCustomersForVendorId = "Fetching all customers for vendorId:";
-export const vendorNotFoundForVendorId = "Vendor not found for vendorId:";
-export const vendorFound = "Vendor found:";
-export const successfullyRetrieved = "Successfully retrieved";
-export const customersForVendorId = "customers for vendorId:";
-export const errorWhileFetchingCustomersForVendorId = 'Error while fetching customers for vendorId:';
+export const customersRetrievedSuccessfullyForVendorId =
+  'Customers retrieved successfully for vendorId';
+export const errorFetchingCustomersForVendorId =
+  'Error fetching customers for vendorId';
+export const fetchingVendorById = 'Fetching vendor by id';
+export const vendorFoundWithId = 'Vendor found with id';
+export const fetchingAllCustomersForUserId =
+  'Fetching all customers for userId:';
+export const vendorNotFoundForUserId = 'Vendor not found for userId:';
+export const userFoundUserId = 'User found. userId:';
+export const noCustomersFoundForUserId = 'No customers found for userId:';
+export const customersRetrievedSuccessfullyForUserId =
+  'Customers retrieved successfully for userId:';
+export const errorFetchingCustomersForUserId =
+  'Error fetching customers for userId:';
+export const fetchingUserByID = 'Fetching user by ID:';
+export const errorFetchingUserWithID = 'Error fetching user with ID';
+export const fetchingAllCustomersForVendorId =
+  'Fetching all customers for vendorId:';
+export const vendorNotFoundForVendorId = 'Vendor not found for vendorId:';
+export const vendorFound = 'Vendor found:';
+export const successfullyRetrieved = 'Successfully retrieved';
+export const customersForVendorId = 'customers for vendorId:';
+export const errorWhileFetchingCustomersForVendorId =
+  'Error while fetching customers for vendorId:';
 export const fetchingVendorByVendorId = 'Fetching vendor by vendorId:';
-export const vendorRetrievedSuccessfullyForVendorId = "Vendor retrieved successfully for vendorId:";
-export const errorFetchingVendorWithID = "Error fetching vendor with ID";
-export const customerRetrievedSuccessfully = "Customer retrieved successfully";
-export const attemptingToUpdateCustomerId = "Attempting to update customerId:";
+export const vendorRetrievedSuccessfullyForVendorId =
+  'Vendor retrieved successfully for vendorId:';
+export const errorFetchingVendorWithID = 'Error fetching vendor with ID';
+export const customerRetrievedSuccessfully = 'Customer retrieved successfully';
+export const attemptingToUpdateCustomerId = 'Attempting to update customerId:';
 export const byUserId = 'by userId:';
-export const noCustomerFoundToUpdate = "No customer found to update";
-export const customerUpdatedSuccessfullyInDB = "Customer updated successfully in DB";
-export const creatingNotificationForUpdatedCustomer = "Creating notification for updated customer";
-export const notificationCreationFailedForCustomer = "Notification creation failed for customer";
-export const customerUpdateNotificationCompletedSuccessfully = "Customer update + notification completed successfully";
-export const errorWhileUpdatingCustomer = "Error while updating customer";
-export const createCustomerControllerRequestReceivedToCreateCustomerByUser = '[CreateCustomerController] Request received to create customer by user';
-export const createCustomerControllerCustomerCreatedSuccessfullyByUse = "[CreateCustomerController] Customer created successfully by use";
-export const createCustomerControllerFailedToCreateCustomerByUser = "[CreateCustomerController] Failed to create customer by user";
-export const createCustomerControllerUnexpectedErrorWhileCreatingCustomerByUser = "[CreateCustomerController] Unexpected error while creating customer by user";
-export const deleteCustomerByIdControllerRequestReceivedToDeleteCustomer = "[DeleteCustomerByIdController] Request received to delete customer";
-export const deleteCustomerByIdControllerCustomer = "[DeleteCustomerByIdController] Customer";
-export const deletedSuccessfullyByUser = "deleted successfully by user";
-export const deleteCustomerByIdControllerFailedToDeleteCustomer = "[DeleteCustomerByIdController] Failed to delete customer";
-export const deleteCustomerByIdControllerUnexpectedErrorWhileDeletingCustomer = "[DeleteCustomerByIdController] Unexpected error while deleting customer";
-export const getCustomerByVendorIdControllerRequestReceivedToFetchCustomersForVendor = "[GetCustomerByVendorIdController] Request received to fetch customers for vendor";
-export const getCustomerByVendorIdControllerCustomersForVendor = "[GetCustomerByVendorIdController] Customers for vendor";
-export const retrievedSuccessfullyByUser = "retrieved successfully by user";
-export const getCustomerByVendorIdControllerFailedToRetrieveCustomersForVendor = '[GetCustomerByVendorIdController] Failed to retrieve customers for vendor';
-export const getCustomerByVendorIdControllerUnexpectedErrorWhileFetchingCustomersForVendor = "[GetCustomerByVendorIdController] Unexpected error while fetching customers for vendor";
-export const getAllCustomerControllerRequestReceivedToFetchALLCustomersByUser = "[GetAllCustomerController] Request received to fetch ALL customers by user";
-export const getAllCustomerControllerSuccessfullyRetrievedAllCustomersForUser = "[GetAllCustomerController] Successfully retrieved all customers for user";
-export const getAllCustomerControllerFailedToRetrieveCustomersForUser = "[GetAllCustomerController] Failed to retrieve customers for user";
-export const getAllCustomerControllerUnexpectedErrorWhileRetrievingCustomersForUser = "[GetAllCustomerController] Unexpected error while retrieving customers for user";
-export const getCustomerByVendorControllerIncomingRequestForVendorCustomers = '[GetCustomerByVendorController] Incoming request for vendor customers';
-export const getCustomerByVendorControllerVendorNotFoundInRequestUserIdMissing = "[GetCustomerByVendorController] Vendor not found in request (userId missing).";
-export const getCustomerByVendorControllerCustomersRetrievedSuccessfullyForVendor = "[GetCustomerByVendorController] Customers retrieved successfully for vendor";
-export const getCustomerByVendorControllerFailedToRetrieveCustomersForVendor = "[GetCustomerByVendorController] Failed to retrieve customers for vendor";
-export const getCustomerByVendorControllerUnexpectedServerErrorWhileFetchingCustomers = "[GetCustomerByVendorController] Unexpected server error while fetching customers";
-export const updateCustomerControllerIncomingRequestToUpdateCustomer = "[UpdateCustomerController] Incoming request to update customer";
-export const updateCustomerControllerCustomerUpdatedSuccessfully = "[UpdateCustomerController] Customer updated successfully";
-export const updateCustomerControllerFailedToUpdateCustomer = "[UpdateCustomerController] Failed to update customer";
-export const updateCustomerControllerUnexpectedServerErrorWhileUpdatingCustomer = '[UpdateCustomerController] Unexpected server error while updating customer';
+export const noCustomerFoundToUpdate = 'No customer found to update';
+export const customerUpdatedSuccessfullyInDB =
+  'Customer updated successfully in DB';
+export const creatingNotificationForUpdatedCustomer =
+  'Creating notification for updated customer';
+export const notificationCreationFailedForCustomer =
+  'Notification creation failed for customer';
+export const customerUpdateNotificationCompletedSuccessfully =
+  'Customer update + notification completed successfully';
+export const errorWhileUpdatingCustomer = 'Error while updating customer';
+export const createCustomerControllerRequestReceivedToCreateCustomerByUser =
+  '[CreateCustomerController] Request received to create customer by user';
+export const createCustomerControllerCustomerCreatedSuccessfullyByUse =
+  '[CreateCustomerController] Customer created successfully by use';
+export const createCustomerControllerFailedToCreateCustomerByUser =
+  '[CreateCustomerController] Failed to create customer by user';
+export const createCustomerControllerUnexpectedErrorWhileCreatingCustomerByUser =
+  '[CreateCustomerController] Unexpected error while creating customer by user';
+export const deleteCustomerByIdControllerRequestReceivedToDeleteCustomer =
+  '[DeleteCustomerByIdController] Request received to delete customer';
+export const deleteCustomerByIdControllerCustomer =
+  '[DeleteCustomerByIdController] Customer';
+export const deletedSuccessfullyByUser = 'deleted successfully by user';
+export const deleteCustomerByIdControllerFailedToDeleteCustomer =
+  '[DeleteCustomerByIdController] Failed to delete customer';
+export const deleteCustomerByIdControllerUnexpectedErrorWhileDeletingCustomer =
+  '[DeleteCustomerByIdController] Unexpected error while deleting customer';
+export const getCustomerByVendorIdControllerRequestReceivedToFetchCustomersForVendor =
+  '[GetCustomerByVendorIdController] Request received to fetch customers for vendor';
+export const getCustomerByVendorIdControllerCustomersForVendor =
+  '[GetCustomerByVendorIdController] Customers for vendor';
+export const retrievedSuccessfullyByUser = 'retrieved successfully by user';
+export const getCustomerByVendorIdControllerFailedToRetrieveCustomersForVendor =
+  '[GetCustomerByVendorIdController] Failed to retrieve customers for vendor';
+export const getCustomerByVendorIdControllerUnexpectedErrorWhileFetchingCustomersForVendor =
+  '[GetCustomerByVendorIdController] Unexpected error while fetching customers for vendor';
+export const getAllCustomerControllerRequestReceivedToFetchALLCustomersByUser =
+  '[GetAllCustomerController] Request received to fetch ALL customers by user';
+export const getAllCustomerControllerSuccessfullyRetrievedAllCustomersForUser =
+  '[GetAllCustomerController] Successfully retrieved all customers for user';
+export const getAllCustomerControllerFailedToRetrieveCustomersForUser =
+  '[GetAllCustomerController] Failed to retrieve customers for user';
+export const getAllCustomerControllerUnexpectedErrorWhileRetrievingCustomersForUser =
+  '[GetAllCustomerController] Unexpected error while retrieving customers for user';
+export const getCustomerByVendorControllerIncomingRequestForVendorCustomers =
+  '[GetCustomerByVendorController] Incoming request for vendor customers';
+export const getCustomerByVendorControllerVendorNotFoundInRequestUserIdMissing =
+  '[GetCustomerByVendorController] Vendor not found in request (userId missing).';
+export const getCustomerByVendorControllerCustomersRetrievedSuccessfullyForVendor =
+  '[GetCustomerByVendorController] Customers retrieved successfully for vendor';
+export const getCustomerByVendorControllerFailedToRetrieveCustomersForVendor =
+  '[GetCustomerByVendorController] Failed to retrieve customers for vendor';
+export const getCustomerByVendorControllerUnexpectedServerErrorWhileFetchingCustomers =
+  '[GetCustomerByVendorController] Unexpected server error while fetching customers';
+export const updateCustomerControllerIncomingRequestToUpdateCustomer =
+  '[UpdateCustomerController] Incoming request to update customer';
+export const updateCustomerControllerCustomerUpdatedSuccessfully =
+  '[UpdateCustomerController] Customer updated successfully';
+export const updateCustomerControllerFailedToUpdateCustomer =
+  '[UpdateCustomerController] Failed to update customer';
+export const updateCustomerControllerUnexpectedServerErrorWhileUpdatingCustomer =
+  '[UpdateCustomerController] Unexpected server error while updating customer';

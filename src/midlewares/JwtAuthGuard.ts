@@ -1,46 +1,51 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
-    invalidOrExpiredToken,
-    tokenNotFound,
-    unauthorized
+  invalidOrExpiredToken,
+  tokenNotFound,
+  unauthorized,
 } from './common/authenticationMessage';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-    constructor(private readonly jwtService: JwtService) { }
+  constructor(private readonly jwtService: JwtService) {}
 
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest();
-        const token = this.extractTokenFromHeader(request);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
 
-        if (!token) {
-            throw new UnauthorizedException({
-                statusCode: 401,
-                message: tokenNotFound,
-                error: unauthorized,
-            });
-        }
-
-        try {
-            const payload = await this.jwtService.verifyAsync(token, {
-                secret: process.env.JWT_SECRET,
-            });
-            request.user = payload;
-            return true;
-        } catch (error) {
-            throw new UnauthorizedException({
-                statusCode: 401,
-                message: invalidOrExpiredToken,
-                error: unauthorized,
-            });
-        }
+    if (!token) {
+      throw new UnauthorizedException({
+        statusCode: 401,
+        message: tokenNotFound,
+        error: unauthorized,
+      });
     }
 
-    private extractTokenFromHeader(request: any): string | undefined {
-        const authorizationHeader = request.headers['authorization'];
-        if (!authorizationHeader) return undefined;
-        const [type, token] = authorizationHeader.split(' ');
-        return type === 'Bearer' ? token : undefined;
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      request.user = payload;
+      return true;
+    } catch (error: any) {
+      throw new UnauthorizedException({
+        statusCode: 401,
+        message: invalidOrExpiredToken,
+        error: unauthorized,
+      });
     }
+  }
+
+  private extractTokenFromHeader(request: any): string | undefined {
+    const authorizationHeader = request.headers['authorization'];
+    if (!authorizationHeader) return undefined;
+    const [type, token] = authorizationHeader.split(' ');
+    return type === 'Bearer' ? token : undefined;
+  }
 }

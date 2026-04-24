@@ -1,5 +1,5 @@
 export const emailUpdateServiceTypeTemplates = {
-  UpdateUserRequest: (serviceSubType: string, status: string = "Updated") => {
+  UpdateUserRequest: (serviceSubType: string, status: string = 'Updated') => {
     return `
       <div>
         <h3>Your ${serviceSubType} Request Has Been Updated!</h3>
@@ -39,5 +39,5 @@ export const emailUpdateServiceTypeTemplates = {
         </p>
       </div>
     `;
-  }
+  },
 };

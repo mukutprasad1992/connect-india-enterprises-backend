@@ -1,101 +1,142 @@
-export const inputCannotBeUndefinedOrNull = "Input cannot be undefined or null.";
-export const requestBodyIsRequired = "Request body is required";
-export const validationFailed = "Validation failed";
-export const requestBodyMustBeAJSONObject = "Request body must be a JSON object";
-export const aadharNumberIsRequired = "aadharNumber is required";
-export const aadharNumberMustBe12Or16Digits = "Aadhar number must be  12  or 16 digits";
-export const activeStepsIsRequired = "activeSteps is required";
-export const activeStepsMustBeDasicDetails = "activeSteps must be basicDetails";
-export const panNumberIsRequired = "panNumber is required";
-export const PANnumberMustFollowFormat5Letters4Digits1Letter = "PAN number must follow format: 5 letters, 4 digits, 1 letter (e.g., ABCDE1234F)";
-export const serviceIdIsRequired = "serviceId is required";
-export const serviceIdMustAbeNumber = "serviceId must be a number";
-export const serviceSubTypeIsRequired = "ServiceSubType is required";
-export const serviceSubTypeMustBeAString = "ServiceSubType must be a string";
-export const statusMustBeOneOf = "Status must be one of";
-export const userNotFound = "User not found";
-export const insuranceCreatedSuccessfully = "Insurance created successfully";
-export const insuranceCreationError = "Insurance creation error";
-export const failedToRetrieveTheIDOfTheLastInsertedInsurance = "Failed to retrieve the ID of the last inserted Insurance.";
-export const yourInsuranceRequestHasBeenCreatedSuccessfully = "Your insurance request has been created successfully.";
-export const invalidServiceSubType = "Invalid ServiceSubType";
-export const failedToCreateInsuranceRequest = "Failed to create insurance request";
-export const failedToCreateBasicDetails = "Failed to create basic details";
-export const insuranceHasBeenCreatedBy = "Insurance has been created by ";
-export const AndRequiresYourAttention = "and requires your attention."
-export const ANew = "A new";
+export const inputCannotBeUndefinedOrNull =
+  'Input cannot be undefined or null.';
+export const requestBodyIsRequired = 'Request body is required';
+export const validationFailed = 'Validation failed';
+export const requestBodyMustBeAJSONObject =
+  'Request body must be a JSON object';
+export const aadharNumberIsRequired = 'aadharNumber is required';
+export const aadharNumberMustBe12Or16Digits =
+  'Aadhar number must be  12  or 16 digits';
+export const activeStepsIsRequired = 'activeSteps is required';
+export const activeStepsMustBeDasicDetails = 'activeSteps must be basicDetails';
+export const panNumberIsRequired = 'panNumber is required';
+export const PANnumberMustFollowFormat5Letters4Digits1Letter =
+  'PAN number must follow format: 5 letters, 4 digits, 1 letter (e.g., ABCDE1234F)';
+export const serviceIdIsRequired = 'serviceId is required';
+export const serviceIdMustAbeNumber = 'serviceId must be a number';
+export const serviceSubTypeIsRequired = 'ServiceSubType is required';
+export const serviceSubTypeMustBeAString = 'ServiceSubType must be a string';
+export const statusMustBeOneOf = 'Status must be one of';
+export const userNotFound = 'User not found';
+export const insuranceCreatedSuccessfully = 'Insurance created successfully';
+export const insuranceCreationError = 'Insurance creation error';
+export const failedToRetrieveTheIDOfTheLastInsertedInsurance =
+  'Failed to retrieve the ID of the last inserted Insurance.';
+export const yourInsuranceRequestHasBeenCreatedSuccessfully =
+  'Your insurance request has been created successfully.';
+export const invalidServiceSubType = 'Invalid ServiceSubType';
+export const failedToCreateInsuranceRequest =
+  'Failed to create insurance request';
+export const failedToCreateBasicDetails = 'Failed to create basic details';
+export const insuranceHasBeenCreatedBy = 'Insurance has been created by ';
+export const AndRequiresYourAttention = 'and requires your attention.';
+export const ANew = 'A new';
 export const createdSuccessfully = 'created successfully';
-export const insuranceNotFoundOrValidationFailed = 'Insurance not found. or validation failed';
-export const insuranceRetrievedSuccessfully = 'Insurance retrieved successfully.';
-export const insuranceNotFound = "Insurance not found.";
+export const insuranceNotFoundOrValidationFailed =
+  'Insurance not found. or validation failed';
+export const insuranceRetrievedSuccessfully =
+  'Insurance retrieved successfully.';
+export const insuranceNotFound = 'Insurance not found.';
 export const insuranceRetrievalError = 'Insurance retrieval error.';
-export const activeStepsMustBeOneOfBasicDetailsPersonalDetailsNomineeDetailsDocumentsReview = "activeSteps must be one of: basicDetails, personalDetails, nomineeDetails, documents, review";
-export const atLeastOneFieldMustBeProvidedForpdate = "At least one field must be provided for update";
+export const activeStepsMustBeOneOfBasicDetailsPersonalDetailsNomineeDetailsDocumentsReview =
+  'activeSteps must be one of: basicDetails, personalDetails, nomineeDetails, documents, review';
+export const atLeastOneFieldMustBeProvidedForpdate =
+  'At least one field must be provided for update';
 export const mobileIsRequired = 'mobile is required';
-export const mobileMustBeInTheFormat = "Mobile must be in the format +91 9876543210";
-export const nomineeMobileIsRequired = "Nominee mobile is required";
-export const insurnaceUpdateError = "Inurance update error.";
-export const insuranceUpdatedSuccessfully = "Insurance updated successfully.";
-export const insuranceNotFoundOrNoChangesHaveBeenMade = "Insurance not found or no changes have been made.";
-export const invalidStatusValueProvided = "Invalid status value provided.";
-export const userNotFoundForTheGivenInsuranceID = "User not found for the given Insurance ID";
+export const mobileMustBeInTheFormat =
+  'Mobile must be in the format +91 9876543210';
+export const nomineeMobileIsRequired = 'Nominee mobile is required';
+export const insurnaceUpdateError = 'Inurance update error.';
+export const insuranceUpdatedSuccessfully = 'Insurance updated successfully.';
+export const insuranceNotFoundOrNoChangesHaveBeenMade =
+  'Insurance not found or no changes have been made.';
+export const invalidStatusValueProvided = 'Invalid status value provided.';
+export const userNotFoundForTheGivenInsuranceID =
+  'User not found for the given Insurance ID';
 export const theServiceRequestFor = 'The service request for';
-export const hasBeenApproved = "has been approved.";
-export const hasBeenRejected = "has been rejected.";
-export const isCurrentlyInProgress = "is currently in progress.";
-export const isPending = "is pending.";
-export const reviewStepCompletedSuccessfully = "Review step completed successfully";
-export const failedToUpdateBasicDetails = "Failed to update basic details";
-export const failedToSavePersonalDetails = "Failed to save personal details";
-export const failedToSaveNomineeDetails = "Failed to save nominee details";
-export const failedToSaveDocuments = "Failed to save documents";
+export const hasBeenApproved = 'has been approved.';
+export const hasBeenRejected = 'has been rejected.';
+export const isCurrentlyInProgress = 'is currently in progress.';
+export const isPending = 'is pending.';
+export const reviewStepCompletedSuccessfully =
+  'Review step completed successfully';
+export const failedToUpdateBasicDetails = 'Failed to update basic details';
+export const failedToSavePersonalDetails = 'Failed to save personal details';
+export const failedToSaveNomineeDetails = 'Failed to save nominee details';
+export const failedToSaveDocuments = 'Failed to save documents';
 export const updatedSuccessfully = 'updated successfully';
-export const insuranceUpdateError = "Insurance update error.";
-export const insuranceRequestNotFound = "Insurance request not found";
-export const heightMustBeANumber = "Height must be a number";
-export const heightIsRequired = "Height is required";
-export const weightMustBeANumber = "Weight must be a number";
-export const weightIsRequired = "Weight is required";
+export const insuranceUpdateError = 'Insurance update error.';
+export const insuranceRequestNotFound = 'Insurance request not found';
+export const heightMustBeANumber = 'Height must be a number';
+export const heightIsRequired = 'Height is required';
+export const weightMustBeANumber = 'Weight must be a number';
+export const weightIsRequired = 'Weight is required';
 export const smokerMustBeEitherYesOrNo = 'Smoker must be either "yes" or "no"';
-export const smokerStatusIsRequired = "Smoker status is required";
-export const alcoholMustBeEitherYesOrNo = 'Alcohol must be either "yes" or "no"';
-export const alcoholStatusIsRequired = "Alcohol status is required";
-export const insuranceDeletionError = "Insurance deletion error";
-export const insuranceDeletedSuccessfully = "Insurance deleted successfully";
-export const insuranceNotFoundOrAlreadyDeleted = "Insurance not found or already deleted";
-export const insuranceDeletionMailError = "Insurance deletion mail error";
-export const serviceRequestDeletedByUser = "Service request deleted by user";
-export const notificationCreationFailed = "Notification creation failed";
-export const createInsuranceServiceUserNotFound = "Create insurance service User not found";
-export const createInsuranceServiceStartCreatingInsuranceRequest = 'Create insurance service Start creating insurance request';
-export const createInsuranceServiceInvalidServiceSubType = "Create insurance service Invalid service sub type:";
-export const createInsuranceServiceFailedToCreateServiceRequest = "Create insurance service Failed to create service request";
-export const createInsuranceServiceFailedToCreateInsuranceBasicDetails = "Create insurance service Failed to create insurance basic details";
-export const createInsuranceServiceFailedToRetrieveIDOfLastInsertedInsurance = "Create insurance service Failed to retrieve ID of last inserted insurance";
-export const createInsuranceServiceInsuranceCreatedSuccessfully = "Create insurance service Insurance created successfully";
-export const createInsuranceServiceNotificationCreationFailed = "Create insurance service Notification creation failed";
-export const createInsuranceServiceNotificationSentSuccessfully = 'Create insurance service Notification sent successfully';
-export const createInsuranceServiceUnexpectedError = "Create insurance service Unexpected error";
-export const deleteInsuranceServiceStartDeletingInsurance = 'Start deleting insurance request';
-export const deleteInsuranceServiceInsuranceNotFound = 'Insurance record not found or already deleted';
-export const deleteInsuranceServiceDeletedSuccessfully = 'Insurance deleted successfully';
-export const deleteInsuranceServiceNotificationFailed = 'Failed to create notification for insurance deletion';
-export const deleteInsuranceServiceMailFailed = 'Failed to send insurance deletion mail';
-export const deleteInsuranceServiceUnexpectedError = 'Unexpected error during insurance deletion';
-export const getInsuranceServiceStartRetrieving = 'Start retrieving insurance details by service ID';
-export const getInsuranceServiceNoInsuranceFound = 'No insurance record found for the given service ID';
-export const getInsuranceServiceRetrievedSuccessfully = 'Insurance details retrieved successfully';
-export const getInsuranceServiceUnexpectedError = 'Unexpected error while retrieving insurance details';
-export const updateInsuranceServiceStartUpdating = 'Start updating insurance details by service request ID';
-export const updateInsuranceServiceInvalidStep = 'Invalid or unsupported insurance update step';
-export const updateInsuranceServiceUpdatedSuccessfully = 'Insurance details updated successfully';
-export const updateInsuranceServiceUnexpectedError = 'Unexpected error while updating insurance details';
+export const smokerStatusIsRequired = 'Smoker status is required';
+export const alcoholMustBeEitherYesOrNo =
+  'Alcohol must be either "yes" or "no"';
+export const alcoholStatusIsRequired = 'Alcohol status is required';
+export const insuranceDeletionError = 'Insurance deletion error';
+export const insuranceDeletedSuccessfully = 'Insurance deleted successfully';
+export const insuranceNotFoundOrAlreadyDeleted =
+  'Insurance not found or already deleted';
+export const insuranceDeletionMailError = 'Insurance deletion mail error';
+export const serviceRequestDeletedByUser = 'Service request deleted by user';
+export const notificationCreationFailed = 'Notification creation failed';
+export const createInsuranceServiceUserNotFound =
+  'Create insurance service User not found';
+export const createInsuranceServiceStartCreatingInsuranceRequest =
+  'Create insurance service Start creating insurance request';
+export const createInsuranceServiceInvalidServiceSubType =
+  'Create insurance service Invalid service sub type:';
+export const createInsuranceServiceFailedToCreateServiceRequest =
+  'Create insurance service Failed to create service request';
+export const createInsuranceServiceFailedToCreateInsuranceBasicDetails =
+  'Create insurance service Failed to create insurance basic details';
+export const createInsuranceServiceFailedToRetrieveIDOfLastInsertedInsurance =
+  'Create insurance service Failed to retrieve ID of last inserted insurance';
+export const createInsuranceServiceInsuranceCreatedSuccessfully =
+  'Create insurance service Insurance created successfully';
+export const createInsuranceServiceNotificationCreationFailed =
+  'Create insurance service Notification creation failed';
+export const createInsuranceServiceNotificationSentSuccessfully =
+  'Create insurance service Notification sent successfully';
+export const createInsuranceServiceUnexpectedError =
+  'Create insurance service Unexpected error';
+export const deleteInsuranceServiceStartDeletingInsurance =
+  'Start deleting insurance request';
+export const deleteInsuranceServiceInsuranceNotFound =
+  'Insurance record not found or already deleted';
+export const deleteInsuranceServiceDeletedSuccessfully =
+  'Insurance deleted successfully';
+export const deleteInsuranceServiceNotificationFailed =
+  'Failed to create notification for insurance deletion';
+export const deleteInsuranceServiceMailFailed =
+  'Failed to send insurance deletion mail';
+export const deleteInsuranceServiceUnexpectedError =
+  'Unexpected error during insurance deletion';
+export const getInsuranceServiceStartRetrieving =
+  'Start retrieving insurance details by service ID';
+export const getInsuranceServiceNoInsuranceFound =
+  'No insurance record found for the given service ID';
+export const getInsuranceServiceRetrievedSuccessfully =
+  'Insurance details retrieved successfully';
+export const getInsuranceServiceUnexpectedError =
+  'Unexpected error while retrieving insurance details';
+export const updateInsuranceServiceStartUpdating =
+  'Start updating insurance details by service request ID';
+export const updateInsuranceServiceInvalidStep =
+  'Invalid or unsupported insurance update step';
+export const updateInsuranceServiceUpdatedSuccessfully =
+  'Insurance details updated successfully';
+export const updateInsuranceServiceUnexpectedError =
+  'Unexpected error while updating insurance details';
 export const insuranceCreationStarted = 'Insurance creation process started';
-export const insuranceCreationFailed = 'Insurance creation failed due to invalid data or business logic';
+export const insuranceCreationFailed =
+  'Insurance creation failed due to invalid data or business logic';
 export const insuranceDeletionStarted = 'Insurance deletion process started';
-export const insuranceNotFoundForDeletion = 'No insurance record found for deletion';
-export const fetchingInsuranceDetailsForServiceId = "Fetching insurance details for serviceId:";
-export const updatingInsuranceRecordID = "Updating insurance record ID:";
-
-
-
+export const insuranceNotFoundForDeletion =
+  'No insurance record found for deletion';
+export const fetchingInsuranceDetailsForServiceId =
+  'Fetching insurance details for serviceId:';
+export const updatingInsuranceRecordID = 'Updating insurance record ID:';

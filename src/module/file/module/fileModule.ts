@@ -16,34 +16,31 @@ import { UploadDocumentForServiceTypeByUserController } from '../controller/uplo
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([UserSchema]),
-        TypeOrmModule,
-        JwtModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-        }),
-    ],
-    controllers: [
-        ProfileImageUploadController,
-        CouponPDFFileController,
-        DeleteProfileImageController,
-        UploadDocumentForServiceTypeByUserController
-
-    ],
-    providers: [
-        AppLogger,
-        ProfileImageUploadService,
-        GetUserByIdService,
-        UploadCouponPDFService,
-        DeleteProfileImageService,
-        UploadDocumentForServiceTypeByUserService
-    ],
-    exports: [
-        UploadCouponPDFService
-    ]
+  imports: [
+    TypeOrmModule.forFeature([UserSchema]),
+    TypeOrmModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
+  ],
+  controllers: [
+    ProfileImageUploadController,
+    CouponPDFFileController,
+    DeleteProfileImageController,
+    UploadDocumentForServiceTypeByUserController,
+  ],
+  providers: [
+    AppLogger,
+    ProfileImageUploadService,
+    GetUserByIdService,
+    UploadCouponPDFService,
+    DeleteProfileImageService,
+    UploadDocumentForServiceTypeByUserService,
+  ],
+  exports: [UploadCouponPDFService],
 })
-export class FileModule { }
+export class FileModule {}

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SuccessVoucherMessageService {
-    private statusMessages: Record<string, string> = {
-        CouponGenerated: `
+  private statusMessages: Record<string, string> = {
+    CouponGenerated: `
             <html>
                 <head>
                     <style>
@@ -85,40 +85,40 @@ export class SuccessVoucherMessageService {
                     </div>
                 </body>
             </html>
-        `
+        `,
+  };
+
+  getCouponGeneratedMessage(voucherDetails: {
+    vendorBusinessRepresentative?: string;
+    vendorBusinessName?: string;
+    customerName: string;
+    amount: string;
+    voucherCode: string;
+    validityFrom: string;
+    validityTo: string;
+  }): string {
+    const vendorName =
+      voucherDetails.vendorBusinessName ||
+      voucherDetails.vendorBusinessRepresentative ||
+      'Partner';
+    const customerName = voucherDetails.customerName || 'a customer';
+    const amount = voucherDetails.amount || '0.00';
+    const voucherCode = voucherDetails.voucherCode || 'N/A';
+
+    const formatDate = (dateStr: string): string => {
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? 'N/A' : date.toDateString();
     };
 
-    getCouponGeneratedMessage(voucherDetails: {
-        vendorBusinessRepresentative?: string;
-        vendorBusinessName?: string;
-        customerName: string;
-        amount: string;
-        voucherCode: string;
-        validityFrom: string;
-        validityTo: string;
-    }): string {
-        const vendorName =
-            voucherDetails.vendorBusinessName ||
-            voucherDetails.vendorBusinessRepresentative ||
-            'Partner';
-        const customerName = voucherDetails.customerName || 'a customer';
-        const amount = voucherDetails.amount || '0.00';
-        const voucherCode = voucherDetails.voucherCode || 'N/A';
+    const validityFrom = formatDate(voucherDetails.validityFrom);
+    const validityTo = formatDate(voucherDetails.validityTo);
 
-        const formatDate = (dateStr: string): string => {
-            const date = new Date(dateStr);
-            return isNaN(date.getTime()) ? 'N/A' : date.toDateString();
-        };
-
-        const validityFrom = formatDate(voucherDetails.validityFrom);
-        const validityTo = formatDate(voucherDetails.validityTo);
-
-        return this.statusMessages['CouponGenerated']
-            .replace('{vendorName}', vendorName)
-            .replace('{customerName}', customerName)
-            .replace('{voucherCode}', voucherCode)
-            .replace('{amount}', amount)
-            .replace('{validityFrom}', validityFrom)
-            .replace('{validityTo}', validityTo);
-    }
+    return this.statusMessages['CouponGenerated']
+      .replace('{vendorName}', vendorName)
+      .replace('{customerName}', customerName)
+      .replace('{voucherCode}', voucherCode)
+      .replace('{amount}', amount)
+      .replace('{validityFrom}', validityFrom)
+      .replace('{validityTo}', validityTo);
+  }
 }

@@ -5,18 +5,18 @@ import { AiService } from '../service/AIService';
 import { AiController } from '../controller/AIController';
 import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
-    imports: [
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '1h' },
-            }),
-            inject: [ConfigService],
-        }),
-        TypeOrmModule,
-    ],
-    controllers: [AiController],
-    providers: [AiService],
+  imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule,
+  ],
+  controllers: [AiController],
+  providers: [AiService],
 })
-export class AiModule { }
+export class AiModule {}

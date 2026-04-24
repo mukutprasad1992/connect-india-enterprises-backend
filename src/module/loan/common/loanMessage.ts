@@ -1,155 +1,208 @@
-export const inputCannotBeUndefinedOrNull = "Input cannot be undefined or null.";
-export const requestBodyIsRequired = "Request body is required";
-export const validationFailed = "Validation failed";
-export const requestBodyMustBeAJSONObject = "Request body must be a JSON object";
-export const aadharNumberIsRequired = "aadharNumber is required";
-export const aadharNumberMustBe12Or16Digits = "Aadhar number must be  12  or 16 digits";
-export const activeStepsIsRequired = "activeSteps is required";
-export const activeStepsMustPersonalDetails = "activeSteps must be PersonalDetails";
-export const panNumberIsRequired = "panNumber is required";
-export const PANnumberMustFollowFormat5Letters4Digits1Letter = "PAN number must follow format: 5 letters, 4 digits, 1 letter (e.g., ABCDE1234F)";
-export const serviceIdIsRequired = "serviceId is required";
-export const serviceIdMustAbeNumber = "serviceId must be a number";
-export const serviceSubTypeIsRequired = "ServiceSubType is required";
-export const serviceSubTypeMustBeAString = "ServiceSubType must be a string";
-export const statusMustBeOneOf = "Status must be one of";
-export const userNotFound = "User not found";
-export const loanCreatedSuccessfully = "Loan created successfully";
-export const loanCreationError = "Loan creation error";
-export const failedToRetrieveTheIDOfTheLastInsertedLoan = "Failed to retrieve the ID of the last inserted loan.";
-export const yourLoanRequestHasBeenCreatedSuccessfully = "Your loan request has been created successfully.";
-export const invalidServiceSubType = "Invalid ServiceSubType";
-export const failedToCreateLoanRequest = "Failed to create loan request";
-export const failedToCreateBasicDetails = "Failed to create basic details";
-export const loanHasBeenCreatedBy = "Loan has been created by ";
-export const andrequiresYourAttention = "and requires your attention.";
-export const ANew = "A new";
+export const inputCannotBeUndefinedOrNull =
+  'Input cannot be undefined or null.';
+export const requestBodyIsRequired = 'Request body is required';
+export const validationFailed = 'Validation failed';
+export const requestBodyMustBeAJSONObject =
+  'Request body must be a JSON object';
+export const aadharNumberIsRequired = 'aadharNumber is required';
+export const aadharNumberMustBe12Or16Digits =
+  'Aadhar number must be  12  or 16 digits';
+export const activeStepsIsRequired = 'activeSteps is required';
+export const activeStepsMustPersonalDetails =
+  'activeSteps must be PersonalDetails';
+export const panNumberIsRequired = 'panNumber is required';
+export const PANnumberMustFollowFormat5Letters4Digits1Letter =
+  'PAN number must follow format: 5 letters, 4 digits, 1 letter (e.g., ABCDE1234F)';
+export const serviceIdIsRequired = 'serviceId is required';
+export const serviceIdMustAbeNumber = 'serviceId must be a number';
+export const serviceSubTypeIsRequired = 'ServiceSubType is required';
+export const serviceSubTypeMustBeAString = 'ServiceSubType must be a string';
+export const statusMustBeOneOf = 'Status must be one of';
+export const userNotFound = 'User not found';
+export const loanCreatedSuccessfully = 'Loan created successfully';
+export const loanCreationError = 'Loan creation error';
+export const failedToRetrieveTheIDOfTheLastInsertedLoan =
+  'Failed to retrieve the ID of the last inserted loan.';
+export const yourLoanRequestHasBeenCreatedSuccessfully =
+  'Your loan request has been created successfully.';
+export const invalidServiceSubType = 'Invalid ServiceSubType';
+export const failedToCreateLoanRequest = 'Failed to create loan request';
+export const failedToCreateBasicDetails = 'Failed to create basic details';
+export const loanHasBeenCreatedBy = 'Loan has been created by ';
+export const andrequiresYourAttention = 'and requires your attention.';
+export const ANew = 'A new';
 export const createdSuccessfully = 'created successfully';
 export const loanNotFound = 'Loan not found.';
 export const loanRetrievedSuccessfully = 'Loan retrieved successfully.';
 export const loanRetrievalError = 'Loan retrieval error.';
-export const activeStepsMustBeOneOfBasicDetailsPersonalDetailsNomineeDetailsDocumentsReview = "activeSteps must be one of: basicDetails, personalDetails, nomineeDetails, documents, review";
-export const atLeastOneFieldMustBeProvidedForpdate = "At least one field must be provided for update";
+export const activeStepsMustBeOneOfBasicDetailsPersonalDetailsNomineeDetailsDocumentsReview =
+  'activeSteps must be one of: basicDetails, personalDetails, nomineeDetails, documents, review';
+export const atLeastOneFieldMustBeProvidedForpdate =
+  'At least one field must be provided for update';
 export const mobileIsRequired = 'mobile is required';
-export const mobileMustBeInTheFormat = "Mobile must be in the format +91 9876543210";
-export const nomineeMobileIsRequired = "Nominee mobile is required";
-export const insurnaceUpdateError = "Inurance update error.";
-export const loanUpdatedSuccessfully = "Loan updated successfully.";
-export const loanNotFoundOrNoChangesHaveBeenMade = "Loan not found or no changes have been made.";
-export const invalidStatusValueProvided = "Invalid status value provided.";
-export const userNotFoundForTheGivenLoanID = "User not found for the given loan ID";
+export const mobileMustBeInTheFormat =
+  'Mobile must be in the format +91 9876543210';
+export const nomineeMobileIsRequired = 'Nominee mobile is required';
+export const insurnaceUpdateError = 'Inurance update error.';
+export const loanUpdatedSuccessfully = 'Loan updated successfully.';
+export const loanNotFoundOrNoChangesHaveBeenMade =
+  'Loan not found or no changes have been made.';
+export const invalidStatusValueProvided = 'Invalid status value provided.';
+export const userNotFoundForTheGivenLoanID =
+  'User not found for the given loan ID';
 export const theServiceRequestFor = 'The service request for';
-export const hasBeenApproved = "has been approved.";
-export const hasBeenRejected = "has been rejected.";
-export const isCurrentlyInProgress = "is currently in progress.";
-export const isPending = "is pending.";
-export const reviewStepCompletedSuccessfully = "Review step completed successfully";
-export const failedToUpdateBasicDetails = "Failed to update basic details";
-export const failedToSavePersonalDetails = "Failed to save personal details";
-export const feildToSaveContactDetails = "Feild to save contact details";
-export const feildToSaveEmploymentDetails = "feild to save employment details";
-export const feildToSaveReferenceDetails = "Feild to save reference details";
-export const failedToSaveDocuments = "Failed to save documents";
+export const hasBeenApproved = 'has been approved.';
+export const hasBeenRejected = 'has been rejected.';
+export const isCurrentlyInProgress = 'is currently in progress.';
+export const isPending = 'is pending.';
+export const reviewStepCompletedSuccessfully =
+  'Review step completed successfully';
+export const failedToUpdateBasicDetails = 'Failed to update basic details';
+export const failedToSavePersonalDetails = 'Failed to save personal details';
+export const feildToSaveContactDetails = 'Feild to save contact details';
+export const feildToSaveEmploymentDetails = 'feild to save employment details';
+export const feildToSaveReferenceDetails = 'Feild to save reference details';
+export const failedToSaveDocuments = 'Failed to save documents';
 export const updatedSuccessfully = 'updated successfully';
-export const loanUpdateError = "Loan update error.";
-export const heightMustBeANumber = "Height must be a number";
-export const heightIsRequired = "Height is required";
-export const weightMustBeANumber = "Weight must be a number";
-export const weightIsRequired = "Weight is required";
+export const loanUpdateError = 'Loan update error.';
+export const heightMustBeANumber = 'Height must be a number';
+export const heightIsRequired = 'Height is required';
+export const weightMustBeANumber = 'Weight must be a number';
+export const weightIsRequired = 'Weight is required';
 export const smokerMustBeEitherYesOrNo = 'Smoker must be either "yes" or "no"';
-export const smokerStatusIsRequired = "Smoker status is required";
-export const alcoholMustBeEitherYesOrNo = 'Alcohol must be either "yes" or "no"';
-export const alcoholStatusIsRequired = "Alcohol status is required";
-export const loanDeletionError = "Loan deletion error";
-export const loanDeletedSuccessfully = "Loan deleted successfully";
-export const loanNotFoundOrAlreadyDeleted = "Loan not found or already deleted";
-export const loanDeletionMailError = "Loan deletion mail error";
-export const serviceRequestDeletedByUser = "Service request deleted by user";
-export const notificationCreationFailed = "Notification creation failed";
-export const motherNameIsRequired = "Mother name is required";
-export const maritalStatusNameIsRequired = "Marital status name is required";
-export const currentAddressNameIsRequired = "Current address name is required";
-export const alternatNoIsRequired = "Alternat no is required";
+export const smokerStatusIsRequired = 'Smoker status is required';
+export const alcoholMustBeEitherYesOrNo =
+  'Alcohol must be either "yes" or "no"';
+export const alcoholStatusIsRequired = 'Alcohol status is required';
+export const loanDeletionError = 'Loan deletion error';
+export const loanDeletedSuccessfully = 'Loan deleted successfully';
+export const loanNotFoundOrAlreadyDeleted = 'Loan not found or already deleted';
+export const loanDeletionMailError = 'Loan deletion mail error';
+export const serviceRequestDeletedByUser = 'Service request deleted by user';
+export const notificationCreationFailed = 'Notification creation failed';
+export const motherNameIsRequired = 'Mother name is required';
+export const maritalStatusNameIsRequired = 'Marital status name is required';
+export const currentAddressNameIsRequired = 'Current address name is required';
+export const alternatNoIsRequired = 'Alternat no is required';
 export const yearsOfCityIsRequired = 'Years of city is required';
-export const landmarkIsRequired = "Landmark is required";
-export const designationIsRequired = "Designation is required";
-export const companyExpNoIsRequired = "Company Exp no is required";
-export const totalWorkExpIsRequired = "Total work exp is required";
+export const landmarkIsRequired = 'Landmark is required';
+export const designationIsRequired = 'Designation is required';
+export const companyExpNoIsRequired = 'Company Exp no is required';
+export const totalWorkExpIsRequired = 'Total work exp is required';
 export const officeMobileNoIsRequired = 'Office mobile no is required';
-export const officeAddressIsRequired = "Office address is required";
-export const reference1NameIsRequired = "Reference 1 Name is required";
-export const reference1MobileIsRequired = "Reference 1 mobile is required";
-export const reference1AddressIsRequired = "Reference 1 address is required";
-export const reference2NameIsRequired = "Reference 2 name is required";
-export const reference2MobileIsRequired = "Reference 2 mobile is required";
-export const reference2AddressIsRequired = "Reference 2 address is required";
-export const aadharCardFileKeyIsRequired = "Aadhar card file key is required";
-export const PANCardFileKeyIsRequired = "PAN card file key is required";
-export const photoFileKeyIsRequired = "Photo file key is required";
+export const officeAddressIsRequired = 'Office address is required';
+export const reference1NameIsRequired = 'Reference 1 Name is required';
+export const reference1MobileIsRequired = 'Reference 1 mobile is required';
+export const reference1AddressIsRequired = 'Reference 1 address is required';
+export const reference2NameIsRequired = 'Reference 2 name is required';
+export const reference2MobileIsRequired = 'Reference 2 mobile is required';
+export const reference2AddressIsRequired = 'Reference 2 address is required';
+export const aadharCardFileKeyIsRequired = 'Aadhar card file key is required';
+export const PANCardFileKeyIsRequired = 'PAN card file key is required';
+export const photoFileKeyIsRequired = 'Photo file key is required';
 export const salarySilipFileKeyIsRequired = 'Salary silip file key is required';
-export const bankStatementFileKeyIsRequired = "Bank statement file key is required";
-export const loanAlreadyExistsOrValidationFailed = 'A loan with the same details already exists or validation failed';
-export const retrievingLoansForServiceId = "Retrieving loans for serviceId:";
-export const loansRetrievedSuccessfullyForUserId = "Loans retrieved successfully for userId:";
-export const noLoansFoundForUserId = "No loans found for userId:";
-export const errorRetrievingLoansForUserId = "Error retrieving loans for userId:";
-export const deletingLoanWithID = "Deleting loan with ID:";
-export const creatingLoanRequestForUserId = "Creating loan request for userId:";
+export const bankStatementFileKeyIsRequired =
+  'Bank statement file key is required';
+export const loanAlreadyExistsOrValidationFailed =
+  'A loan with the same details already exists or validation failed';
+export const retrievingLoansForServiceId = 'Retrieving loans for serviceId:';
+export const loansRetrievedSuccessfullyForUserId =
+  'Loans retrieved successfully for userId:';
+export const noLoansFoundForUserId = 'No loans found for userId:';
+export const errorRetrievingLoansForUserId =
+  'Error retrieving loans for userId:';
+export const deletingLoanWithID = 'Deleting loan with ID:';
+export const creatingLoanRequestForUserId = 'Creating loan request for userId:';
 export const updatingLoanWithID = 'Updating loan with ID:';
-export const forUser = "for user:";
-export const failedToUpdateLoan = "Failed to update loan";
-export const errorUpdatingLoan = "Error updating loan";
-export const fetchingUserByID = "Fetching user by ID:";
-export const userNotFoundWithID = "User not found with ID:";
-export const userFound = "User found:";
-export const fetchingServiceSubTypeIDFor = "Fetching serviceSubType ID for:";
-export const foundServiceSubTypeID = "Found serviceSubType ID:";
-export const insertedRecordWithID = "Inserted record with ID:";
-export const insertQueryFailed = "Insert query failed:";
-export const creatingServiceRequestForUserId = "Creating service request for userId:";
-export const addingPersonalDetailsForUserId = "Adding personal details for userId:";
-export const startingLoanCreationForUserId = "Starting loan creation for userId:";
-export const loanCreatedSuccessfullyWithID = "Loan created successfully with ID:";
-export const loanCreationEmailSentTo = "Loan creation email sent to";
-export const notificationCreationFailedForLoanId = "Notification creation failed for loanId:";
-export const notificationCreatedSuccessfullyForLoanId = "Notification created successfully for loanId:";
-export const attemptingToDeleteLoanWithID = "Attempting to delete loan with ID:";
-export const loanNotFoundOrAlreadyDeletedForServiceRequestId = "Loan not found or already deleted for serviceRequestId:";
-export const loanFoundForDeletionServiceRequestId = 'Loan found for deletion: serviceRequestId';
-export const noRowsDeletedForServiceRequestId = "No rows deleted for serviceRequestId:";
-export const loanAndRelatedDataDeletedSuccessfullyForServiceRequestId = "Loan and related data deleted successfully for serviceRequestId:";
-export const notificationCreationFailedForServiceRequestId = 'Notification creation failed for serviceRequestId:';
-export const notificationCreatedSuccessfullyForserviceRequestId = "Notification created successfully for serviceRequestId:";
-export const failedToSendDeletionEmailTo = "Failed to send deletion email to";
-export const deletionEmailSentTo = "Deletion email sent to";
-export const loanDeletionProcessCompletedSuccessfullyForServiceRequestId = "Loan deletion process completed successfully for serviceRequestId:";
-export const loanDeletionErrorForServiceRequestId = "Loan deletion error for serviceRequestId:";
-export const fetchingLoanForServiceRequestId = "Fetching loan for serviceRequestId:";
-export const noLoanFoundForServiceRequestId = "No loan found for serviceRequestId:";
-export const loanRetrievedSuccessfullyForServiceRequestId = "Loan retrieved successfully for serviceRequestId:";
-export const errorRetrievingLoanForServiceRequestId = 'Error retrieving loan for serviceRequestId:';
-export const errorUpdatingLoanId = "Error updating loanId:";
-export const completedSuccessfullyForLoanId = "completed successfully for loanId:";
-export const reviewStepCompletedForLoanId = "Review step completed for loanId:";
-export const failedToSaveDocumentsForLoanId = "Failed to save documents for loanId:";
-export const failedToSaveReferenceDetailsForLoanId = "Failed to save reference details for loanId:";
-export const failedToSaveEmploymentDetailsForLoanId = 'Failed to save employment details for loanId:';
-export const failedToSaveContactDetailsForLoanId = "Failed to save contact details for loanId:";
-export const failedToSavePersonalDetailsForLoanId = 'Failed to save personal details for loanId:';
-export const startingLoanUpdateForServiceRequestId = "Starting loan update for serviceRequestId:";
-export const documentsInsertedWithID = "Documents inserted with ID:";
-export const savingDocumentDetailsForUserId = "Saving document details for userId:";
-export const referenceDetailsInsertedWithID = 'Reference details inserted with ID:';
-export const referenceDetailsUpdate = "Reference details update";
-export const savingReferenceDetailsForUserId = "Saving reference details for userId:";
-export const employmentDetailsInsertedWithID = "Employment details inserted with ID:";
-export const employmentDetailsUpdate = "Employment details update";
-export const savingEmploymentDetailsForUserId = "Saving employment details for userId:";
-export const contactDetailsSavedWithID = "Contact details saved with ID:";
-export const savingContactDetailsForUserId = 'Saving contact details for userId:';
-export const personalDetailsUpdate = "Personal details update";
-export const updatingPersonalDetailsForUserId = 'Updating personal details for userId:';
-export const insertReturnedId = "Insert returned id:";
-export const executingInsertQueryParamsHidden = "Executing insert query [params hidden]";
-export const serviceRequest = "Service request";
-export const fetchingLoanDetailsForServiceRequestId = "Fetching loan details for serviceRequestId:";
+export const forUser = 'for user:';
+export const failedToUpdateLoan = 'Failed to update loan';
+export const errorUpdatingLoan = 'Error updating loan';
+export const fetchingUserByID = 'Fetching user by ID:';
+export const userNotFoundWithID = 'User not found with ID:';
+export const userFound = 'User found:';
+export const fetchingServiceSubTypeIDFor = 'Fetching serviceSubType ID for:';
+export const foundServiceSubTypeID = 'Found serviceSubType ID:';
+export const insertedRecordWithID = 'Inserted record with ID:';
+export const insertQueryFailed = 'Insert query failed:';
+export const creatingServiceRequestForUserId =
+  'Creating service request for userId:';
+export const addingPersonalDetailsForUserId =
+  'Adding personal details for userId:';
+export const startingLoanCreationForUserId =
+  'Starting loan creation for userId:';
+export const loanCreatedSuccessfullyWithID =
+  'Loan created successfully with ID:';
+export const loanCreationEmailSentTo = 'Loan creation email sent to';
+export const notificationCreationFailedForLoanId =
+  'Notification creation failed for loanId:';
+export const notificationCreatedSuccessfullyForLoanId =
+  'Notification created successfully for loanId:';
+export const attemptingToDeleteLoanWithID =
+  'Attempting to delete loan with ID:';
+export const loanNotFoundOrAlreadyDeletedForServiceRequestId =
+  'Loan not found or already deleted for serviceRequestId:';
+export const loanFoundForDeletionServiceRequestId =
+  'Loan found for deletion: serviceRequestId';
+export const noRowsDeletedForServiceRequestId =
+  'No rows deleted for serviceRequestId:';
+export const loanAndRelatedDataDeletedSuccessfullyForServiceRequestId =
+  'Loan and related data deleted successfully for serviceRequestId:';
+export const notificationCreationFailedForServiceRequestId =
+  'Notification creation failed for serviceRequestId:';
+export const notificationCreatedSuccessfullyForserviceRequestId =
+  'Notification created successfully for serviceRequestId:';
+export const failedToSendDeletionEmailTo = 'Failed to send deletion email to';
+export const deletionEmailSentTo = 'Deletion email sent to';
+export const loanDeletionProcessCompletedSuccessfullyForServiceRequestId =
+  'Loan deletion process completed successfully for serviceRequestId:';
+export const loanDeletionErrorForServiceRequestId =
+  'Loan deletion error for serviceRequestId:';
+export const fetchingLoanForServiceRequestId =
+  'Fetching loan for serviceRequestId:';
+export const noLoanFoundForServiceRequestId =
+  'No loan found for serviceRequestId:';
+export const loanRetrievedSuccessfullyForServiceRequestId =
+  'Loan retrieved successfully for serviceRequestId:';
+export const errorRetrievingLoanForServiceRequestId =
+  'Error retrieving loan for serviceRequestId:';
+export const errorUpdatingLoanId = 'Error updating loanId:';
+export const completedSuccessfullyForLoanId =
+  'completed successfully for loanId:';
+export const reviewStepCompletedForLoanId = 'Review step completed for loanId:';
+export const failedToSaveDocumentsForLoanId =
+  'Failed to save documents for loanId:';
+export const failedToSaveReferenceDetailsForLoanId =
+  'Failed to save reference details for loanId:';
+export const failedToSaveEmploymentDetailsForLoanId =
+  'Failed to save employment details for loanId:';
+export const failedToSaveContactDetailsForLoanId =
+  'Failed to save contact details for loanId:';
+export const failedToSavePersonalDetailsForLoanId =
+  'Failed to save personal details for loanId:';
+export const startingLoanUpdateForServiceRequestId =
+  'Starting loan update for serviceRequestId:';
+export const documentsInsertedWithID = 'Documents inserted with ID:';
+export const savingDocumentDetailsForUserId =
+  'Saving document details for userId:';
+export const referenceDetailsInsertedWithID =
+  'Reference details inserted with ID:';
+export const referenceDetailsUpdate = 'Reference details update';
+export const savingReferenceDetailsForUserId =
+  'Saving reference details for userId:';
+export const employmentDetailsInsertedWithID =
+  'Employment details inserted with ID:';
+export const employmentDetailsUpdate = 'Employment details update';
+export const savingEmploymentDetailsForUserId =
+  'Saving employment details for userId:';
+export const contactDetailsSavedWithID = 'Contact details saved with ID:';
+export const savingContactDetailsForUserId =
+  'Saving contact details for userId:';
+export const personalDetailsUpdate = 'Personal details update';
+export const updatingPersonalDetailsForUserId =
+  'Updating personal details for userId:';
+export const insertReturnedId = 'Insert returned id:';
+export const executingInsertQueryParamsHidden =
+  'Executing insert query [params hidden]';
+export const serviceRequest = 'Service request';
+export const fetchingLoanDetailsForServiceRequestId =
+  'Fetching loan details for serviceRequestId:';

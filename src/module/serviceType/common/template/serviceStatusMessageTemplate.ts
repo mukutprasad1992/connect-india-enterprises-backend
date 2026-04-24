@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MessageGeneratorService {
-    private statusMessages: Record<string, string> = {
-        Approved: `
+  private statusMessages: Record<string, string> = {
+    Approved: `
             <html>
                 <head>
                     <style>
@@ -57,7 +57,7 @@ export class MessageGeneratorService {
                 </body>
             </html>
         `,
-        Rejected: `
+    Rejected: `
             <html>
                 <head>
                     <style>
@@ -111,7 +111,7 @@ export class MessageGeneratorService {
                 </body>
             </html>
         `,
-        'In Progress': `
+    'In Progress': `
             <html>
                 <head>
                     <style>
@@ -165,7 +165,7 @@ export class MessageGeneratorService {
                 </body>
             </html>
         `,
-        Pending: `
+    Pending: `
             <html>
                 <head>
                     <style>
@@ -218,12 +218,17 @@ export class MessageGeneratorService {
                     </div>
                 </body>
             </html>
-        `
-    };
+        `,
+  };
 
-    getStatusMessage(status: string, serviceSubType: string): string {
-        const formattedStatus = status.trim();
-        let message = this.statusMessages[formattedStatus] || `ℹ️ Your service request status: ${status}`;
-        return message.replace("{serviceSubType}", `<span class="highlight">${serviceSubType}</span>`);
-    }
+  getStatusMessage(status: string, serviceSubType: string): string {
+    const formattedStatus = status.trim();
+    let message =
+      this.statusMessages[formattedStatus] ||
+      `ℹ️ Your service request status: ${status}`;
+    return message.replace(
+      '{serviceSubType}',
+      `<span class="highlight">${serviceSubType}</span>`,
+    );
+  }
 }

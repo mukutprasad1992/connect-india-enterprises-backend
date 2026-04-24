@@ -1,20 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { errorRetrievingVouchers, errorRretrievingVouchers, getAllVoucherServiceCalled, vouchersRetrievedSuccessfully, vouchersRetrievedSuccessfullyCount } from '../common/voucherMessage';
+import {
+  errorRetrievingVouchers,
+  errorRretrievingVouchers,
+  getAllVoucherServiceCalled,
+  vouchersRetrievedSuccessfully,
+  vouchersRetrievedSuccessfullyCount,
+} from '../common/voucherMessage';
 import { AppLogger } from 'src/utils/common/loggerService';
 
 @Injectable()
 export class GetAllVoucherService {
-    constructor(
-        private readonly dataSource: DataSource,
-        private readonly logger: AppLogger,
-    ) { }
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly logger: AppLogger,
+  ) {}
 
-    async getAllVouchers(): Promise<any> {
-        this.logger.doLog(`${getAllVoucherServiceCalled}`, 'info');
+  async getAllVouchers(): Promise<any> {
+    this.logger.doLog(`${getAllVoucherServiceCalled}`, 'info');
 
-        try {
-            const query = `
+    try {
+      const query = `
                 SELECT
                     v.id, v.amount, v.voucherCode, v.validityFrom, v.validityTo,
                     v.customerId, v.vendorId, c.name AS customerName, c.address AS customerAddress, c.phone AS customerPhone,
@@ -31,24 +37,30 @@ export class GetAllVoucherService {
                 ORDER BY id DESC;
             `;
 
-            const vouchers = await this.dataSource.query(query);
+      const vouchers = await this.dataSource.query(query);
 
-            this.logger.doLog(`${vouchersRetrievedSuccessfullyCount} ${vouchers.length}`, 'success');
+      this.logger.doLog(
+        `${vouchersRetrievedSuccessfullyCount} ${vouchers.length}`,
+        'success',
+      );
 
-            return {
-                status: true,
-                message: vouchersRetrievedSuccessfully,
-                data: vouchers,
-            };
-        } catch (error) {
-            this.logger.doLog(`${errorRretrievingVouchers} ${error.message}`, 'error');
+      return {
+        status: true,
+        message: vouchersRetrievedSuccessfully,
+        data: vouchers,
+      };
+    } catch (error: any) {
+      this.logger.doLog(
+        `${errorRretrievingVouchers} ${error.message}`,
+        'error',
+      );
 
-            return {
-                status: false,
-                message: errorRetrievingVouchers,
-                error: error.message,
-                data: null,
-            };
-        }
+      return {
+        status: false,
+        message: errorRetrievingVouchers,
+        error: error.message,
+        data: null,
+      };
     }
+  }
 }

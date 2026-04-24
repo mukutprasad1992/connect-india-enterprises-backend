@@ -2,28 +2,34 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AppLogger } from 'src/utils/common/loggerService';
 import {
-    errorRetrievingLoanForServiceRequestId,
-    fetchingLoanForServiceRequestId,
-    loanNotFound,
-    loanRetrievalError,
-    loanRetrievedSuccessfully,
-    loanRetrievedSuccessfullyForServiceRequestId,
-    noLoanFoundForServiceRequestId,
+  errorRetrievingLoanForServiceRequestId,
+  fetchingLoanForServiceRequestId,
+  loanNotFound,
+  loanRetrievalError,
+  loanRetrievedSuccessfully,
+  loanRetrievedSuccessfullyForServiceRequestId,
+  noLoanFoundForServiceRequestId,
 } from '../common/loanMessage';
 
 @Injectable()
 export class GetloanByServiceIdService {
-    constructor(
-        private readonly dataSource: DataSource,
-        private readonly logger: AppLogger,
-    ) { }
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly logger: AppLogger,
+  ) {}
 
-    async getLoanByServiceId(serviceRequestId: number, userId: number): Promise<any> {
-        this.logger.doLog(`${fetchingLoanForServiceRequestId} ${serviceRequestId}, userId: ${userId}`, 'info');
+  async getLoanByServiceId(
+    serviceRequestId: number,
+    userId: number,
+  ): Promise<any> {
+    this.logger.doLog(
+      `${fetchingLoanForServiceRequestId} ${serviceRequestId}, userId: ${userId}`,
+      'info',
+    );
 
-        try {
-            const result = await this.dataSource.query(
-                `
+    try {
+      const result = await this.dataSource.query(
+        `
                 SELECT
                     -- Service Request
                     sr.id,
@@ -97,19 +103,32 @@ export class GetloanByServiceIdService {
                 WHERE sr.serviceId = ? AND sr.userId = ? 
                 ORDER BY sr.id DESC;
                 `,
-                [serviceRequestId, userId],
-            );
+        [serviceRequestId, userId],
+      );
 
-            if (result.length === 0) {
-                this.logger.doLog(`${noLoanFoundForServiceRequestId} ${serviceRequestId}, userId: ${userId}`, 'warn');
-                return { status: false, message: loanNotFound };
-            }
+      if (result.length === 0) {
+        this.logger.doLog(
+          `${noLoanFoundForServiceRequestId} ${serviceRequestId}, userId: ${userId}`,
+          'warn',
+        );
+        return { status: false, message: loanNotFound };
+      }
 
-            this.logger.doLog(`${loanRetrievedSuccessfullyForServiceRequestId} ${serviceRequestId}, userId: ${userId}`, 'success');
-            return { status: true, message: loanRetrievedSuccessfully, data: result };
-        } catch (error: any) {
-            this.logger.doLog(`${errorRetrievingLoanForServiceRequestId} ${serviceRequestId}, userId: ${userId} - ${error.message}`, 'error');
-            return { status: false, message: loanRetrievalError, error: error.message };
-        }
+      this.logger.doLog(
+        `${loanRetrievedSuccessfullyForServiceRequestId} ${serviceRequestId}, userId: ${userId}`,
+        'success',
+      );
+      return { status: true, message: loanRetrievedSuccessfully, data: result };
+    } catch (error: any) {
+      this.logger.doLog(
+        `${errorRetrievingLoanForServiceRequestId} ${serviceRequestId}, userId: ${userId} - ${error.message}`,
+        'error',
+      );
+      return {
+        status: false,
+        message: loanRetrievalError,
+        error: error.message,
+      };
     }
+  }
 }
