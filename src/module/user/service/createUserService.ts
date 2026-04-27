@@ -179,6 +179,7 @@ export class UserCreateService {
     }
     // if( createUserDTO.roleId === 2){
 
+<<<<<<< HEAD
     // }
     const password = createUserDTO.password || this.generateRandomPassword();
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -197,6 +198,38 @@ export class UserCreateService {
       createUserDTO.address,
       createUserDTO.status,
     ];
+=======
+        if (emailExists) {
+            this.logger.doLog(`${emailAlreadyExists} ${createUserDTO.email}`, 'warn');
+            return {
+                status: false,
+                message: emailIsAlreadyExist,
+                data: null
+            };
+        }
+
+        const mobileExists = await this.isMobileExist(createUserDTO.mobileNo);
+        if (mobileExists) {
+            this.logger.doLog(`${mobileNumberAlreadyExists} ${createUserDTO.mobileNo}`, 'warn');
+            return {
+                status: false,
+                message: mobileNoIsAlreadyExist,
+                data: null
+            };
+        }
+        if (createUserDTO.vendorCode) {
+            const vendorCodeExists = await this.isVendorCodeExist(createUserDTO.vendorCode);
+            if (vendorCodeExists) {
+                this.logger.doLog(`${vendorCodeAlreadyExists} ${createUserDTO.vendorCode}`, 'warn');
+                return {
+                    status: false,
+                    message: vendorCodeIsAlreadyExist,
+                    data: null
+                };
+            }
+        }
+        // if( createUserDTO.roleId === 2){
+>>>>>>> 89bba0fa105cf3f3a469624ee08f65cc90e0eb21
 
     const query = `INSERT INTO users (email, password, mobileNo, roleId, businessName, businessRepresentative, vendorCode, address, status, createdAt)
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now())`;
