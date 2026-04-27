@@ -1,5 +1,5 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 type Status = 'success' | 'fail' | 'info' | 'error' | 'warn';
 
