@@ -27,7 +27,7 @@ export class CreateServiceSubTypeService {
   ): Promise<ServiceSubTypeSchema | null> {
     this.logger.doLog(`${fetchingServiceSubTypeByID} ${ledgerId}`, 'info');
     const investment = await this.dataSource.query(
-      'SELECT * FROM serviceSubTypes WHERE id = ?',
+      'SELECT * FROM servicesubtypes WHERE id = ?',
       [ledgerId],
     );
     return investment.length > 0 ? investment[0] : null;
@@ -39,7 +39,7 @@ export class CreateServiceSubTypeService {
   ): Promise<any> {
     const { ledgerType, serviceId } = ServiceSubTypeDTO;
     const createdBy = userId;
-    const query = `INSERT INTO serviceSubTypes (ledgerType, serviceId, createdBy, createdAt)
+    const query = `INSERT INTO servicesubtypes (ledgerType, serviceId, createdBy, createdAt)
                        VALUES (?, ?, ?, now())`;
 
     const values = [ledgerType, serviceId, createdBy];

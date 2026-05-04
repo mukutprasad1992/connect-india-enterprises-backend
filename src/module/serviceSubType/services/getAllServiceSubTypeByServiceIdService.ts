@@ -26,7 +26,7 @@ export class GetServiceSubTypeByServiceIdService {
 
     try {
       const serviceSubType = await this.dataSource.query(
-        'SELECT * FROM serviceSubTypes WHERE serviceId = ?',
+        'SELECT * FROM servicesubtypes WHERE serviceId = ?',
         [ServiceId],
       );
 

@@ -27,7 +27,7 @@ export class DeleteServiceSubTypeByIdService {
 
     try {
       const existingServiceSubType = await this.dataSource.query(
-        'SELECT id FROM serviceSubTypes WHERE id = ?;',
+        'SELECT id FROM servicesubtypes WHERE id = ?;',
         [serviceSubTypeId],
       );
 
@@ -43,7 +43,7 @@ export class DeleteServiceSubTypeByIdService {
         };
       }
 
-      await this.dataSource.query('DELETE FROM serviceSubTypes WHERE id = ?;', [
+      await this.dataSource.query('DELETE FROM servicesubtypes WHERE id = ?;', [
         serviceSubTypeId,
       ]);
 

@@ -31,7 +31,7 @@ export class UpdateServiceSubTypeByIdService {
 
     try {
       const serviceSubType = await this.dataSource.query(
-        'SELECT * FROM serviceSubTypes WHERE id = ?',
+        'SELECT * FROM servicesubtypes WHERE id = ?',
         [ledgerId],
       );
 
@@ -94,7 +94,7 @@ export class UpdateServiceSubTypeByIdService {
       }
 
       const { ledgerType } = updatedData;
-      const query = `UPDATE serviceSubTypes 
+      const query = `UPDATE servicesubtypes 
                SET ledgerType = ?, updatedBy = ?, updatedAt = now()
                WHERE id = ?`;
       const values = [ledgerType, updatedBy, ledgerId];

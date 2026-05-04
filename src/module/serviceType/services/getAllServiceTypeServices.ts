@@ -44,6 +44,7 @@ export class GetALLServiceTypeByIdService {
                   u.email AS userEmail,
                   u.mobileNo,
                   u.profileImageKey,
+                  u.profileImageURL,
                   inv.id AS investmentId,
                   inv.status,
                   inv.activeSteps,
